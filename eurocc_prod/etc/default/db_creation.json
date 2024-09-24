@@ -1,0 +1,28 @@
+{
+    "flag": [
+        {
+            "name": "--input_docs_dir",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": ""
+            }
+        },
+        {   
+            "name": "--output_index_dir",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": ""
+            }
+        },
+        {
+            "name": "--hf_embedder_model_name",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": ""
+            }
+        }
+    ]
+}

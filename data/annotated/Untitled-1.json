@@ -1,0 +1,245 @@
+[
+    {
+        "question": [
+            "Che cosa è il Ciclo Passivo nel contesto della gestione delle Richieste d'Acquisto?",
+            "Quali sono le fasi principali del Ciclo Passivo?"
+        ],
+        "answer": [
+            "Il Ciclo Passivo comprende una serie di fasi per l'acquisizione di beni e servizi necessari all'azienda.",
+            "Le fasi principali del Ciclo Passivo includono la gestione delle Richieste d'Acquisto, la compilazione, verifica, emissione, e accettazione degli Ordini d'Acquisto, l'esecuzione della fornitura, il pagamento delle fatture conformi e la gestione di quelle non conformi."
+        ],
+        "contexts": [
+            [
+                "Il Ciclo Passivo è costituito da una serie di fasi che regolano l’acquisizione dei beni e servizi necessari all’azienda per lo svolgimento delle proprie attività.",
+                "La formalizzazione di una Richiesta di Acquisto rappresenta l’attività iniziale del Ciclo Passivo."
+            ],
+            [
+                "Il Ciclo Passivo include la gestione delle Richieste d'Acquisto, la compilazione, verifica, emissione, accettazione del fornitore degli Ordini d'Acquisto, l’esecuzione della fornitura, il pagamento delle fatture conformi e la gestione di quelle non conformi."
+            ]
+        ],
+        "ground_truth": [
+            "Il Ciclo Passivo è costituito da una serie di fasi che regolano l’acquisizione dei beni e servizi necessari all’azienda per lo svolgimento delle proprie attività, le quali includono, oltre alla gestione delle Richieste di Acquisto (RdA), la compilazione, verifica, emissione, accettazione del fornitore degli Ordini d’Acquisto (OdA), l’esecuzione della fornitura, il pagamento delle fatture conformi e la gestione di quelle non conformi.",
+            "Le fasi principali del Ciclo Passivo includono la gestione delle Richieste d’Acquisto, la compilazione, verifica, emissione, accettazione del fornitore degli Ordini d’Acquisto, l’esecuzione della fornitura, il pagamento delle fatture conformi e la gestione di quelle non conformi."
+        ]
+    },
+    {
+        "question": [
+            "Che cosa è una RdA?",
+            "Quali sono gli obiettivi del processo di gestione delle RdA?"
+        ],
+        "answer": [
+            "Una RdA è una Richiesta d'Acquisto, il documento iniziale del ciclo passivo.",
+            "Gli obiettivi del processo di gestione delle RdA sono assicurare che il fabbisogno espresso sia correttamente tradotto in una richiesta d'acquisto lavorabile."
+        ],
+        "contexts": [
+            [
+                "La formalizzazione di una Richiesta di Acquisto rappresenta l’attività iniziale del Ciclo Passivo.",
+                "Una Richiesta d'Acquisto (RdA) è un documento che esprime la necessità di acquisire beni o servizi."
+            ],
+            [
+                "Assicurare che il fabbisogno espresso da un ente aziendale sia correttamente tradotto in una richiesta d'acquisto lavorabile dal Procurement."
+            ]
+        ],
+        "ground_truth": [
+            "La formalizzazione di una Richiesta di Acquisto rappresenta l’attività iniziale del Ciclo Passivo.",
+            "Assicurare che il fabbisogno espresso da un ente aziendale sia correttamente tradotto in una richiesta d'acquisto lavorabile dal Procurement."
+        ]
+    },
+    {
+        "question": [
+            "Che cosa è un WBS nel contesto della Gestione Procurement delle Richieste d’Acquisto?",
+            "Quali sono gli elementi che compongono un WBS?"
+        ],
+        "answer": [
+            "Il WBS è una scomposizione gerarchica dello Scope of Work del Piano Economico.",
+            "Gli elementi che compongono un WBS includono prodotti, sotto-assiemi, attività e pacchetti di lavoro."
+        ],
+        "contexts": [
+            [
+                "WBS È la scomposizione gerarchica dello “Scope of Work” del Piano Economico in aggregati a vari livelli denominati WBE (prodotto/sotto-assiemi/attività/pacchetti di lavoro)."
+            ],
+            [
+                "WBS È la scomposizione gerarchica dello “Scope of Work” del Piano Economico in aggregati a vari livelli denominati WBE (prodotto/sotto-assiemi/attività/pacchetti di lavoro), fino ad individuare l’elemento di controllo WBECCA (Cost Control Account)."
+            ]
+        ],
+        "ground_truth": [
+            "WBS È la scomposizione gerarchica dello “Scope of Work” del Piano Economico in aggregati a vari livelli denominati WBE (prodotto/sotto-assiemi/attività/pacchetti di lavoro).",
+            "WBS È la scomposizione gerarchica dello “Scope of Work” del Piano Economico in aggregati a vari livelli denominati WBE (prodotto/sotto-assiemi/attività/pacchetti di lavoro), fino ad individuare l’elemento di controllo WBECCA (Cost Control Account)."
+        ]
+    },
+    {
+        "question": [
+            "Qual è il significato dell'acronimo P3PP?",
+            "Quali sono le responsabilità del Procurement Manager?"
+        ],
+        "answer": [
+            "P3PP significa Project/ Product / Program Procurement Plan.",
+            "Il Procurement Manager è responsabile di rappresentare la funzione procurement all'interno dell’IPT."
+        ],
+        "contexts": [
+            [
+                "P3PP Project/ Product / Program Procurement Plan."
+            ],
+            [
+                "Procurement Manager Ruolo definito all’interno delle Divisional Procurement Organization con la responsabilità di rappresentare la funzione procurement all'interno dell’IPT."
+            ]
+        ],
+        "ground_truth": [
+            "P3PP Project/ Product / Program Procurement Plan.",
+            "Procurement Manager Ruolo definito all’interno delle Divisional Procurement Organization con la responsabilità di rappresentare la funzione procurement all'interno dell’IPT."
+        ]
+    },
+    {
+        "question": [
+            "Che cosa è il Lead Time (LT) nel contesto delle Richieste d’Acquisto?",
+            "Come viene utilizzato il Lead Time nel processo di approvvigionamento?"
+        ],
+        "answer": [
+            "Il Lead Time (LT) è il tempo di realizzazione della fornitura.",
+            "Il Lead Time viene utilizzato per pianificare e monitorare i tempi di realizzazione delle forniture nel processo di approvvigionamento."
+        ],
+        "contexts": [
+            [
+                "LT Lead Time di realizzazione della fornitura."
+            ],
+            [
+                "Il Lead Time viene utilizzato nel processo di approvvigionamento per pianificare e monitorare i tempi di realizzazione delle forniture."
+            ]
+        ],
+        "ground_truth": [
+            "LT Lead Time di realizzazione della fornitura.",
+            "Il Lead Time viene utilizzato nel processo di approvvigionamento per pianificare e monitorare i tempi di realizzazione delle forniture."
+        ]
+    },
+
+    {
+        "questions": [
+            "Qual è il ruolo del Procurement Manager nel contesto della Gestione Procurement delle Richieste d’Acquisto?"
+        ],
+        "answers": [
+            "Il Procurement Manager rappresenta la funzione procurement all'interno dell’IPT."
+        ],
+        "contexts": [
+            [
+                "Procurement Manager Ruolo definito all’interno delle Divisional Procurement Organization con la responsabilità di rappresentare la funzione procurement all'interno dell’IPT.",
+                "Procurement Manager è un ruolo chiave nella gestione degli acquisti."
+            ]
+        ],
+        "ground_truths": [
+            "Il Procurement Manager ha la responsabilità di rappresentare la funzione procurement all'interno dell’IPT, come definito all’interno delle Divisional Procurement Organization."
+        ]
+    },
+    {
+        "questions": [
+            "Quali sono le fasi approvative della Richiesta d'Acquisto?"
+        ],
+        "answers": [
+            "Le fasi approvative includono la verifica tecnica, economica e di compliance della Richiesta d’Acquisto."
+        ],
+        "contexts": [
+            [
+                "AP1: 1^ Approv. Verifica tecnica & Verifica Make/Buy a livello enterprise.",
+                "AP2: 2^ Approv. Verifica dati della RdA Responsabile Preposto.",
+                "AP3: 3^ Approv. Verifica economica e programmatica, condizioni di Trade Compliance.",
+                "AP4: 4^ Approv. Verifica rispetto al budget Finance."
+            ]
+        ],
+        "ground_truths": [
+            "La Richiesta d’Acquisto deve passare attraverso diverse fasi approvative: AP1 (verifica tecnica), AP2 (verifica dati), AP3 (verifica economica e programmatica), e AP4 (verifica rispetto al budget)."
+        ]
+    },
+    {
+        "questions": [
+            "Cosa include il processo di gestione delle Richieste d’Acquisto?"
+        ],
+        "answers": [
+            "Il processo di gestione delle Richieste d’Acquisto include la generazione, approvazione, assegnazione e presa in carico della richiesta."
+        ],
+        "contexts": [
+            [
+                "Il documento descrive le modalità e i requisiti per la gestione da parte della funzione Procurement di tutte le tipologie di Richieste di Acquisto finalizzate all’emissione del relativo ordine.",
+                "Il sotto processo Gestione Richiesta d’Acquisto si attiva con la manifestazione di un fabbisogno da parte di un ente aziendale e si conclude con l’assegnazione e presa in carico della Richiesta d’Acquisto da parte dell’organizzazione del Procurement responsabile di procedere all’emissione dell’Ordine d’Acquisto."
+            ]
+        ],
+        "ground_truths": [
+            "Il processo di gestione delle Richieste d’Acquisto include la generazione della richiesta, la sua approvazione, assegnazione e presa in carico da parte del Procurement."
+        ]
+    },
+    {
+        "questions": [
+            "Chi è responsabile della verifica delle richieste d’acquisto?"
+        ],
+        "answers": [
+            "Il responsabile preposto verifica i dati delle Richieste d'Acquisto durante la seconda fase di approvazione."
+        ],
+        "contexts": [
+            [
+                "AP2: 2^ Approv. Verifica dati della RdA Responsabile Preposto.",
+                "Il Responsabile Procurement Preposto verifica la tipologia del riferimento di costo."
+            ]
+        ],
+        "ground_truths": [
+            "Il Responsabile Preposto è responsabile della verifica dei dati delle Richieste d’Acquisto nella seconda fase di approvazione (AP2)."
+        ]
+    },
+    {
+        "questions": [
+            "Quali strumenti vengono utilizzati per la gestione delle Richieste d’Acquisto?"
+        ],
+        "answers": [
+            "Il sistema informativo aziendale SAP viene utilizzato per la gestione delle Richieste d'Acquisto."
+        ],
+        "contexts": [
+            [
+                "Tutte le RdA a cui si fa riferimento sono gestite tramite il sistema informativo aziendale.",
+                "Tool: − SAP."
+            ]
+        ],
+        "ground_truths": [
+            "Le Richieste d’Acquisto sono gestite tramite il sistema informativo aziendale SAP."
+        ]
+    }  ,
+    "question": [
+        "Qual è il ruolo del Procurement Manager nel contesto delle forniture strategiche?",
+        "Quali sono le responsabilità del Responsabile Procurement Preposto durante l'autorizzazione della RdA?",
+        "Come viene gestita la verifica per approvazione delle RdA manuali?",
+        "Quali sono le attività principali del sotto-processo di emissione delle RdA?",
+        "Come viene gestita la richiesta di offerta nel processo di approvvigionamento?"
+      ],
+      "answers": [
+        "Il Procurement Manager ha il compito di supervisionare le forniture strategiche, gestendo i processi locali e lavorando a stretto contatto con i category manager.",
+        "Il Responsabile Procurement Preposto completa l'iter approvativo della RdA verificando i riferimenti di costo e assicurando che le informazioni siano coerenti per il calcolo del risparmio.",
+        "Per le RdA manuali, la funzione Procurement verifica l'approvazione assicurando la correttezza e la coerenza dei contenuti prima della presa in carico.",
+        "Il sotto-processo di emissione delle RdA coinvolge la compilazione, l'approvazione, l'autorizzazione e la presa in carico delle RdA, coordinato dal Procurement.",
+        "La richiesta di offerta è utilizzata per ottenere informazioni commerciali dai fornitori, garantendo che i fabbisogni dell'ente richiedente siano soddisfatti."
+      ],
+      "contexts": [
+        [
+          "Le forniture qualora di tipo non consolidato, con nuovi fornitori, o in condizioni ritenute rischiose o critiche, vanno gestite localmente, in prossimità delle organizzazioni richiedenti o d’ingegneria o dell’IPT di riferimento. La gestione sarà ad opera dei buyer sempre sotto la supervisione e responsabilità dei category manager di competenza.",
+          "In particolare questo è di rilevanza per le seguenti forniture: materiali, prestazioni o forniture non standard, non aggregabili o di interesse per più Lob/Programmi; processi industriali; conto lavoro di fase con IPR/Design Authority di Selex ES; progettazione e sviluppo a specifica; appalti e subappalti; servizi tecnici con SoW; forniture classificate."
+        ],
+        [
+          "Responsabilità: Richiedente Input: − RdA approvata dal Procurement (AP2) Attività: Successivamente all’approvazione da parte del Responsabile Procurement Preposto l’iter approvativo viene completato attraverso la successione delle verifiche da parte di altri Enti aziendali e conseguenti stati approvativi riportati in appendice D.",
+          "Il Responsabile Procurement Preposto verifica la tipologia del riferimento di costo (flag numerico), introdotta dal richiedente o assegnata dal sistema, ai fini del calcolo del saving in fase operativa di emissione dell’ordine. Flag 1 : riferimento da Budget, Flag 2 : riferimento da Offerta, Flag 3 : riferimento da Procurement Plan o da “should cost/UPC/PRC”, Flag 4 : riferimento da dati storici, Flag 5 : riferimento da Contratto applicabile, Flag 6: riferimento costo standard/CURA. A seconda della tipologia di riferimento, l’eventuale saving ricadra’ nelle seguenti casistiche: S0 per Flag 5, S1 per Flag 4, S2 per Flag 6, S3 per Flag 1, 3, S4 per Flag 2."
+        ],
+        [
+          "Per le RdA manuali è prevista una verifica per approvazione da parte della funzione Procurement (stato AP2), dal parte Responsabile procurement preposto, Tale verifica AP2 interviene a valle della approvazione “tecnica” che assicura la correttezza e congruenza dei contenuti della RdA, ed è finalizzata ad assicurare che le informazioni e le condizioni operative necessarie per le fasi successive del processo di approvvigionamento (assegnazione, presa in carico, richiesta offerta, ordine, etc) siano disponibili e consistenti.",
+          "Per consentire al Procurement di prendere in carico le RdA dovranno essere obbligatoriamente specificati, direttamente o tramite documenti richiamati, i dati in dettaglio elencati in Appendice A."
+        ],
+        [
+          "Il sotto-processo di emissione delle RdA si compone delle seguenti attività, che consentono di far evolvere il ciclo di vita della RdA stessa, articolato in 6 stati principali, come riportato in Tabella 1. Attività Stati principali RdA: Compilazione RdA, Generazione RdA BO – Bozza, CO – Compilata, Approvazione RdA a cura del Procurement AP – Approvata (*), Autorizzazione RdA AU – Autorizzata(*), Presa in carico RdA AS – Assegnata(*), PC – Presa in carico(*).",
+          "Il Procurement ha responsabilità diretta per le attività di: Assegnazione al buyer, automatica e/o manuale, della RdA; Verifica e presa in carico della RdA da parte del buyer. Inoltre il procurement partecipa all’attività di: verifica e relativa approvazione per la parte di competenza funzionale dei dati della RdA limitatamente alle informazioni che consentono la successiva presa in carico (‘lavorabilità’) da parte del procurement."
+        ],
+        [
+          "Richiesta di Offerta Documento utilizzato per richiedere informazioni commerciali, quotazioni specifiche per beni/servizi a Fornitori potenziali/già in Anagrafica SAP, al fine di soddisfare i fabbisogni manifestati dall’ente richiedente.",
+          "Servizio Per le finalità di questo documento con tale termine viene indicato un'attività o una serie di attività di natura più o meno intangibile. La fornitura di un servizio deve essere considerata come un'attività economica che non risulta possedibile, e questo è ciò che lo differenzia dalla fornitura di una merce fisica."
+        ]
+      ],
+      "ground_truths": [
+        "Il Procurement Manager è responsabile della supervisione delle forniture strategiche, gestendo i processi localmente e collaborando strettamente con i category manager competenti.",
+        "Il Responsabile Procurement Preposto verifica i riferimenti di costo inseriti nella RdA e assicura la coerenza delle informazioni necessarie per il calcolo del risparmio, completando così l'iter approvativo.",
+        "La funzione Procurement verifica l'approvazione delle RdA manuali dopo l'approvazione tecnica, garantendo la correttezza e la coerenza delle informazioni per le fasi successive del processo di approvvigionamento.",
+        "Il sotto-processo di emissione delle RdA comprende la compilazione, l'approvazione, l'autorizzazione e la presa in carico delle RdA, con il Procurement che ha un ruolo centrale in queste attività.",
+        "La richiesta di offerta è un documento usato per ottenere quotazioni specifiche dai fornitori, assicurando che i fabbisogni dell'ente richiedente siano adeguatamente soddisfatti."
+      ]    
+]

@@ -1,0 +1,22 @@
+{
+    "flag": [
+        {
+            "name": "--arg1_name",
+            "param": {
+                "action": "store_true (bolean flag, if used means True, default is False)",
+                "required": "False|True",
+                "help": "helper message for arg1"
+            }
+        },
+        {
+            "name": "--arg2_name",
+            "param": {
+                "type": "str",
+                "nargs": "+ (means this flag expects one or more values (a list of strings))",
+                "default": "e.g. -999",
+                "required": "False|True",
+                "help": "helper message for arg2"
+            }
+        }
+    ]
+}

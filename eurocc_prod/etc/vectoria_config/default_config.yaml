@@ -1,0 +1,27 @@
+# Logs
+# vectoria_logs_dir: ~/vectoria_logs
+
+# LEO
+vectoria_logs_dir: /home/leobaro/workspace/labs/eurocc/llm_eucc/eurocc/vectoria_logs
+# TODO: configurare final vectoria_logs dir OR dinamically loaded
+# CINECA
+#vectoria_logs_dir: /leonardo_work/PhDLR_prod/llm_eucc/eurocc/vectoria_logs
+
+
+# Preprocessing
+multiprocessing_for_preprocessing: true
+documents_format: pdf
+header_regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+'
+footer_regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
+remove_header: true
+remove_footer: true
+replace_ligatures: true
+remove_bullets: true
+remove_empty_lines: true
+remove_multiple_spaces: true
+chunk_size: 1024
+chunk_overlap: 256
+
+# Vector store
+# todo..
+

@@ -1,0 +1,55 @@
+IDENTIFICATIVO: 
+
+PRO002-P-IT Rev. 01 
+
+DATA: 
+
+30/12/2015 
+
+TIPO DOCUMENTO:  PROCEDURA 
+
+APPLICAZIONE: 
+
+Selex ES S.p.A. 
+
+Selezione, Autorizzazione e Qualifica dei 
+Fornitori  
+
+SOMMARIO: 
+
+Il  presente  documento  descrive  le  attività  di  selezione,  autorizzazione  e  qualifica  dei  fornitori  utilizzabili  in 
+Selex ES S.p.A e la gestione degli stessi nell’Elenco Fornitori Qualificati (EFQ) e nell’Anagrafica Fornitori SAP. 
+
+Le informazioni contenute nel presente documento sono di proprietà di Selex ES S.p.A. e non possono, al pari di tale documento, essere 
+riprodotte, utilizzate o divulgate in tutto o in parte a terzi senza preventiva autorizzazione scritta di Selex ES S.p.A. 
+Il documento è disponibile nell’Intranet Aziendale/BMS di Selex ES S.p.A. Le copie, sia in formato elettronico che cartaceo dovranno 
+essere verificate, prima dell’utilizzo, con la versione vigente disponibile su Intranet. 
+
+© Copyright Selex ES S.p.A. 2014 - Tutti i diritti riservati 
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+

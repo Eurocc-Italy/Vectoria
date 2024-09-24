@@ -1,0 +1,10 @@
+*.egg-info
+logs
+output
+**/*/__pycache__
+**/*/.ipynb_checkpoints
+
+**/*.pkl
+
+vectoria_logs/
+log/

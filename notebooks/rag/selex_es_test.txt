@@ -1,0 +1,63 @@
+4.2  Descrizione del Processo 
+
+Obiettivi del 
+Processo: 
+
+Il processo di selezione, approvazione e qualifica dei fornitori è finalizzato alla 
+gestione del Parco Fornitori, attraverso: 
+
+l’autorizzazione in Anagrafica SAP 
+la qualifica e l’inserimento nell’Elenco Fornitori Qualificati (EFQ), 
+la gestione di rinnovi, variazioni e cancellazioni. 
+
+Criteri di attivazione: 
+
+La  qualifica  e/o  l’autorizzazione  di  un  fornitore  si  può  attivare  sia  per  auto-
+candidatura del fornitore sia per richieste interne che portano a coinvolgere un 
+determinato fornitore. 
+
+La gestione dell’anagrafica fornitori è un processo continuo. 
+
+Input: 
+
+•  Documentazione Fornitore  
+•  Manifestazione di Interesse 
+•  Richiesta nuovo fornitore 
+•  Richiesta di apertura temporanea in deroga 
+•  Gravi  non  conformità  riscontrate  sulle  forniture/prestazioni  che  hanno 
+creato  danni  materiali  o  di  immagine  Valutazioni  di  Procurement  sulla 
+necessità del rinnovo di qualifica 
+
+•  Ripetuti rilievi di bassi livelli di prestazioni 
+•  Violazione dei requisiti riportati nella direttiva n. 21 Finmeccanica del 30.03.2015. 
+
+Descrizione: 
+
+Attivazione del processo (par. 5.2) 
+La  qualifica  e/o  l’autorizzazione  di  un  fornitore  si  può  attivare  sia  per autocandidatura  del 
+interne  che  portano  a coinvolgere un determinato fornitore. 
+
+Fornitori soggetti a Qualifica (fornitori diretti) (par.5.3) 
+➢  Attività propedeutiche alla Pre-qualifica (par. 5.3.1) 
+➢  Sviluppo e conclusione della Pre-qualifica (par. 5.3.2) 
+
+SBC attua una serie di verifiche coinvolgendo SHE, ed eventualmente 
+altri  enti  aziendali  (Legal,  Corporate  Affairs  and  Compliance,  Finance 
+etc) per aspetti di rispettiva competenza/congruenza.  
+
+Le verifiche sopra citate possono sintetizzarsi in: 
+
+▪  Compliance qualification 
+▪  Valutazione economico finanziaria 
+
+➢  Qualifica del fornitore (par. 5.3.3) 
+
+A  fronte  dell’esito  positivo  della  fase  di  pre-qualifica,  Procurement  / 
+SBC  invia  la richiesta  di  valutazione  al  Comitato  Valutazione  Fornitori 
+(CVF). Tale comitato opera, come descritto nel dettaglio nel par. 5.3.3, 
+valuta  gli  elementi  di  rispettiva  competenza  dei  propri  membri  e 
+concorda  l’esito  finale  di  qualifica  per  i  fornitori  diretti,  attraverso  la 
+documentazione inviata dal fornitore e l’eventuale attività di auditing sul fornitore  sia  per  richieste 
+ 
+ 
+
