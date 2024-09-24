@@ -33,6 +33,7 @@ dependencies = [
     "pandas",
     "langchain",
     "langchain-huggingface",
+    "langchain_community",
     "pypdf",
     "python-docx",
     "tqdm"
