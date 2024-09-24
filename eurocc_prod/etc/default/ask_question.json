@@ -1,19 +1,11 @@
 {
     "flag": [
         {
-            "name": "--faiss_index_name",
-            "param": {
-                "type": "str",
-                "required": "True",
-                "help": "The name of the embedder model"
-            }
-        },
-        {
             "name": "--faiss_index",
             "param": {
                 "type": "str",
                 "required": "True",
-                "help": "The path to the faiss index"
+                "help": "The path to the faiss index (in pickle format)"
             }
         },
         {

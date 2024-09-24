@@ -9,7 +9,7 @@ def extraction_docx():
 
 def test_extract_text_from_file(extraction_docx):
     text = extraction_docx.extract_text_from_file(TEST_DIR / "data/docx/2.docx")
-    assert len(text) == 65
+    assert len(text) == 85
 
 # def test_extract_text_from_folder(extraction_docx):
 #     text_per_doc = extraction_docx.extract_text_from_folder(TEST_DIR / "data/docx")

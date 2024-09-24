@@ -12,6 +12,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain.chains import LLMChain, LLMMathChain, TransformChain, SequentialChain
 
+from vectoria_lib.common.config import Config
 from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
 from vectoria_lib.db_management.retriever.faiss_retriever import Retriever, FaissRetriever
 from vectoria_lib.llm.parser import CustomResponseParser
@@ -25,11 +26,7 @@ class QAAgent():
 
     def __init__(
         self,
-        rag_retriever: Retriever,
-        model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct",
-        max_new_tokens = 150,
-        load_in_8bit = True,
-        device = "cuda"
+        rag_retriever: Retriever
     ):
         """
             max_new_tokens: https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
@@ -46,21 +43,22 @@ class QAAgent():
         """
 
         self.logger = logging.getLogger('llm')
+        config = Config()
 
-        self.model_name = model_name
-        tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model_name = config.get("llm_model")
+        tokenizer = AutoTokenizer.from_pretrained(config.get("llm_model"))
         model = AutoModelForCausalLM.from_pretrained(
             self.model_name,
-            load_in_8bit = load_in_8bit
+            load_in_8bit = config.get("load_in_8bit")
         )
-        if load_in_8bit:
+        if config.get("load_in_8bit"):
             device = None
         
         pipe = pipeline(
             "text-generation", 
             model = model,
             tokenizer = tokenizer,
-            max_new_tokens = max_new_tokens,
+            max_new_tokens = config.get("max_new_tokens"),
             device = device
         )
 
@@ -120,5 +118,5 @@ class QAAgent():
         - str: The generated answer to the question.
         """
         output = self.chain.invoke(question)
-        self.logger.info(f"\n\n\nQAAgent: {output}")
+        self.logger.info("\n\n=================> Answer:\n%s", output)
         return output

@@ -20,7 +20,8 @@ logger = logging.getLogger('db_management')
 class PreprocessingPipelineBuilder:        
     
     @staticmethod
-    def bulding_cleaning_component(config: Config):
+    def bulding_cleaning_component():
+        config = Config()
         cleaning = Cleaning()
         if config.get("remove_header"):
             cleaning.add_cleaning_step(remove_header)
@@ -37,7 +38,8 @@ class PreprocessingPipelineBuilder:
         return cleaning
     
     @staticmethod
-    def building_text_extractor_component(config: Config):
+    def building_text_extractor_component():
+        config = Config()
         if config.get("documents_format") == "docx":
             return DocXTextExtractor()
         elif config.get("documents_format") == "pdf":
@@ -46,16 +48,15 @@ class PreprocessingPipelineBuilder:
             raise ValueError(f"Unsupported document format: {config.get('documents_format')}")
     
     @staticmethod
-    def building_chunking_component(config: Config):
+    def building_chunking_component():
+        config = Config()
         return Chunking(config.get("chunk_size"), config.get("chunk_overlap"))
 
     @staticmethod
-    def build_pipeline(config: Config = None):
-        if config is None:
-            config = Config()
+    def build_pipeline():
         pipeline = PreprocessingPipeline()
-        pipeline.set_text_cleaner(  PreprocessingPipelineBuilder.bulding_cleaning_component(config))
-        pipeline.set_text_extractor(PreprocessingPipelineBuilder.building_text_extractor_component(config))
-        pipeline.set_chunking(      PreprocessingPipelineBuilder.building_chunking_component(config))
+        pipeline.set_text_cleaner(  PreprocessingPipelineBuilder.bulding_cleaning_component())
+        pipeline.set_text_extractor(PreprocessingPipelineBuilder.building_text_extractor_component())
+        pipeline.set_chunking(      PreprocessingPipelineBuilder.building_chunking_component())
         logger.info("Pipeline built successfully: %s", pipeline)
         return pipeline

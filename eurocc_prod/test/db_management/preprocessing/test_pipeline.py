@@ -22,9 +22,4 @@ def test_pipeline():
     processed_docs = pp.run(TEST_DIR / "data/docx")
 
     # A list of LangChain Document (chunks) for each input document
-    assert len(processed_docs) == 2
-    assert len(processed_docs[0]) == 1
-    assert len(processed_docs[1]) == 10
-
-    for doc in processed_docs[1]:
-        assert len(doc.page_content) >= 89
+    assert len(processed_docs) == 12

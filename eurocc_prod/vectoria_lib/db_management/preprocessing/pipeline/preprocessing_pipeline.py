@@ -47,8 +47,8 @@ class PreprocessingPipeline:
     
 
     def run_on_file(self, path: Path):
-        self.logger.info("Processing file: %s", path)
         text = self.text_extractor.extract_text_from_file(path)
         cleaned_text = self.text_cleaner.clean_text(text)
         chunks = self.chunking.make_chunks(cleaned_text)
+        self.logger.debug("Extracted %d chunks from file %s", len(chunks), path)
         return chunks
