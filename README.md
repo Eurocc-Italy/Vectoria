@@ -18,8 +18,14 @@ source eucc-env/bin/activate
 
 # INSTALL ADDITIONAL REQUIREMENTS
 cd llm_eucc/eurocc
-pip install -e . [dev,test]
+pip install -e ".[dev,test]"
 ```
+
+# User interface
+```
+streamlit run vectoria_lib/gui/gui_v1.py
+```
+
 
 ## Configuration
 ```

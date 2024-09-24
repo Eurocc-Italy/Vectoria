@@ -8,3 +8,4 @@ output
 
 vectoria_logs/
 log/
+*-env/
