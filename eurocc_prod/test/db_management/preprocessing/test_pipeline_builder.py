@@ -10,7 +10,7 @@ def test_pipeline():
     config.set("chunk_overlap", 10)
     config.set("documents_format", "docx")
 
-    pipeline = PreprocessingPipelineBuilder.build_pipeline(config)
+    pipeline = PreprocessingPipelineBuilder.build_pipeline()
 
     assert pipeline is not None
     assert pipeline.text_cleaner is not None

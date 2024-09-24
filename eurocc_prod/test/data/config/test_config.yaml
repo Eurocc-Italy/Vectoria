@@ -1,13 +1,6 @@
 # Logs
-# vectoria_logs_dir: ~/vectoria_logs
-
-# LEO
-vectoria_logs_dir: /home/leobaro/workspace/labs/vectoria/vectoria_logs
+vectoria_logs_dir: /tmp/vectoria_logs
 log_level: DEBUG
-# TODO: configurare final vectoria_logs dir OR dinamically loaded
-# CINECA
-#vectoria_logs_dir: /leonardo_work/PhDLR_prod/llm_eucc/eurocc/vectoria_logs
-
 
 # Preprocessing
 multiprocessing_for_preprocessing: true
@@ -25,7 +18,7 @@ chunk_overlap: 256
 
 # Vector store
 hf_embedder_model_name: BAAI/bge-m3
-embedder_device: cuda
+embedder_device: cpu
 normalize_embeddings: false
 
 # QA agent
@@ -33,4 +26,4 @@ llm_model: meta-llama/Meta-Llama-3.1-8B-Instruct
 retriever_top_k: 5
 max_new_tokens: 150
 load_in_8bit: true
-device: cuda
+device: cpu

@@ -1,12 +1,15 @@
 import logging
 
-def setup_logger(logger_name, log_file=None):
+def setup_logger(logger_name: str, log_file: str = None, log_level: str = None):
     """
     Sets up a logger with the given name.
     Optionally logs to a file if log_file is provided.
     """
     logger = logging.getLogger(logger_name)
-    logger.setLevel(logging.DEBUG)  # Set default logging level
+    if log_level is not None:
+        logger.setLevel(logging.getLevelName(log_level))
+    else:
+        logger.setLevel(logging.DEBUG)  # Set default logging level
 
     # Define a formatter (use same format for all loggers)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(filename)s - %(lineno)s')

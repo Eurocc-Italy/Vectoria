@@ -7,6 +7,7 @@
 from pathlib import Path
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from vectoria_lib.common.config import Config
 
 class FaissVectorStore:
     """
@@ -21,39 +22,55 @@ class FaissVectorStore:
 
 
     @staticmethod
-    def load_from_pickle(model_name: str, pkl: bytes):
+    def load_from_pickle(pkl_path: str | Path):
         """
         Load a FAISS index from a serialized pickle file.
 
         Parameters:
-        - model_name (str): The name of the embedding model to use.
-        - pkl (bytes): The serialized FAISS index in bytes.
-
+        - pkl_path (str | Path): The path to the serialized FAISS index pickle file.
+        
         Returns:
         - FaissVectorStore: An instance of FaissVectorStore with the loaded FAISS index.
 
         """
+        pkl_path = Path(pkl_path)
+        pkl_bytes = pkl_path.read_bytes()
+
+        # BAAI__bge-m3_faiss_index.pkl -> BAAI/bge-m3
+        model_name = pkl_path.stem.split("_faiss_index")[0].replace('__', '/')
+
         fvs = FaissVectorStore(model_name)
         index = FAISS.deserialize_from_bytes(
-            embeddings=fvs.hf_embedder, serialized=pkl, allow_dangerous_deserialization=True
+            embeddings=fvs.hf_embedder,
+            serialized=pkl_bytes,
+            allow_dangerous_deserialization=True
         )
         fvs.index = index
-        # TODO: do something like fvs = FaissVectorStore(index.model_name)
+        
         return fvs
 
-    def __init__(self, model_name, device="cuda"):
+    def __init__(self, model_name: str = None):
         """
         Initialize a FaissVectorStore object.
 
         Parameters:
         - model_name (str): The name of the embedding model to use.
-        - device (str): The device ("cuda" or "cpu") to run the embedding model on. Default is 'cuda'.
         """
+        config = Config()
+
         self.model_name = model_name
-        model_kwargs = {"device": device}
-        encode_kwargs = {"normalize_embeddings": False}
+
+        if model_name is None:
+            self.model_name = config.get("hf_embedder_model_name")
+
         self.hf_embedder = HuggingFaceBgeEmbeddings(
-            model_name=self.model_name, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs
+            model_name=self.model_name,
+            model_kwargs={
+                "device": config.get("embedder_device")
+            },
+            encode_kwargs={
+                "normalize_embeddings": config.get("normalize_embeddings")
+            }
         )
         self.index = None
 

@@ -15,14 +15,6 @@
                 "required": "True",
                 "help": ""
             }
-        },
-        {
-            "name": "--hf_embedder_model_name",
-            "param": {
-                "type": "str",
-                "required": "True",
-                "help": ""
-            }
         }
     ]
 }
