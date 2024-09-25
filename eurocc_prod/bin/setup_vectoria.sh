@@ -1,7 +1,7 @@
 #
 # VECTORIA
 #
-# @authors : Eric Pascolo
+# @authors : 
 #
 
 module load profile/deeplrn

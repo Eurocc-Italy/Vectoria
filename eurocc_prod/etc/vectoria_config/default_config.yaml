@@ -2,11 +2,11 @@
 # vectoria_logs_dir: ~/vectoria_logs
 
 # LEO
-vectoria_logs_dir: /home/leobaro/workspace/labs/vectoria/vectoria_logs
+#vectoria_logs_dir: /home/leobaro/workspace/labs/vectoria/vectoria_logs
 log_level: DEBUG
 # TODO: configurare final vectoria_logs dir OR dinamically loaded
 # CINECA
-#vectoria_logs_dir: /leonardo_work/PhDLR_prod/llm_eucc/eurocc/vectoria_logs
+vectoria_logs_dir: /leonardo_work/PhDLR_prod/vectoria/vectoria_logs
 
 
 # Preprocessing

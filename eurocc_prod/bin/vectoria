@@ -64,9 +64,9 @@ def main():
     args = cl_convert_to_dict(args)
 
     if args["command"] == 'build_index':
-        build_index(args)
+        build_index(**args)
     elif args["command"] == 'ask_question':
-        ask_question(args)
+        ask_question(**args)
 
 if __name__ == "__main__":
     main()
