@@ -1,0 +1,34 @@
+{
+    "question": [
+        "Quali sono i documenti di riferimento per procedere ad un acquisto da parte di un Ente Aziendale?", 
+        "Quale è la prima cosa da fare per procedere ad un acquisto?",
+        "Quale è il Sistema Informativo che mi permette di emettere una richiesta di Acquisto?",
+        "Gli Oda possono essere emessi verso qualsiasi Fornitore?",
+        "Quale è la UO Aziendale che ha il compito di emettere OdA nei confronti dei Fornitori?",
+        "Quale è il documento che formalizza la richiesta di deroga alla selezione del Fornitore?",
+        "Chi deve compilare il modello PRO094- T-IT-I? A quale altro documento deve essere allegato?",
+        "E' ammessa la firma elettronica negli OdA?",
+        "E' possibile effettuare un acquisto senza procedere alle modalità negoziali previste?",
+        "Quali sono le procedure negoziali per procedere alla selezione di un Fornitore?"
+    ],
+    "ground_truth": [
+        "I Documenti di riferimento sono PRO011-P-IT-I e PRO012-P-IT-I", 
+        "Ogni richiesta di acquisto si attiva con la manifestazione di un fabbisogno, da parte di un ente e/o funzione aziendale, che si identifica nella successiva emissione di una RdA su sistema informativo aziendale. Detto fabbisogno è sottoposto al vaglio delle funzioni preposte per verifica dei contenuti e approvazione.",
+        "Il Sistema da utilizzare per formalizzare una Richiesta di Acquisto è SAP.",
+        "Solo verso quei Fornitori presenti nell’Anagrafica SAP o da qualificare per il successivo inserimento in Elenco Fornitori Qualificati.",
+        "La UO preposta all'emissione degli ODA è il Procurement.",
+        "E' il template PRO094-T-IT-I.",
+        "Il modello PRO094-T-IT-I deve essere compilato dall'Ente Richiedente e deve sempre essere allegato alla RdA.",
+        "Sì.",
+        "Sì, tramite affidamento diretto in due casi diversi:\n1. per deroga \n2. per i seguenti casi:\n  a. Consegna complementari con un limite max del 20 % del valore iniziale,\n  b. fornitori imposti dal Cliente,\n  c. per attività commissionate al Fornitore OEM del prodotto o SM,\n  d. per acquisti a Fornitore formalizzato nei sistemi aziendali,\n  e. per OdA occasionali non superiori a 5Keuro,\n  f. OdA vs società del gruppo.",
+        "Le procedure negoziali dipendono dal valore stimato della fornitura. E i vari tipi sono:\n1. Gara con pubblicazione di avviso\n2. Gara a inviti\n3. Trattativa Privata."
+    ],
+    "contexts": [
+        [
+            "2 2.1 Documenti di riferimento CodiceTitolo PRO012-P-IT Emissione e Gestione degli Ordini di Acquisto PRO002-P-IT Valutazione, Qualifica e Monitoraggio dei Fornitori PRO010-W-COProcurement Functional Framework GOV028-L-COPolicy di Trade Compliance"
+        ]
+    ],
+    "answers": [ 
+    ]
+
+}
