@@ -12,13 +12,15 @@ class AgentBuilder:
 
     @staticmethod
     def build_qa_agent(
-        faiss_index_path: str | Path
+        #faiss_index_path: str | Path
+        **kwargs: dict
     ) -> QAAgent:
 
         logger = logging.getLogger("llm")
         
         # Load vector store
         start_time = time.time()
+        faiss_index_path = kwargs['faiss_index']
         logger.debug("Loading Faiss index: %s", faiss_index_path)
         vector_store = FaissVectorStore.load_from_pickle(
             Path(faiss_index_path)
