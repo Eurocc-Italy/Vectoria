@@ -6,7 +6,7 @@
         "Gli Oda possono essere emessi verso qualsiasi Fornitore?",
         "Quale è la UO Aziendale che ha il compito di emettere OdA nei confronti dei Fornitori?",
         "Quale è il documento che formalizza la richiesta di deroga alla selezione del Fornitore?",
-        "Chi deve compilare il modello PRO094- T-IT-I? A quale altro documento deve essere allegato?",
+        "Chi deve compilare il modello PRO094- T-IT-I? A quale altro documento deve essere allegato?"
     ],
     "ground_truth": [
         "I Documenti di riferimento sono PRO011-P-IT-I e PRO012-P-IT-I", 
@@ -15,7 +15,7 @@
         "Solo verso quei Fornitori presenti nell’Anagrafica SAP o da qualificare per il successivo inserimento in Elenco Fornitori Qualificati.",
         "La UO preposta all'emissione degli ODA è il Procurement.",
         "E' il template PRO094-T-IT-I.",
-        "Il modello PRO094-T-IT-I deve essere compilato dall'Ente Richiedente e deve sempre essere allegato alla RdA.",
+        "Il modello PRO094-T-IT-I deve essere compilato dall'Ente Richiedente e deve sempre essere allegato alla RdA."
     ],
     "contexts": [
         [
