@@ -63,8 +63,13 @@ class FaissVectorStore:
         if model_name is None:
             self.model_name = config.get("hf_embedder_model_name")
 
+        # FIXME: solo per test vado a modificare il path del modello da caricare per usare quello locale
+        # lascio "self.model_name" invariato per non alterare il nome del dump
+        local_model = "/leonardo_work/PhDLR_prod/bge-m3" # CINECA
+
         self.hf_embedder = HuggingFaceBgeEmbeddings(
-            model_name=self.model_name,
+            #model_name=self.model_name,
+            model_name=local_model,
             model_kwargs={
                 "device": config.get("embedder_device")
             },

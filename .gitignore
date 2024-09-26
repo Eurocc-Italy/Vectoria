@@ -9,3 +9,7 @@ output
 vectoria_logs/
 log/
 *-env/
+
+*.err
+*.out
+clean
