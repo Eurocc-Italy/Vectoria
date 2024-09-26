@@ -32,8 +32,9 @@ dependencies = [
     "bitsandbytes",
     "pandas",
     "langchain",
-    "langchain-huggingface",
     "langchain_community",
+    "langchain-huggingface",
+    "langchain-ollama",
     "pypdf",
     "python-docx",
     "tqdm"
