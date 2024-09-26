@@ -22,8 +22,14 @@ embedder_device: cpu
 normalize_embeddings: false
 
 # QA agent
-llm_model: meta-llama/Meta-Llama-3.1-8B-Instruct
 retriever_top_k: 5
-max_new_tokens: 150
-load_in_8bit: true
-device: cpu
+
+# Inference engine
+inference_engine:
+  name: 'huggingface'
+  url: null
+  api_key: null
+  model_name: 'meta-llama/Meta-Llama-3.1-8B-Instruct'
+  device: cpu
+  load_in_8bit: true
+  max_new_tokens: 150

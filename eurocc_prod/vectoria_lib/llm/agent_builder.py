@@ -7,7 +7,7 @@ from vectoria_lib.llm.agents.qa import QAAgent
 from vectoria_lib.common.config import Config
 from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-
+from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 class AgentBuilder:
 
     @staticmethod
@@ -35,4 +35,7 @@ class AgentBuilder:
         logger.info("Set Faiss retriever in %.2f seconds", time.time() - start_time)
 
         # Create QA agent
-        return QAAgent(retriever)
+        return QAAgent(
+            retriever,
+            InferenceEngineBuilder.build_inference_engine(Config().get("inference_engine"))
+        )
