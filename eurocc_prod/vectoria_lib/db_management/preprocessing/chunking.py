@@ -8,13 +8,13 @@ import logging
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 class Chunking:
-    def __init__(self, chunk_size: int = 1024, chunk_overlap: int = 256):
+    def __init__(self, chunk_size, chunk_overlap):
         """
         Initialize the Chunking object with a chunk size and overlap for the text splitter.
 
         Parameters:
-        - chunk_size (int): The maximum size of each text chunk. Default is 1024.
-        - chunk_overlap (int): The overlap size between consecutive chunks to ensure text continuity. Default is 256.
+        - chunk_size (int): The maximum size of each text chunk.
+        - chunk_overlap (int): The overlap size between consecutive chunks to ensure text continuity.
         """
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap

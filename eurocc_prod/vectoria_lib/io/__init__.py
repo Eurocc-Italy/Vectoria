@@ -4,4 +4,4 @@ logger = setup_logger(
     'io', 
     Config().get("vectoria_logs_dir") / "io.log"
 )
-logger.info("Module io initialized")
+logger.debug("Module io initialized")

@@ -41,7 +41,8 @@ dependencies = [
 ]
 [project.optional-dependencies]
 dev = [
-    "jupyterlab"
+    "jupyterlab",
+    "ipykernel"
 ]
 test = [
     "pytest==8.2.0",

@@ -6,4 +6,4 @@ logger = setup_logger(
     Config().get("vectoria_logs_dir") / "tasks.log"
 )
 
-logger.info("Module tasks initialized")
+logger.debug("Module tasks initialized")

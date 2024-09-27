@@ -15,6 +15,7 @@ remove_empty_lines: true
 remove_multiple_spaces: true
 chunk_size: 1024
 chunk_overlap: 256
+save_chunks_on_disk: false
 
 # Vector store
 hf_embedder_model_name: BAAI/bge-m3

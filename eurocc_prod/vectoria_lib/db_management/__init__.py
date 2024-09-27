@@ -4,4 +4,4 @@ logger = setup_logger(
     'db_management', 
     Config().get("vectoria_logs_dir") / "db_management.log"
 )
-logger.info("Module db_management initialized")
+logger.debug("Module db_management initialized")

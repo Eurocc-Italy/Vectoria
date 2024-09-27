@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 import multiprocessing as mp
 
-from vectoria_lib.db_management.preprocessing.extraction_base import ExtractionBase
+from vectoria_lib.db_management.preprocessing.extraction_base import DocumentData, ExtractionBase
 from vectoria_lib.db_management.preprocessing.cleaning import Cleaning
 from vectoria_lib.db_management.preprocessing.chunking import Chunking
 from vectoria_lib.io.folder_reader import get_files_in_folder
@@ -47,7 +47,8 @@ class PreprocessingPipeline:
     
 
     def run_on_file(self, path: Path):
-        text = self.text_extractor.extract_text_from_file(path)
+        document_data: DocumentData = self.text_extractor.extract_text_from_file(path)
+        # TODO: 
         cleaned_text = self.text_cleaner.clean_text(text)
         chunks = self.chunking.make_chunks(cleaned_text)
         self.logger.debug("Extracted %d chunks from file %s", len(chunks), path)

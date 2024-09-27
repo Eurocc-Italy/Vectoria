@@ -5,20 +5,20 @@
 #
 
 from pathlib import Path
+from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 
+@dataclass
+class DocumentData:
+    unstructured_text: str = ""
+    structured_text: dict = field(default_factory=dict)  # Use default_factory for mutable types
+    metadata: dict = field(default_factory=dict)         # Same for metadata
+
+
 class ExtractionBase(ABC):
-    # @abstractmethod
-    # def extract_text_from_folder(self, folder_path: Path, limit: int = -1) -> list[str]:
-    #     pass
-
-    """
-    Abstract base class for text extraction operations.
-
-    """
 
     @abstractmethod
-    def extract_text_from_file(self, file_path: Path) -> str:
+    def extract_text_from_file(self, file_path: Path) -> DocumentData:
         """
         Abstract method to extract text from a single file.
 
@@ -26,6 +26,6 @@ class ExtractionBase(ABC):
         - file_path (Path): The path to the file from which text should be extracted.
 
         Returns:
-        - str: The extracted text from the file.
+        - DocumentData: The extracted data from the file.
         """
         pass
