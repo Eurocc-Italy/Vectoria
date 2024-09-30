@@ -15,13 +15,12 @@ sys.path.remove(lib_path)
 sys.path.insert(1,lib_path)
 
 import sys
-import logging
 import argparse
-from argparse import Namespace
 
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.tasks.build_index import build_index
 from vectoria_lib.tasks.ask_question import ask_question
+from vectoria_lib.tasks.evaluate import evaluate
 from vectoria_lib.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
 from vectoria_lib.common.config import Config
 
@@ -55,6 +54,9 @@ def cli():
     parser_ask_question_task = subparsers.add_parser('ask_question', formatter_class=argparse.RawTextHelpFormatter, help='Run the ask_question behavior')
     create_cl_parser_from_json(parser_ask_question_task, 'ask_question.json')
 
+    parser_ask_question_task = subparsers.add_parser('evaluate', formatter_class=argparse.RawTextHelpFormatter, help='Run the ask_question behavior')
+    create_cl_parser_from_json(parser_ask_question_task, 'evaluate.json')
+
     return parser.parse_args()
 
 def main():
@@ -70,6 +72,8 @@ def main():
         build_index(**args)
     elif args["command"] == 'ask_question':
         ask_question(**args)
+    elif args["command"] == 'evaluate':
+        evaluate(**args)
 
 if __name__ == "__main__":
     main()

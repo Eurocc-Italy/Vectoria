@@ -7,13 +7,12 @@
 
 import logging
 from langchain.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
 
-from vectoria_lib.common.config import Config
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.db_management.retriever.faiss_retriever import Retriever, FaissRetriever
 from vectoria_lib.llm.parser import CustomResponseParser
 from vectoria_lib.llm.helpers import format_docs, get_prompt
+from vectoria_lib.db_management.retriever.faiss_retriever import Retriever
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
 class QAAgent:
@@ -39,18 +38,21 @@ class QAAgent:
         self.logger = logging.getLogger('llm')
         
         prompt = ChatPromptTemplate.from_template(get_prompt())
-        langchain_retriever = rag_retriever.as_langchain_retriever()
-        langchain_inference_engine = inference_engine.as_langchain_llm()
+        retriever = rag_retriever.as_langchain_retriever()
+        inference_engine = inference_engine.as_langchain_llm()
         
-        self.qa_chain = (
-            {"context": langchain_retriever | format_docs, "question": RunnablePassthrough()}
+        chain = (
+            RunnablePassthrough.assign(context=(lambda x: format_docs(x["context"])))
             | prompt
-            | langchain_inference_engine
+            | inference_engine
             | CustomResponseParser()
         )
+        self.chain = RunnableParallel(
+            {"context": retriever, "question": RunnablePassthrough()}
+        ).assign(answer=chain)
 
 
-    def ask(self, question) -> str:
+    def ask(self, question) -> tuple[str,str,str]:
         """
         Ask the QAAgent a question and get an answer based on the retrieved documents 
         and generated response.
@@ -59,8 +61,7 @@ class QAAgent:
         - question (str): The question to ask the agent.
 
         Returns:
-        - str: The generated answer to the question.
+        - The question, the generated answer and the retrived context.
         """
-        output = self.qa_chain.invoke(question)
-        self.logger.info("\n\n=================> Answer:\n%s", output)
-        return output
+        output = self.chain.invoke(question)
+        return output["question"], output["answer"], output["context"]
