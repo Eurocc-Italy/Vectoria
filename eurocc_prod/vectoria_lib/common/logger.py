@@ -1,11 +1,12 @@
 import logging
 
-def setup_logger(logger_name: str, log_file: str = None, log_level: str = None):
+def setup_logger(logger_name: str, log_level: str, log_file: str = None):
     """
     Sets up a logger with the given name.
     Optionally logs to a file if log_file is provided.
     """
     logger = logging.getLogger(logger_name)
+
     if log_level is not None:
         logger.setLevel(logging.getLevelName(log_level))
     else:

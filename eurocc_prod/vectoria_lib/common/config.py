@@ -16,14 +16,13 @@ class Config(metaclass=Singleton):
         return Config(config_path)
     """
     def __init__(self, config_path: Path | str = None):
-        self.config_stream_logger = setup_logger('config_logger') # <- stream logger
+        self.config_stream_logger = setup_logger('config_logger', 'INFO') # <- stream logger
         self.logger = logging.getLogger('common')
         self.config = {}
         self.load_config(config_path)
 
     def load_config(self, config_path: Path | str = None):
         self.config_stream_logger.debug("Loading configuration from %s", config_path)
-        
         if config_path is None:
             config_path = ETC_DIR / "vectoria_config/default_config.yaml"
             self.config_stream_logger.info("No configuration path provided, using default: %s", config_path)
