@@ -15,6 +15,14 @@
                 "required": "True",
                 "help": "The number of retrieved chunks"
             }
+        },
+        {
+            "name": "--query",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": "The desired query to prompt the RAG system"
+            }
         }
     ]
 }

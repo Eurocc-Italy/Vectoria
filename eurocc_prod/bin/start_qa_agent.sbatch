@@ -28,7 +28,8 @@ echo "Environment loaded..."
 
 K=5
 FAISS_INDEX=/leonardo_work/PhDLR_prod/vectoria/eurocc_prod/test/index/BAAI__bge-m3_faiss_index.pkl
+QUERY="Who are you?"
 
 echo "START"
-python vectoria ask_question --faiss_index $FAISS_INDEX --k $K
+python vectoria ask_question --faiss_index $FAISS_INDEX --k $K --query "$QUERY"
 echo "END"

@@ -29,7 +29,9 @@ inference_engine:
   name: 'huggingface'
   url: null
   api_key: null
-  model_name: 'meta-llama/Meta-Llama-3.1-8B-Instruct'
+  # FIXME: niente, non funziona, lascio la doppia scelta poi fixiamo
+  #model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # LEO
+  model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150
