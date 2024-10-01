@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --account=PhDLR_prod
-#SBATCH --job-name=build_index
+#SBATCH --job-name=qa_agent
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
 #SBATCH --partition=boost_usr_prod

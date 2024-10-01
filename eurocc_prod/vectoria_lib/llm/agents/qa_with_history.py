@@ -112,23 +112,24 @@ class QAAgent:
         )
 
         # TODO: we need to merge these two!!!!!!!!!!!!!!
-        # 1: question_answer_chain = create_stuff_documents_chain(self.langchain_inference_engine, qa_prompt)
+        question_answer_chain = create_stuff_documents_chain(self.langchain_inference_engine, qa_prompt)
         # 2: question_answer_chain = (
         #     {"context": self.langchain_retriever | format_docs, "question": RunnablePassthrough()}
         #     | self.prompt
         #     | self.langchain_inference_engine
         #     | CustomResponseParser()
         # )
-        question_answer_chain = (
-            { 
-                "context": self.langchain_retriever | format_docs, # Retrieve and format the documents
-                "question": RunnablePassthrough() # Step to pass through the question as is
-            }
-            | qa_prompt  # Use the qa_prompt template here to structure the input
-            | self.langchain_inference_engine  # Run the inference engine on the formatted input
-            # TODO: modify parser to be compliant with new prompt
-            #| CustomResponseParser()  # Custom step to parse the engine's output
-        )
+        # Merged version:
+        # question_answer_chain = (
+        #     { 
+        #         "context": self.langchain_retriever | format_docs, # Retrieve and format the documents
+        #         "question": RunnablePassthrough() # Step to pass through the question as is
+        #     }
+        #     | qa_prompt  # Use the qa_prompt template here to structure the input
+        #     | self.langchain_inference_engine  # Run the inference engine on the formatted input
+        #     # TODO: modify parser to be compliant with new prompt
+        #     #| CustomResponseParser()  # Custom step to parse the engine's output
+        # )
 
         return question_answer_chain
     
