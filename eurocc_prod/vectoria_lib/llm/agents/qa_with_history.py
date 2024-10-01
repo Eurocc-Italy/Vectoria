@@ -19,11 +19,9 @@ from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import START, StateGraph
 
-from vectoria_lib.common.config import Config
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.db_management.retriever.faiss_retriever import Retriever, FaissRetriever
+from vectoria_lib.db_management.retriever.faiss_retriever import Retriever
 from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.llm.helpers import format_docs, get_prompt
+from vectoria_lib.llm.helpers import format_docs
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
 class QAAgent:
@@ -48,7 +46,7 @@ class QAAgent:
 
         self.logger = logging.getLogger('llm')
         
-        #self.prompt = ChatPromptTemplate.from_template(get_prompt())             # PROMPT
+        #self.prompt = ChatPromptTemplate.from_template(get_prompt())            # PROMPT
         self.langchain_retriever = rag_retriever.as_langchain_retriever()        # RETRIEVER
         self.langchain_inference_engine = inference_engine.as_langchain_llm()    # LLM
 
@@ -147,8 +145,9 @@ class QAAgent:
         contextualize_q_prompt = ChatPromptTemplate.from_messages(
             [
                 ("system", contextualize_q_system_prompt),
+                # FIXME: this is a big problem damn
                 MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
+                ("human", "{question}"),
             ]
         )
         history_aware_retriever = create_history_aware_retriever(
@@ -174,8 +173,17 @@ class QAAgent:
         """
 
         config = {"configurable": {"thread_id": "abc123"}}
+
+        # QUERY 1: defined in sbatch file ("Which are the energy and policy considerations for deep learning in NLP?")
         output = self.qa_chain_with_memory.invoke(
             {"question" : question},
+            config = config)
+        self.logger.info("\n\n=================> Answer:\n%s", output)
+
+        # QUERY 2: follow up question that refers to the previous
+        question2 = "How are they related?"
+        output = self.qa_chain_with_memory.invoke(
+            {"question" : question2},
             config = config)
         self.logger.info("\n\n=================> Answer:\n%s", output)
         return output
