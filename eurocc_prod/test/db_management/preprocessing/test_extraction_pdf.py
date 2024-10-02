@@ -1,26 +1,16 @@
 import pytest
 from pathlib import Path
-from vectoria_lib.db_management.preprocessing.extraction_pdf import PDFTextExtractor
+from langchain.docstore.document import Document
+
+from vectoria_lib.db_management.preprocessing.extraction_pdf import extract_text_from_pdf_file
 from vectoria_lib.common.paths import TEST_DIR
 
-@pytest.fixture
-def extraction_pdf():
-    return PDFTextExtractor()
 
-def test_extract_text_from_file(extraction_pdf):
-    text = extraction_pdf.extract_text_from_file(TEST_DIR / "data/pdf/1.pdf")
-    assert len(text) == 24815
+def test_extract_text_from_pdf_file():
+    doc: list[Document] = extract_text_from_pdf_file(TEST_DIR / "data/pdf/1.pdf", filter_paragraphs=[])
 
-# def test_extract_text_from_folder(extraction_pdf):
-#     text_per_doc = extraction_pdf.extract_text_from_folder(TEST_DIR / "data/pdf")
-#     assert len(text_per_doc) == 2
-#     assert len(text_per_doc[0]) == 24815
-#     assert len(text_per_doc[1]) == 27417
-
-# def test_extract_text_from_folder_with_limit(extraction_pdf):
-#     text_per_doc = extraction_pdf.extract_text_from_folder(
-#         TEST_DIR / "data/pdf",
-#         limit = 1
-#     )
-#     assert len(text_per_doc) == 1
-#     assert len(text_per_doc[0]) == 24815
+    assert isinstance(doc, list)
+    assert isinstance(doc[0], Document)
+    assert len(doc) == 1
+    assert "arXiv:1906.02243v1" in doc[0].page_content
+    assert doc[0].metadata == {}

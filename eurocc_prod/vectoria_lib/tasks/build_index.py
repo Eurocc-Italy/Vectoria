@@ -17,7 +17,6 @@ def build_index(
                 Path(kwargs["input_docs_dir"])
             )
     logger.info("Created %d documents from %s in %.2f seconds", len(docs), kwargs['input_docs_dir'], time.time() - start_time)
-
         
     start_time = time.time()
     fvs = FaissVectorStore(Config().get("hf_embedder_model_name")).make_index(docs)

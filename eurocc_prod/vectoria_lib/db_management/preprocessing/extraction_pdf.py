@@ -8,27 +8,25 @@ import logging
 from pathlib import Path
 
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.docstore.document import Document
 
-from .extraction_base import ExtractionBase, DocumentData
+from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
-class PDFTextExtractor(ExtractionBase):
+logger = logging.getLogger('db_management')
 
-    def __init__(self):
-        self.logger = logging.getLogger('db_management')
-    
-    def extract_text_from_file(self, file_path: Path) -> DocumentData:
+def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None) -> list[Document]:
 
-        self.logger.debug(f"Extracting text from {file_path}")
+    logger.debug("Extracting text from %s", file_path)
 
-        pages = PyPDFLoader(file_path).load()
+    pages = PyPDFLoader(file_path).load()
 
-        pages_list = []
-        for page in pages:
-            pages_list.append(page.page_content)
+    pages_list = []
+    for page in pages:
+        pages_list.append(page.page_content)
 
-        pages_str = "".join(pages_list)
+    pages_str = "".join(pages_list)
 
-        self.logger.debug(f"Loaded {len(pages_str)} characters")
+    logger.debug("Loaded %d characters", len(pages_str))
 
-        return DocumentData(None, pages_str)
+    return [Document(page_content=pages_str, metadata={})]
 

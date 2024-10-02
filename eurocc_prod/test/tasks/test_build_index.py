@@ -9,11 +9,19 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
 import pytest
 
-@pytest.mark.parametrize("doc_format", ["docx", "pdf"])
-def test_build_index(doc_format):
+@pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
+def test_build_index(extraction_fn):
 
     with TemporaryDirectory() as temp_dir:
-        Config().set("documents_format", doc_format)
+        config = Config()
+        config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+        config.config["pp_steps"][0]["name"] = extraction_fn
+        
+        if "docx" in extraction_fn:
+            doc_format = "docx"
+        elif "pdf" in extraction_fn:
+            doc_format = "pdf"
+
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
             "output_index_dir" : temp_dir

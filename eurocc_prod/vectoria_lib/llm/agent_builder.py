@@ -20,7 +20,7 @@ class AgentBuilder:
         
         # Load vector store
         start_time = time.time()
-        faiss_index_path = kwargs['faiss_index']
+        faiss_index_path = kwargs['faiss_index_path']
         logger.debug("Loading Faiss index: %s", faiss_index_path)
         vector_store = FaissVectorStore.load_from_pickle(
             Path(faiss_index_path)

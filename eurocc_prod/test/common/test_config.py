@@ -10,10 +10,11 @@ def test_default_config():
 def test_custom_config():
     config = Config().load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     assert config.get("retriever_top_k") == 5
-    assert config.get("inference_engine")["device"] == "cpu"
+    assert config.get("inference_engine")["device"] == "cuda"
 
 def test_override_config():
     config = Config()
     config.update_from_args(argparse.Namespace(retriever_top_k=10))
     assert config.get("retriever_top_k") == 10
-
+    config.set("log_level", "INFO")
+    assert config.get("log_level") == "INFO"

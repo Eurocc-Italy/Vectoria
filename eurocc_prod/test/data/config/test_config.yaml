@@ -1,25 +1,38 @@
-# Logs
+ # Logging
 vectoria_logs_dir: /tmp/vectoria_logs
 log_level: DEBUG
 
 # Preprocessing
-multiprocessing_for_preprocessing: true
-documents_format: pdf
-header_regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+'
-footer_regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
-remove_header: true
-remove_footer: true
-replace_ligatures: true
-remove_bullets: true
-remove_empty_lines: true
-remove_multiple_spaces: true
-chunk_size: 1024
-chunk_overlap: 256
-save_chunks_on_disk: false
+pp_multiprocessing: true
+pp_steps: 
+  - name: extract_text_from_docx_file
+    filter_paragraphs: ["1", "2", "3"]
+
+  - name: remove_header
+    regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
+  
+  - name: remove_footer
+    regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
+
+  - name: remove_multiple_spaces
+    regex: null
+
+  - name: replace_ligatures
+    regex: null
+  
+  - name: remove_bullets
+    regex: null
+
+  - name: recursive_character_text_splitter
+    chunk_size: 1024
+    chunk_overlap: 256
+    separators: ["\n\n", "\n", " ", ""]
+    is_separator_regex: [false, false, false, false]
+
 
 # Vector store
 hf_embedder_model_name: BAAI/bge-m3
-embedder_device: cpu
+embedder_device: cuda
 normalize_embeddings: false
 
 # QA agent
@@ -31,6 +44,6 @@ inference_engine:
   url: null
   api_key: null
   model_name: 'meta-llama/Meta-Llama-3.1-8B-Instruct'
-  device: cpu
+  device: cuda
   load_in_8bit: true
   max_new_tokens: 150

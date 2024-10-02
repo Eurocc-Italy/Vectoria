@@ -1,25 +1,26 @@
 import pytest
-
+from time import time
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
+
+
 from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline import PreprocessingPipeline
-from vectoria_lib.db_management.preprocessing.extraction_docx import DocXTextExtractor
-from vectoria_lib.db_management.preprocessing.cleaning import Cleaning
-from vectoria_lib.db_management.preprocessing.chunking import Chunking
-from vectoria_lib.db_management.preprocessing.regex import remove_empty_lines
+from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
 
-def test_pipeline():
-    config = Config() 
-    config.set("chunk_size", 100)
-    config.set("chunk_overlap", 10)
-    config.set("documents_format", "docx")
+@pytest.mark.parametrize("multiproc", [False, True])
+def test_pipeline(multiproc):
+    config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.set("pp_multiprocessing", multiproc)
+    config.config["pp_steps"][6]["chunk_size"] = 12
+    config.config["pp_steps"][6]["chunk_overlap"] = 4
 
-    pp = PreprocessingPipeline()
-    pp.set_text_extractor(DocXTextExtractor())
-    pp.set_text_cleaner(Cleaning().add_cleaning_step(remove_empty_lines))
-    pp.set_chunking(Chunking(config.get("chunk_size"), config.get("chunk_overlap")))
+    pipeline = PreprocessingPipelineBuilder.build_pipeline()
     
-    processed_docs = pp.run(TEST_DIR / "data/docx")
+    t = time()
+    processed_docs = pipeline.run(TEST_DIR / "data/docx")
+    print("Time taken:", time() - t)
 
     # A list of LangChain Document (chunks) for each input document
-    assert len(processed_docs) == 12
+    assert len(processed_docs) == 7
+    
