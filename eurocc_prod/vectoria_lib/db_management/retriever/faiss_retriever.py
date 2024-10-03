@@ -4,47 +4,12 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-from vectoria_lib.db_management.retriever.retriever import Retriever
+from langchain_community.vectorstores.faiss import FAISS
 
-class FaissRetriever(Retriever):
+class FaissRetriever:
 
-    """
-    Wrapper class around the FAISS library to provide a document retriever for the RAG (Retrieval-Augmented Generation) model.
-
-    This class allows for setting a FAISS-based retriever and fetching relevant documents for a given query.
-    
-    Example usage:
-        vector_store = FaiseVectorStore().make_index(docs)     # Create a FAISS index with the documents.
-        retriever = FaissRetriever(search_kwargs={"k": 5})     # Initialize the FaissRetriever with a search limit of 5 results.
-        retriever.set_retriever(vector_store.as_retriever())   # Set the FAISS retriever instance.
-
-        query = "Qual'è l'argomento principale trattato nella procedura PRO012-P?"  # Example query in Italian.
-        docs = retriever.get_docs(query)    # Retrieve the most relevant documents based on the query.
-
-        for id, doc in enumerate(docs):
-            print(f"\n+++++++++++ CHUNK # {id} +++++++++++")
-            print(doc.page_content)
-            print("\n############################################################")
-    """
-
-    def __init__(self, **kwargs):
-        """
-        Initialize the FaissRetriever object.
-
-        """
-        super().__init__(**kwargs)
-
-    def set_retriever(self, retriever):
-        """
-        Set the FAISS retriever to be used for fetching documents.
-
-        Parameters:
-        - retriever: The FAISS retriever instance that will be used to retrieve documents.
-
-        Returns:
-        - None
-        """
-        self.retriever = retriever
+    def __init__(self, vector_store: FAISS, search_type: str, search_kwargs: dict):
+        self.retriever = vector_store.as_retriever(search_type=search_type, search_kwargs=search_kwargs)
 
     def get_docs(self, query: str):
         """

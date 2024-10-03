@@ -13,9 +13,9 @@ def format_docs(docs):
     
     return "\n\n".join(doc.page_content for doc in docs)
 
-def get_prompt():
-    custom_prompt = ETC_DIR / "custom" / "qa_prompt.txt"
+def get_prompt(file_name: str):
+    custom_prompt = ETC_DIR / "custom" / "prompts" / file_name
     if custom_prompt.exists():
         return custom_prompt.read_text()
     else:
-        return (ETC_DIR / "default" / "qa_prompt.txt").read_text()
+        return (ETC_DIR / "default" / "prompts" / file_name).read_text()

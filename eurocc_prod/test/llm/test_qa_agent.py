@@ -28,7 +28,7 @@ import torch
         )
     ]
 )
-def test_qa_agent_ollama(inference_config):
+def test_qa_agent_engines(inference_config):
     config = Config()
     config.set("inference_engine", inference_config)
     agent = AgentBuilder.build_qa_agent(
@@ -38,3 +38,73 @@ def test_qa_agent_ollama(inference_config):
     answer = agent.ask("What is the name of the movie?")
 
     assert "matrix" in answer.lower()
+
+
+def test_qa_agent_with_history():
+    config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    inference_config = dict(
+            name='huggingface',
+            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
+            device="cuda",
+            load_in_8bit=True,
+            max_new_tokens=500
+        )   
+    config.set("inference_engine", inference_config)
+    config.set("documents_format", "pdf")
+    config.set("chat_history", True)
+    
+    agent = AgentBuilder.build_qa_agent(
+        faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"
+    )
+
+    answer = agent.ask(
+        "Which are the energy and policy considerations for deep learning in NLP?",
+        session_id="test_session"
+    )
+    chat_history = agent.get_chat_history("test_session", pretty_print=True)
+    assert len(chat_history) == 2
+    breakpoint()
+
+    answer = agent.ask(
+        "How these two are related?",
+        session_id="test_session"
+    )
+    chat_history = agent.get_chat_history("test_session", pretty_print=True)
+    assert len(chat_history) == 4
+    breakpoint()
+
+    answer = agent.ask(
+        "What did I ask before?",
+        session_id="test_session_2"
+    )
+    chat_history = agent.get_chat_history("test_session_2", pretty_print=True)
+    breakpoint()
+    assert len(chat_history) == 2
+
+
+def test_qa_agent_without_history():
+    config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    inference_config = dict(
+            name='huggingface',
+            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
+            device="cuda",
+            load_in_8bit=True,
+            max_new_tokens=200
+        )   
+    config.set("inference_engine", inference_config)
+    config.set("documents_format", "pdf")
+    config.set("chat_history", False)
+    config.set("retriever_top_k", 1) 
+
+    agent = AgentBuilder.build_qa_agent(
+        faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"
+    )
+
+    result = agent.ask(
+        "Which are the energy and policy considerations for deep learning in NLP?"
+    )
+    breakpoint()
+    assert "answer" in result
+

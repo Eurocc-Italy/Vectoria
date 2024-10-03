@@ -13,28 +13,38 @@ logger = logging.getLogger("llm")
 class CustomResponseParser(BaseOutputParser):
     
     def filter_prefix(self, text: str):
-        match = re.search(r'^(.+\s*=*\s*RISPOSTA\s\s*=*\s)(.+)', text, re.DOTALL)
+        pattern = r"(?<=Risposta:)(.*)"
+        return re.findall(pattern, text, re.DOTALL)[0]
+
+        """
+        match = re.search(r'Risposta:\s+(.*)', text, re.DOTALL)
         if match:
-            logger.debug("Filter prefix match: %s", match.group(2))
-            response = match.group(2)
-            response = re.sub(r'\s{2,}', ' ', response).strip()
+            logger.debug("Filter prefix match!")
+            response = match.group(0).strip()
             return response
+        logger.debug("Filter prefix no match")
         return None
-    
+        """
+        
     def filter_postfix(self, text: str):
         match = re.search(r'(.+)(\s*Fine Risposta|Fine|Human:)', text)
         if match:
-            logger.debug("Filter postfix match: %s", match.group(1))
+            logger.debug("Filter postfix match")
             response = match.group(1)
             response = re.sub(r'\s{2,}', ' ', response).strip()
             return response
+        logger.debug("Filter postfix no match")
         return None
 
     def parse(self, text: str) -> str:
         response = self.filter_prefix(text)
+
         if not response:
-            return f"No valid response found for text:\n {text}"
-        response = self.filter_postfix(response)
-        if not response:
-            return f"\n {text}"
-        return response
+            return f"[CustomResponseParser] failed to filter prefix for:\n {text}"
+
+        response_without_suffix = self.filter_postfix(response)
+        if not response_without_suffix:
+            return response
+
+        return response_without_suffix
+

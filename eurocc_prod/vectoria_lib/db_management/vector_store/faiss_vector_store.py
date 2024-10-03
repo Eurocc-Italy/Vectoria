@@ -19,7 +19,7 @@ class FaissVectorStore:
 
     # Reference to FAISS integration documentation:
     # https://python.langchain.com/v0.2/docs/integrations/vectorstores/faiss/
-
+    # https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
 
     @staticmethod
     def load_from_pickle(pkl_path: str | Path):
@@ -65,11 +65,11 @@ class FaissVectorStore:
 
         # FIXME: solo per test vado a modificare il path del modello da caricare per usare quello locale
         # lascio "self.model_name" invariato per non alterare il nome del dump
-        local_model = "/leonardo_work/PhDLR_prod/bge-m3" # CINECA
+        # local_model = "/leonardo_work/PhDLR_prod/bge-m3" # CINECA
 
         self.hf_embedder = HuggingFaceBgeEmbeddings(
-            #model_name=self.model_name,
-            model_name=local_model,
+            model_name=self.model_name,
+            #model_name=local_model,
             model_kwargs={
                 "device": config.get("embedder_device")
             },

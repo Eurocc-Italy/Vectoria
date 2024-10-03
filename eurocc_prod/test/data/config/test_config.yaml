@@ -18,11 +18,15 @@ chunk_overlap: 256
 
 # Vector store
 hf_embedder_model_name: BAAI/bge-m3
-embedder_device: cpu
+embedder_device: cuda
 normalize_embeddings: false
 
 # QA agent
 retriever_top_k: 5
+retriever_search_type: 'mmr'
+retriever_fetch_k: 2
+retriever_lambda_mult: 0.5
+chat_history: true
 
 # Inference engine
 inference_engine:
