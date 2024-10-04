@@ -31,6 +31,8 @@ import torch
 def test_qa_agent_engines(inference_config):
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.set("chat_history", False)
+    config.set("retriever_top_k", 1)
 
     config.set("inference_engine", inference_config)
     agent = AgentBuilder.build_qa_agent(
@@ -55,6 +57,7 @@ def test_qa_agent_with_history():
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
     config.set("chat_history", True)
+    config.set("retriever_top_k", 1)
     
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"
@@ -98,7 +101,7 @@ def test_qa_agent_without_history():
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
     config.set("chat_history", False)
-    config.set("retriever_top_k", 1) 
+    config.set("retriever_top_k", 1)
 
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"

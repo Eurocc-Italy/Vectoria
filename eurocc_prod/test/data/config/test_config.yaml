@@ -1,4 +1,4 @@
- # Logging
+# Logging
 vectoria_logs_dir: /tmp/vectoria_logs
 log_level: DEBUG
 

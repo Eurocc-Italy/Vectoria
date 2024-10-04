@@ -37,7 +37,6 @@ embedder_device: cuda
 normalize_embeddings: false
 
 # QA agent
-# QA agent
 retriever_top_k: 5
 retriever_search_type: 'mmr'
 retriever_fetch_k: 2
@@ -50,8 +49,8 @@ inference_engine:
   url: null
   api_key: null
   # FIXME: niente, non funziona, lascio la doppia scelta poi fixiamo
-  #model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # LEO
-  model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
+  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # LEO
+  #model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150

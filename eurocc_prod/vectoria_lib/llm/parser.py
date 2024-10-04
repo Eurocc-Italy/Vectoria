@@ -15,16 +15,6 @@ class CustomResponseParser(BaseOutputParser):
     def filter_prefix(self, text: str):
         pattern = r"(?<=Risposta:)(.*)"
         return re.findall(pattern, text, re.DOTALL)[0]
-
-        """
-        match = re.search(r'Risposta:\s+(.*)', text, re.DOTALL)
-        if match:
-            logger.debug("Filter prefix match!")
-            response = match.group(0).strip()
-            return response
-        logger.debug("Filter prefix no match")
-        return None
-        """
         
     def filter_postfix(self, text: str):
         match = re.search(r'(.+)(\s*Fine Risposta|Fine|Human:)', text)
