@@ -14,6 +14,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
+from langsmith import traceable
 
 from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
@@ -82,7 +83,7 @@ class QAAgent:
             )
 
     # --------------------------------------------------------------------------------
-
+    @traceable
     def ask(self, question: str, session_id: str = None) -> str:
         """
         Ask the QAAgent a input and get an answer based on the retrieved documents 

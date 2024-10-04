@@ -14,3 +14,4 @@ led_use_case
 *.err
 *.out
 clean
+*_key.txt

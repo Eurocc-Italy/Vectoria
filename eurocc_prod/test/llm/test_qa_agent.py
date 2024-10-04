@@ -43,7 +43,7 @@ def test_qa_agent_engines(inference_config):
 
     assert "matrix" in answer.lower()
 
-
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_qa_agent_with_history():
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
@@ -52,13 +52,13 @@ def test_qa_agent_with_history():
             model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
             device="cuda",
             load_in_8bit=True,
-            max_new_tokens=500
+            max_new_tokens=200
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
     config.set("chat_history", True)
     config.set("retriever_top_k", 1)
-    
+
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"
     )
@@ -67,7 +67,7 @@ def test_qa_agent_with_history():
         "Which are the energy and policy considerations for deep learning in NLP?",
         session_id="test_session"
     )
-    chat_history = agent.get_chat_history("test_session", pretty_print=True)
+    chat_history = agent.get_chat_history("test_session", pretty_print=False)
     assert len(chat_history) == 2
     breakpoint()
 
@@ -75,7 +75,7 @@ def test_qa_agent_with_history():
         "How these two are related?",
         session_id="test_session"
     )
-    chat_history = agent.get_chat_history("test_session", pretty_print=True)
+    chat_history = agent.get_chat_history("test_session", pretty_print=False)
     assert len(chat_history) == 4
     breakpoint()
 
@@ -83,11 +83,11 @@ def test_qa_agent_with_history():
         "What did I ask before?",
         session_id="test_session_2"
     )
-    chat_history = agent.get_chat_history("test_session_2", pretty_print=True)
+    chat_history = agent.get_chat_history("test_session_2", pretty_print=False)
     breakpoint()
     assert len(chat_history) == 2
 
-
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_qa_agent_without_history():
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
@@ -110,6 +110,6 @@ def test_qa_agent_without_history():
     result = agent.ask(
         "Which are the energy and policy considerations for deep learning in NLP?"
     )
-    breakpoint()
+
     assert "answer" in result
 

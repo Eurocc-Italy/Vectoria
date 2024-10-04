@@ -1,3 +1,4 @@
+import os
 import yaml
 import logging
 from pathlib import Path
@@ -20,6 +21,7 @@ class Config(metaclass=Singleton):
         self.logger = logging.getLogger('common')
         self.config = {}
         self.load_config(config_path)
+        self._langchain_tracking()
 
     def load_config(self, config_path: Path | str = None):
         self.config_stream_logger.debug("Loading configuration from %s", config_path)
@@ -34,7 +36,7 @@ class Config(metaclass=Singleton):
         self.config["vectoria_logs_dir"].mkdir(parents=True, exist_ok=True)
         
         self.config_stream_logger.debug("Configuration loaded: %s", self.config)
-        return self
+        return self        
     
     def update_from_args(self, args):
         """Override config parameters from CLI arguments"""
@@ -47,3 +49,14 @@ class Config(metaclass=Singleton):
 
     def set(self, key, value):
         self.config[key] = value
+
+    def _langchain_tracking(self):
+        if not self.config.get("langchain_tracking"):
+            os.environ["LANGCHAIN_TRACING_V2"] = False
+            return        
+
+        if "LANGCHAIN_API_KEY" not in os.environ:
+            raise ValueError("langchain_tracking is enable but LANGCHAIN_API_KEY environment variable is not set")
+
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_PROJECT"] = "vectoria" # TODO: make my dynamic and fetch the version
