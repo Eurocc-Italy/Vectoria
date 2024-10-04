@@ -35,6 +35,8 @@ dependencies = [
     "langchain_community",
     "langchain-huggingface",
     "langchain-ollama",
+    "langsmith",
+    "langgraph",
     "pypdf",
     "python-docx",
     "tqdm"
