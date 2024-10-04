@@ -18,7 +18,7 @@ def create_arg_dict_from_string(a):
     """ Transform string in args dictionary in python callable object. 
         Not use eval() to avoid code error or hacking """
     
-    logger = logging.getLogger("basic")
+    logger = logging.getLogger("io")
     
     for k,v in utils.get_iter_object_from_dictionary(a):
         

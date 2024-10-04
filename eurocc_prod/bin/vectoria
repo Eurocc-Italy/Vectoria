@@ -39,7 +39,7 @@ def cli():
         '--config',
         type=str,
         required=False,
-        default=ETC_DIR/"vectoria_config/default_config.yaml",
+        default=ETC_DIR / "default" / "default_config.yaml",
         help='Path to the configuration file'
     )
     subparsers = parser.add_subparsers(

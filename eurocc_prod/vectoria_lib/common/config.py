@@ -24,7 +24,7 @@ class Config(metaclass=Singleton):
     def load_config(self, config_path: Path | str = None):
         self.config_stream_logger.debug("Loading configuration from %s", config_path)
         if config_path is None:
-            config_path = ETC_DIR / "vectoria_config/default_config.yaml"
+            config_path = ETC_DIR / "default" / "default_config.yaml"
             self.config_stream_logger.info("No configuration path provided, using default: %s", config_path)
         
         with open(config_path, 'r', encoding='utf-8') as file:

@@ -154,8 +154,8 @@ def get_setting_file_path(filename) -> list:
 
     check_setting_path = []
     
-    check_setting_path_standard = ETC_DIR / "custom" / filename
-    check_setting_path_default  = ETC_DIR / "default"/ filename
+    check_setting_path_standard = ETC_DIR / "custom" / "cli" / filename
+    check_setting_path_default  = ETC_DIR / "default" / "cli" / filename
     
     ## check if setting file is in default location
     if os.path.exists(check_setting_path_default):
