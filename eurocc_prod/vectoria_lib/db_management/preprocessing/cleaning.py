@@ -3,51 +3,60 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-
+import re
 import logging
+from langchain.docstore.document import Document
+logger = logging.getLogger('db_management')
 
-class Cleaning:
+# TODO: optimize regex compilation
 
-    def __init__(self):
-        """
-        Initialize the Cleaning object.
-
-        This sets up a logger for tracking cleaning operations and initializes an empty list to store
-        the cleaning steps that will be applied to the text.
-        """
-        self.logger = logging.getLogger('db_management')
-        self.cleaning_steps = []
-
-    def add_cleaning_step(self, cleaning_step):
-        """
-        Add a cleaning step to the list of cleaning steps.
-
-        Parameters:
-        - cleaning_step (function): A function that defines a cleaning step, which will be applied
-                                    to the input text in the clean_text method.
-        
-        Returns:
-        - self: The Cleaning object, allowing method chaining.
-        """
-        self.cleaning_steps.append(cleaning_step)
-        return self
+def remove_header(doc: Document, regex: str) -> str:
+    logging.debug("Removing header")
+    doc.page_content = re.compile(regex, re.IGNORECASE).sub("", doc.page_content).strip()
+    return doc 
     
-    def clean_text(self, text: str) -> str:
-        """
-        Apply the cleaning steps to the input text.
+def remove_footer(doc: Document, regex: str):
+    logging.debug("Removing footer")
+    doc.page_content = re.compile(regex, re.IGNORECASE).sub("", doc.page_content).strip()
+    return doc
 
-        This method iterates over all the cleaning steps in the order they were added, applying each one
-        to the text. The logger tracks each step as it is applied.
+# def remove_empty_lines(doc: Document, regex: str = None) -> str: # TODO: add regex instead of building a temp list    
+#     # TODO: optimize me!
+#     logging.debug("Removing empty lines")
+#     lines = text.splitlines()
+#     non_empty_lines = [line for line in lines if line.strip() != '']
+#     return '\n'.join(non_empty_lines)
 
-        Parameters:
-        - text (str): The input text to be cleaned.
+def remove_multiple_spaces(doc: Document, regex: str = None) -> str:
+    logging.debug("Removing multiple spaces")
+    doc.page_content = re.compile(r"[ \t]{2,}").sub(" ", doc.page_content).strip()
+    return doc
+    
+def replace_ligatures(doc: Document, regex: str = None) -> str:
+    logging.debug("Replacing ligatures")
+    ligatures = {
+        "ﬀ": "ff",
+        "ﬁ": "fi",
+        "ﬂ": "fl",
+        "ﬃ": "ffi",
+        "ﬄ": "ffl",
+        "ﬅ": "ft",
+        "ﬆ": "st",
+        "Ꜳ": "AA",
+        "Æ": "AE",
+        "ꜳ": "aa",
+    }
+    # TODO: maybe this could be optimized 
+    for search, replace in ligatures.items():
+        doc.page_content = doc.page_content.replace(search, replace)        
+    return doc
 
-        Returns:
-        - str: The cleaned text after all cleaning steps have been applied.
-        """
-        pages_str = None
-        for cleaning_step in self.cleaning_steps:
-            self.logger.debug("Performing cleaning step: %s", cleaning_step.__name__)
-            pages_str = cleaning_step(text)
-        
-        return pages_str
+def remove_bullets(doc: Document, regex: str = None) -> str:
+    logging.debug("Removing bullets")
+    """
+    • (\u2022)
+    ▪ (\u25AA)
+    ➢ (\u27A2)  
+    """
+    doc.page_content = re.compile(r"^\s*[\u2022\u25AA\u27A2]\s*", flags=re.MULTILINE).sub("", doc.page_content).strip() # Important to add multiline flag
+    return doc

@@ -9,6 +9,7 @@ output
 vectoria_logs/
 log/
 *-env/
+led_use_case
 
 *.err
 *.out

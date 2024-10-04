@@ -28,8 +28,10 @@ import torch
         )
     ]
 )
-def test_qa_agent_ollama(inference_config):
+def test_qa_agent(inference_config):
     config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+
     config.set("inference_engine", inference_config)
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_the_matrix.pkl",

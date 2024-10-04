@@ -1,26 +1,16 @@
 import pytest
 from pathlib import Path
-from vectoria_lib.db_management.preprocessing.extraction_docx import DocXTextExtractor
+from langchain.docstore.document import Document
+
+from vectoria_lib.db_management.preprocessing.extraction_docx import extract_text_from_docx_file
 from vectoria_lib.common.paths import TEST_DIR
 
-@pytest.fixture
-def extraction_docx():
-    return DocXTextExtractor()
 
-def test_extract_text_from_file(extraction_docx):
-    text = extraction_docx.extract_text_from_file(TEST_DIR / "data/docx/2.docx")
-    assert len(text) == 85
+def test_extract_text_from_docx_file():
+    doc: list[Document] = extract_text_from_docx_file(TEST_DIR / "data/docx/2.docx", filter_paragraphs=[])
 
-# def test_extract_text_from_folder(extraction_docx):
-#     text_per_doc = extraction_docx.extract_text_from_folder(TEST_DIR / "data/docx")
-#     assert len(text_per_doc) == 2
-#     assert len(text_per_doc[0]) == 65
-#     assert len(text_per_doc[1]) == 904
-
-# def test_extract_text_from_folder_with_limit(extraction_docx):
-#     text_per_doc = extraction_docx.extract_text_from_folder(
-#         TEST_DIR / "data/docx",
-#         limit = 1
-#     )
-#     assert len(text_per_doc) == 1
-#     assert len(text_per_doc[0]) == 65
+    assert isinstance(doc, list)
+    assert isinstance(doc[0], Document)
+    assert len(doc) == 3
+    assert "End first chapter" in doc[0].page_content
+    assert doc[0].metadata is not None

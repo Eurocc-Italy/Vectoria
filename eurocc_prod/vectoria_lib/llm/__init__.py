@@ -6,4 +6,4 @@ logger = setup_logger(
     Config().get("vectoria_logs_dir") / "llm.log"
 )
 
-logger.info("Module llm initialized")
+logger.debug("Module llm initialized")

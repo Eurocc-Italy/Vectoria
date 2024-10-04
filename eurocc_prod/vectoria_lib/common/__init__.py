@@ -7,4 +7,4 @@ logger = setup_logger(
     Config().get("log_level")
 )
 
-logger.info("Module common initialized")
+logger.debug("Module common initialized")
