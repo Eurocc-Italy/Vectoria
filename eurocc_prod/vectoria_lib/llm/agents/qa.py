@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------------------------------
 
 import logging
-<<<<<<< HEAD
 from typing_extensions import Annotated, TypedDict
 from typing import Sequence
 
@@ -20,15 +19,6 @@ from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
 from vectoria_lib.llm.parser import CustomResponseParser
 from vectoria_lib.llm.helpers import format_docs
-=======
-from langchain.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnableParallel, RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
-
-from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.llm.helpers import format_docs, get_prompt
-from vectoria_lib.db_management.retriever.faiss_retriever import Retriever
->>>>>>> 1-evaluation-pipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 class QAAgent:
