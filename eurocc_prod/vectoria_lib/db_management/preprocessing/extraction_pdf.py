@@ -4,54 +4,29 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-import os
 import logging
 from pathlib import Path
-import multiprocessing as mp
 
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.docstore.document import Document
 
-from .extraction_base import ExtractionBase
-from vectoria_lib.io.folder_reader import get_files_in_folder
+from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
+logger = logging.getLogger('db_management')
 
-class PDFTextExtractor(ExtractionBase):
+def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None) -> list[Document]:
 
-    def __init__(self):
-        self.logger = logging.getLogger('db_management')
+    logger.debug("Extracting text from %s", file_path)
 
-    # def extract_text_from_folder(self, folder_path: Path, limit: int = -1) -> list[str]:
+    pages = PyPDFLoader(file_path).load()
 
-    #     files = get_files_in_folder(folder_path, limit)
+    pages_list = []
+    for page in pages:
+        pages_list.append(page.page_content)
 
-    #     self.logger.debug(f"Extracting text from {len(files)} PDFs")
+    pages_str = "".join(pages_list)
 
-    #     with mp.Pool(processes=mp.cpu_count()) as pool:
-    #         texts = pool.map(self.extract_text_from_file, files)
+    logger.debug("Loaded %d characters", len(pages_str))
 
-    #     return texts
-    
-    def extract_text_from_file(self, file_path: Path) -> str:
-        """
-        Extract text from a single PDF file.
+    return [Document(page_content=pages_str, metadata={})]
 
-        Parameters:
-        - file_path (Path): The path to the PDF file from which text should be extracted.
-
-        Returns:
-        - str: A string containing all the extracted text from the file.
-        """
-
-        self.logger.debug(f"Extracting text from {file_path}")
-
-        pages = PyPDFLoader(file_path).load()
-
-        pages_list = []
-        for page in pages:
-            pages_list.append(page.page_content)
-
-        pages_str = "".join(pages_list)
-
-        self.logger.debug(f"Loaded {len(pages_str)} characters")
-        
-        return pages_str
