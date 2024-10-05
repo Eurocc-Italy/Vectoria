@@ -17,12 +17,10 @@ class CustomResponseParser(BaseOutputParser):
         return re.findall(pattern, text, re.DOTALL)[0]
         
     def filter_postfix(self, text: str):
-        match = re.search(r'(.+)(\s*Fine Risposta|Fine|Human:)', text)
-        if match:
-            logger.debug("Filter postfix match")
-            response = match.group(1)
-            response = re.sub(r'\s{2,}', ' ', response).strip()
-            return response
+        stop_keywords = ["Fine Risposta", "Fine", "FINE", "Human:"]
+        for keyword in stop_keywords:
+            if keyword in text:
+                return text.split(keyword)[0].strip()
         logger.debug("Filter postfix no match")
         return None
 

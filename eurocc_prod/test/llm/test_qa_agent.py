@@ -110,6 +110,6 @@ def test_qa_agent_without_history():
     result = agent.ask(
         "Which are the energy and policy considerations for deep learning in NLP?"
     )
-
+    print(result)
     assert "answer" in result
 
