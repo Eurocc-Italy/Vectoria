@@ -41,6 +41,7 @@ retriever_search_type: 'mmr'
 retriever_fetch_k: 2
 retriever_lambda_mult: 0.5
 chat_history: true
+system_prompts_lang: eng
 
 # Inference engine
 inference_engine:

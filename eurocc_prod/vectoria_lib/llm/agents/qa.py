@@ -33,7 +33,8 @@ class QAAgent:
         self,
         rag_retriever: FaissRetriever,
         inference_engine: InferenceEngineBase,
-        chat_history: bool
+        chat_history: bool,
+        system_prompts_lang: str
     ):
         """
         Initialize the QAAgent object with the provided retriever and inference engine.
@@ -42,6 +43,7 @@ class QAAgent:
         - rag_retriever (Retriever): A retriever object to fetch relevant documents from a FAISS-based vector store.
         - inference_engine (InferenceEngineBase): An inference engine object to generate answers based on the retrieved documents.
         - use_chat_history (bool): A flag to indicate whether to use chat history to contextualize the answers.
+        - system_prompts_lang (str): The language of the prompts to load.
         """
 
         self.logger = logging.getLogger('llm')
@@ -51,17 +53,20 @@ class QAAgent:
 
         self.use_chat_history = chat_history
 
+        prompt_builder = PromptBuilder(system_prompts_lang)
+        
         if self.use_chat_history:
 
             combine_docs_chain = create_stuff_documents_chain(
                 inference_engine,
-                PromptBuilder.get_qa_prompt_with_history()
+                prompt_builder.get_qa_prompt_with_history(),
+                output_parser=CustomResponseParser()
             )
 
             history_aware_retriever = create_history_aware_retriever(
                 inference_engine,
                 retriever,
-                PromptBuilder.get_contextualize_q_prompt()
+                prompt_builder.get_contextualize_q_prompt()
             )
 
             self.rag_chain = create_retrieval_chain(
@@ -73,7 +78,7 @@ class QAAgent:
         else:
             combine_docs_chain = create_stuff_documents_chain(
                 inference_engine,
-                PromptBuilder.get_qa_prompt(),
+                prompt_builder.get_qa_prompt(),
                 output_parser=CustomResponseParser()
             )
 
@@ -97,13 +102,11 @@ class QAAgent:
         - str: The generated answer to the input.
         """
 
+        config = {}
         if self.use_chat_history:
             if session_id is None:
                 raise ValueError("Session ID is required when using chat history.")
             config = {"configurable": {"thread_id": session_id}}
-        else:
-            config = {}    
-        
         
         output = self.rag_chain.invoke({"input" : question}, config=config)
         
