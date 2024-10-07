@@ -14,6 +14,7 @@ class AgentBuilder:
         **kwargs: dict
     ) -> QAAgent:
 
+        config = Config()
         logger = logging.getLogger("llm")
         
         # Load vector store
@@ -29,11 +30,11 @@ class AgentBuilder:
         logger.debug("Creating Faiss retriever")
         retriever = FaissRetriever(
             vector_store,
-            search_type=Config().get("retriever_search_type"),
+            search_type=config.get("retriever_search_type"),
             search_kwargs={
-                "k": Config().get("retriever_top_k"),
-                "fetch_k": Config().get("retriever_fetch_k"), 
-                "lambda_mult": Config().get("retriever_lambda_mult")
+                "k": config.get("retriever_top_k"),
+                "fetch_k": config.get("retriever_fetch_k"), 
+                "lambda_mult": config.get("retriever_lambda_mult")
             }
         )
         
@@ -42,6 +43,7 @@ class AgentBuilder:
         # Create QA agent
         return QAAgent(
             retriever,
-            InferenceEngineBuilder.build_inference_engine(Config().get("inference_engine")),
-            chat_history = Config().get("chat_history")
+            InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+            chat_history = config.get("chat_history"),
+            system_prompts_lang = config.get("system_prompts_lang")
         )
