@@ -4,7 +4,7 @@ from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
 
 
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline import PreprocessingPipeline
+from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
 from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
 
 @pytest.mark.parametrize("multiproc", [False, True])

@@ -10,88 +10,44 @@ from vectoria_lib.db_management.preprocessing.cleaning import (
     remove_multiple_spaces  
 )
 from functools import partial
-from langchain_core.runnables import RunnableLambda, RunnablePassthrough
-from vectoria_lib.db_management.preprocessing.document_data import get_structured_data
+from langchain_core.runnables import RunnableLambda
 from vectoria_lib.db_management.preprocessing.chunking import recursive_character_text_splitter
-from vectoria_lib.io.folder_reader import get_files_in_folder
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline import PreprocessingPipeline
+from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
 
 logger = logging.getLogger('db_management')
 
 
 from langchain.docstore.document import Document
 
-def multiprocessing_wrapper(fn, docs: list[Document]):
-    import multiprocessing as mp
-    with mp.Pool(processes=mp.cpu_count()) as pool:
-        preprocessed_docs = pool.map(fn, docs)
-    return preprocessed_docs
+# def multiprocessing_wrapper(fn, docs: list[Document]):
+#     import multiprocessing as mp
+#     with mp.Pool(processes=mp.cpu_count()) as pool:
+#         preprocessed_docs = pool.map(fn, docs)
+#     return preprocessed_docs
 
-class PreprocessingPipelineBuilder:        
-        
-    @staticmethod
-    def get_text_extractor_fn(config):
-        if config["format"] == "docx":
-            return RunnableLambda(extract_text_from_file_docx)
-        elif config["format"] == "pdf":
-            return RunnableLambda(extract_text_from_file_pdf)
-        else:
-            raise ValueError(f"Unsupported document format: {config.get('documents_format')}")
-    
-    @staticmethod
-    def get_cleaning_step_fn(cleaning_step_name: str):
-        if cleaning_step_name == "remove_header":
-            return RunnableLambda(remove_header)
-        elif cleaning_step_name == "remove_footer":
-            return RunnableLambda(remove_footer)
-        elif cleaning_step_name == "replace_ligatures":
-            return RunnableLambda(replace_ligatures)
-        elif cleaning_step_name == "remove_bullets":
-            return RunnableLambda(partial(multiprocessing_wrapper, remove_bullets))
-        elif cleaning_step_name == "remove_multiple_spaces":
-            return RunnableLambda(remove_multiple_spaces)
-        else:
-            raise ValueError(f"Unsupported cleaning step: {cleaning_step_name}")
+class PreprocessingPipelineBuilder:
 
     @staticmethod
-    def get_chunking_fn(chunking_step_name: str):
-        if chunking_step_name == "recursive_character_text_splitter":
-            return RunnableLambda(recursive_character_text_splitter)
-        else:
-            raise ValueError(f"Unsupported chunking step: {chunking_step_name}")
+    def check_fields(pp_config: dict) -> None:
+        """
+        Check if the preprocessing pipeline configuration is valid.
+        """
+        if pp_config[0]["name"] not in ["extract_text_from_docx_file", "extract_text_from_pdf_file"]:
+            raise ValueError("First step in preprocessing pipeline must be 'extract_text_from_docx_file' or 'extract_text_from_pdf_file'") 
 
     @staticmethod
-    def check_fields(pp_config: dict):
-        if pp_config[0]["name"] != "extraction":
-            raise ValueError("Missing 'extraction' field in preprocessing pipeline configuration")
-
-    
-
-    @staticmethod
-    def build_pipeline() -> PreprocessingPipeline:
+    def build_pipeline() -> PreprocessingPipelineExecutor:
         pp_steps_config = Config().get("pp_steps")
-        # PreprocessingPipelineBuilder.check_fields(pp_steps_config)
+        PreprocessingPipelineBuilder.check_fields(pp_steps_config)
 
         extraction_step = pp_steps_config[0]
         fn_name = extraction_step.pop("name")
         chain = RunnableLambda(globals()[fn_name]).bind(**extraction_step)
 
-        for step in pp_steps_config[1:]:
-            fn = globals()[step.pop("name")]
-            chain = chain | RunnableLambda(fn).bind(**step).map()
+        for step_args in pp_steps_config[1:]:
+            fn = globals()[step_args.pop("name")] # get the function from the global namespace
+            chain = chain | RunnableLambda(fn).bind(**step_args).map() # with .map() the RunnableLambda is applied to each output of the previous chain
 
-            
+        chain.get_graph().print_ascii() # print the graph
 
-        #clean_step = PreprocessingPipelineBuilder.get_cleaning_step_fn("remove_bullets")
-        # TODO: how to pass text instead 
-        # TOOD: multiprocessing?
-
-
-        #chain = text_extractor | RunnableLambda(get_structured_data)  
-        #chain = chain | clean_step 
-
-        chain.get_graph().print_ascii()
-
-
-
-        return PreprocessingPipeline(chain)
+        return PreprocessingPipelineExecutor(chain)

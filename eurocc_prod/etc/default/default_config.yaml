@@ -9,6 +9,7 @@ pp_multiprocessing: true
 pp_steps: 
   - name: extract_text_from_docx_file
     filter_paragraphs: ["1", "2", "3"]
+    log_in_folder: ~/vectoria_logs/docs_structure
 
   - name: remove_header
     regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
@@ -30,6 +31,7 @@ pp_steps:
     chunk_overlap: 256
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]
+    log_in_folder: ~/vectoria_logs/docs_structure
 
 
 # Vector store

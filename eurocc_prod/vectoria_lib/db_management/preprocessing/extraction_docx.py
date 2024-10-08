@@ -14,15 +14,17 @@ from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
 logger = logging.getLogger('db_management')
     
-def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list) -> list[Document]:
+def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in_folder: Path = None) -> list[Document]:
 
     logger.debug("Extracting text from %s", file_path.stem)
 
     document = docx.Document(file_path)
 
     document_flat_structure = _extract_flat_structure(document)
-    
-    #print_document_structure(document_flat_structure)
+
+    if log_in_folder is not None:
+        Path(log_in_folder).mkdir(parents=True, exist_ok=True)  
+        _log_document_structure_on_file(document_flat_structure, Path(log_in_folder) / f"{file_path.stem}_structure.txt")    
     
     # TODO: what to do with unstructured_data?
     structured_data, unstructured_data = _extract_text_structure(document_flat_structure) 
@@ -31,19 +33,22 @@ def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list) -> lis
 
     logger.debug("Extracted %d documents from %s", len(structured_data), file_path.stem)
 
+
+
     return structured_data
 
-def print_document_structure(structure):
-    # Print the document structure, including where tables are located
-    for element in structure:
-        if element[0].startswith("Heading"):
-            print(f"{element[0]}: {element[1]}")
-        elif element[0] == "Paragraph":
-            print(f"   Paragraph: {element[1]}")
-        elif element[0] == "Table":
-            print(f"   Table under Heading: {element[2]}")
-            for row in element[1]:
-                print(f"      {row}")
+def _log_document_structure_on_file(structure, file_path: Path):
+    with open(file_path, "w", encoding="utf-8") as f:
+        # Print the document structure, including where tables are located
+        for element in structure:
+            if element[0].startswith("Heading"):
+                print(f"{element[0]}: {element[1]}", file=f)
+            elif element[0] == "Paragraph":
+                print(f"   Paragraph: {element[1]}", file=f)
+            elif element[0] == "Table":
+                print(f"   Table under Heading: {element[2]}", file=f)
+                for row in element[1]:
+                    print(f"      {row}", file=f)
 
 def _extract_flat_structure(doc):
 
@@ -170,7 +175,8 @@ def _extract_text_structure(document_flat_structure):
         
     current_name = None
     current_level = None
-
+    current_id = 0
+    
     for item in document_flat_structure:
 
         # Check if the item is a heading (e.g., 'Heading 1', 'Heading 2', etc.)
@@ -178,6 +184,7 @@ def _extract_text_structure(document_flat_structure):
             level = int(item[0].split()[1])  # Extract heading level (e.g., 1, 2, 3, etc.)
             current_name = item[1]
             current_level = level
+            current_id = 0
             heading_dict = {
                 "name": item[1],
                 "doc": None,
@@ -205,7 +212,8 @@ def _extract_text_structure(document_flat_structure):
             text = str(item[1])
             if heading_stack:
                 if heading_stack[-1]["doc"] is None:
-                    heading_stack[-1]["doc"] = Document(page_content=text, metadata={"name": current_name, "level": current_level})
+                    heading_stack[-1]["doc"] = Document(page_content=text, metadata={"name": current_name, "level": current_level, "id": current_id})
+                    current_id += 1
                 else:
                     heading_stack[-1]["doc"].page_content += text
                             

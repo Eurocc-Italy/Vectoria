@@ -14,7 +14,7 @@ from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
 logger = logging.getLogger('db_management')
 
-def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None) -> list[Document]:
+def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None, log_in_folder=None) -> list[Document]:
 
     logger.debug("Extracting text from %s", file_path)
 
