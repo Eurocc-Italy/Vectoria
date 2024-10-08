@@ -2,8 +2,7 @@
  # Logging
 vectoria_logs_dir: ~/vectoria_logs
 log_level: DEBUG
-config_dir: null
-langchain_tracking: true
+langchain_tracking: null
 
 # Preprocessing
 pp_multiprocessing: true

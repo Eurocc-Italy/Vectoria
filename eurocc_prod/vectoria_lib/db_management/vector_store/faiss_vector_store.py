@@ -120,6 +120,7 @@ class FaissVectorStore:
         """
         pkl = self.index.serialize_to_bytes()
         model_name = self.model_name.replace('/','__') # repo/name => repo__name
+        Path(output_path).mkdir(exist_ok=True, parents=True)
         pkl_path = Path(output_path) / f"{model_name}_faiss_index.pkl"
         with open(pkl_path, "wb") as f:
             f.write(pkl)

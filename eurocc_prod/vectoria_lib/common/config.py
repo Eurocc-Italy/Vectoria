@@ -23,11 +23,11 @@ class Config(metaclass=Singleton):
         self.load_config(config_path)
         self._langchain_tracking()
 
-    def load_config(self, config_path: Path | str = None):
+    def load_config(self, config_path: Path | str):
         self.config_stream_logger.debug("Loading configuration from %s", config_path)
         if config_path is None:
             config_path = ETC_DIR / "default" / "default_config.yaml"
-            self.config_stream_logger.info("No configuration path provided, using default: %s", config_path)
+            self.config_stream_logger.info("Loading default configuration: %s", config_path)
         
         with open(config_path, 'r', encoding='utf-8') as file:
             self.config = yaml.safe_load(file)
@@ -52,11 +52,14 @@ class Config(metaclass=Singleton):
 
     def _langchain_tracking(self):
         if not self.config.get("langchain_tracking"):
-            os.environ["LANGCHAIN_TRACING_V2"] = False
-            return        
+            if "LANGCHAIN_TRACING_V2" in os.environ:
+                del os.environ['LANGCHAIN_TRACING_V2']
+            return
 
         if "LANGCHAIN_API_KEY" not in os.environ:
-            raise ValueError("langchain_tracking is enable but LANGCHAIN_API_KEY environment variable is not set")
+            self.config_stream_logger.info("langchain_tracking is enable but LANGCHAIN_API_KEY environment variable is not set")
+            if "LANGCHAIN_TRACING_V2" in os.environ:
+                del os.environ['LANGCHAIN_TRACING_V2']
 
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
         os.environ["LANGCHAIN_PROJECT"] = "vectoria" # TODO: make my dynamic and fetch the version

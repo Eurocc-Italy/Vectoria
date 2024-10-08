@@ -16,7 +16,7 @@ logger = logging.getLogger('db_management')
     
 def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list) -> list[Document]:
 
-    logger.debug("Extracting text from %s", file_path)
+    logger.debug("Extracting text from %s", file_path.stem)
 
     document = docx.Document(file_path)
 
@@ -28,6 +28,8 @@ def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list) -> lis
     structured_data, unstructured_data = _extract_text_structure(document_flat_structure) 
 
     structured_data = _get_flat_docs_list(structured_data)
+
+    logger.debug("Extracted %d documents from %s", len(structured_data), file_path.stem)
 
     return structured_data
 

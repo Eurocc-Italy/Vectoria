@@ -18,9 +18,6 @@ import sys
 import argparse
 
 from vectoria_lib.common.paths import ETC_DIR
-from vectoria_lib.tasks.build_index import build_index
-from vectoria_lib.tasks.ask_question import ask_question
-from vectoria_lib.tasks.evaluate import evaluate
 from vectoria_lib.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
 from vectoria_lib.common.config import Config
 
@@ -62,17 +59,20 @@ def cli():
 def main():
     
     args = cli()
-    Config().load_config(args.config).update_from_args(args) # <-- override config params with cli params
+    Config(args.config).update_from_args(args) # <-- override config params with cli params
     args = cl_convert_to_dict(args)
 
     for k, v in args.items():
         print(k, v)
 
     if args["command"] == 'build_index':
+        from vectoria_lib.tasks.build_index import build_index
         build_index(**args)
     elif args["command"] == 'ask_question':
+        from vectoria_lib.tasks.ask_question import ask_question
         ask_question(**args)
     elif args["command"] == 'evaluate':
+        from vectoria_lib.tasks.evaluate import evaluate
         evaluate(**args)
 
 if __name__ == "__main__":
