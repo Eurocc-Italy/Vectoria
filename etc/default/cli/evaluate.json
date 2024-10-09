@@ -1,7 +1,7 @@
 {
     "flag": [
         {
-            "name": "--faiss_index",
+            "name": "--faiss-index",
             "param": {
                 "type": "str",
                 "required": "True",
@@ -23,6 +23,15 @@
                 "required": "True",
                 "help": "A yaml file defining a set of questions to evaluate the model on."
             }
-        }
+        },
+        {
+            "name": "--generate-answers",
+            "param": {
+                "type": "bool",
+                "required": "False",
+                "default": "False",
+                "help": "Generate answers for the test set."
+            }
+        }     
     ]
 }

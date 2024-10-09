@@ -1,7 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from langchain_huggingface import HuggingFacePipeline, ChatHuggingFace
+from langchain_huggingface import HuggingFacePipeline
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from langchain_core.language_models.llms import BaseLanguageModel
 
 class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
@@ -37,7 +38,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             return_full_text = False
         )
         
-    def as_langchain_llm(self) -> HuggingFacePipeline:
+    def as_langchain_llm(self) -> BaseLanguageModel:
         # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
         # ChatHuggingFace(llm=)
         return HuggingFacePipeline(pipeline=self.pipe)

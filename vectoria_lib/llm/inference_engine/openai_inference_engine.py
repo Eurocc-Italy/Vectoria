@@ -1,16 +1,17 @@
-from langchain_core.language_models.llms import BaseLLM
 from langchain_openai import OpenAI
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from langchain_core.language_models.llms import BaseLanguageModel
 
 class OpenAIInferenceEngine(InferenceEngineBase):
     """
-    Wrapper on Ollama.
+    Wrapper on OpenAI.
     """
     def __init__(self, args: dict):
         super().__init__(args)
-        
-    def as_langchain_llm(self) -> BaseLLM:
+    
+    # TODO: OpenAI or ChatOpenAI?
+    def as_langchain_llm(self) -> BaseLanguageModel:
         return OpenAI(
             #temperature=self.args("temperature"),
             #max_retries=self.args("max_retries"),

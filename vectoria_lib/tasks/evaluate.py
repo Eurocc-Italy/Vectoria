@@ -6,15 +6,31 @@
 # ----------------------------------------------------------------------------------------------
 from vectoria_lib.llm.agent_builder import AgentBuilder
 from vectoria_lib.llm.agent_evaluator import AgentEvaluator
+from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.common.config import Config
 
 def evaluate(
     **kwargs: dict
 ):
-    qa_agent = AgentBuilder.build_qa_agent(**kwargs)
-    evaluator = AgentEvaluator(qa_agent)
 
-    evaluator.evaluate(kwargs["test_set_path"])
-    evaluator.dump()
-    #evaluator.ragas_eval()
-            
-    return None
+    evaluator = AgentEvaluator()
+
+    config = Config()
+
+    config.set("inference_engine", dict(
+        name='openai',
+        model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
+        url="http://localhost:8899/v1",
+        api_key="abcd"
+    ))
+
+    if "generate_answers" in kwargs and kwargs["generate_answers"]:
+        data = evaluator.generate_answers(kwargs["test_set_path"], dump=True)
+    else:
+        data = evaluator.load_from_yaml(kwargs["test_set_path"])
+    
+    evaluator.ragas_eval(
+        data,
+        InferenceEngineBuilder.build_inference_engine(
+            config.get("inference_engine")).as_langchain_llm()
+    )
