@@ -15,7 +15,12 @@ from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 logger = logging.getLogger('db_management')
     
 def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in_folder: Path = None) -> list[Document]:
+    """
+    Extracts text from a DOCX file and returns a list of Document objects.
 
+    Each Document object contains the page content and metadata.
+    The metadata must include the keys: name, level, and id.
+    """
     logger.debug("Extracting text from %s", file_path.stem)
 
     document = docx.Document(file_path)
