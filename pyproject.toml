@@ -46,6 +46,7 @@ dependencies = [
 [project.optional-dependencies]
 evaluation = [
     "ragas==0.2.0b0",
+    "nltk"
 ]
 dev = [
     "jupyterlab",
@@ -60,6 +61,10 @@ ui = [
     "streamlit",
     "plotly",
     "GPUtil"
+]
+engines = [
+    "vllm",
+    "ollama"
 ]
 
 [project.urls]
