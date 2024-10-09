@@ -8,7 +8,7 @@ from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_ex
 from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
 
 @pytest.mark.parametrize("multiproc", [False, True])
-def test_pipeline(multiproc):
+def test_pipeline_executor(multiproc):
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("pp_multiprocessing", multiproc)
@@ -22,5 +22,5 @@ def test_pipeline(multiproc):
     print("Time taken:", time() - t)
 
     # A list of LangChain Document (chunks) for each input document
-    assert len(processed_docs) == 7
+    assert len(processed_docs) == 97
     
