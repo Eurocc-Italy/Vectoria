@@ -6,7 +6,7 @@ The EuroCC project is a part of the European High-Performance Computing Joint Un
 
 ```
 # CLONE REPOSITORY
-git clone git@gitlab.hpc.cineca.it:aproia00/llm_eucc.git
+git clone git@gitlab.hpc.cineca.it:aproia00/vectoria.git
 
 # LOAD MODULES
 module load profile/deeplrn
@@ -17,8 +17,8 @@ python -m venv eucc-env --system-site-packages
 source eucc-env/bin/activate
 
 # INSTALL ADDITIONAL REQUIREMENTS
-cd llm_eucc/eurocc
-pip install -e ".[dev,test]"
+cd vectoria
+pip install -e ".[evaluation,nb,test,ui]"
 ```
 
 # User interface
@@ -26,11 +26,7 @@ pip install -e ".[dev,test]"
 streamlit run vectoria_lib/gui/gui_v1.py
 ```
 
-
-## Configuration
+# Run tests with
 ```
-Command line
-Config file by --config
-Config file in /etc
-Config file in /etc/default
+pytest -v test/ -m "not slow"
 ```

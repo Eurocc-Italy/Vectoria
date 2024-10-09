@@ -22,6 +22,7 @@ class Config(metaclass=Singleton):
         self.config = {}
         self.load_config(config_path)
         self._langchain_tracking()
+        self._disable_ragas_tracking()
 
     def load_config(self, config_path: Path | str):
         self.config_stream_logger.debug("Loading configuration from %s", config_path)
@@ -63,3 +64,6 @@ class Config(metaclass=Singleton):
 
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
         os.environ["LANGCHAIN_PROJECT"] = "vectoria" # TODO: make my dynamic and fetch the version
+
+    def _disable_ragas_tracking(self):
+        os.environ["RAGAS_DO_NOT_TRACK"] = "true"

@@ -1,10 +1,11 @@
+import pytest
+import torch
+
 from vectoria_lib.llm.agent_builder import AgentBuilder
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 
-import pytest
-import torch
-
+@pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 @pytest.mark.parametrize(
     "inference_config", 
@@ -43,6 +44,7 @@ def test_qa_agent_engines(inference_config):
 
     assert "matrix" in answer.lower()
 
+@pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_qa_agent_with_history():
     config = Config()
@@ -69,7 +71,6 @@ def test_qa_agent_with_history():
     )
     chat_history = agent.get_chat_history("test_session", pretty_print=False)
     assert len(chat_history) == 2
-    breakpoint()
 
     answer = agent.ask(
         "How these two are related?",
@@ -77,16 +78,15 @@ def test_qa_agent_with_history():
     )
     chat_history = agent.get_chat_history("test_session", pretty_print=False)
     assert len(chat_history) == 4
-    breakpoint()
 
     answer = agent.ask(
         "What did I ask before?",
         session_id="test_session_2"
     )
     chat_history = agent.get_chat_history("test_session_2", pretty_print=False)
-    breakpoint()
     assert len(chat_history) == 2
 
+@pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_qa_agent_without_history():
     config = Config()

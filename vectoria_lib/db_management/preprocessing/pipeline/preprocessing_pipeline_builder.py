@@ -48,6 +48,9 @@ class PreprocessingPipelineBuilder:
             fn = globals()[step_args.pop("name")] # get the function from the global namespace
             chain = chain | RunnableLambda(fn).bind(**step_args).map() # with .map() the RunnableLambda is applied to each output of the previous chain
 
-        chain.get_graph().print_ascii() # print the graph
+        try:
+            chain.get_graph().print_ascii() # print the graph
+        except Exception as e:
+            logger.warning("Failed to print graph: %s", e)
 
         return PreprocessingPipelineExecutor(chain)
