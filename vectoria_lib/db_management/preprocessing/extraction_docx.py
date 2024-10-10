@@ -31,14 +31,14 @@ def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in
         Path(log_in_folder).mkdir(parents=True, exist_ok=True)  
         _log_document_structure_on_file(document_flat_structure, Path(log_in_folder) / f"{file_path.stem}_structure.txt")    
     
-    # TODO: what to do with unstructured_data?
+    # TODO: what to do with unstructured_data? Maybe extract the procedure ID
     structured_data, unstructured_data = _extract_text_structure(document_flat_structure) 
 
     structured_data = _get_flat_docs_list(structured_data)
 
     logger.debug("Extracted %d documents from %s", len(structured_data), file_path.stem)
-
-
+    for doc in structured_data:
+        doc.metadata["source"] = file_path.stem
 
     return structured_data
 
