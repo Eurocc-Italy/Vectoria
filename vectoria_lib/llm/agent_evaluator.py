@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 from tqdm import tqdm
-
+import pandas as pd
 from ragas.metrics import LLMContextRecall, Faithfulness, FactualCorrectness, SemanticSimilarity
 from ragas import evaluate
 from ragas.llms import LangchainLLMWrapper
@@ -22,7 +22,12 @@ class AgentEvaluator:
         self.test_set_name = None
         self.logger = logging.getLogger('llm')
  
-    def generate_answers(self, agent: QAAgent, test_set_path: str | Path, dump: bool = True) -> dict:
+    def generate_answers(
+            self, 
+            agent: QAAgent, 
+            test_set_path: str | Path, 
+            dump: bool = True
+        ) -> dict:
         
         self.logger.info(f"Generating answers for {test_set_path.name}")
 
@@ -57,7 +62,7 @@ class AgentEvaluator:
         with open(output_path, 'w', encoding='utf-8') as file:
             json.dump(data, file)    
         
-    def ragas_eval(self, evaluator_llm, eval_data: dict):
+    def ragas_eval(self, evaluator_llm, eval_data: dict) -> pd.Dataframe:
 
         eval_dataset = self.to_ragas_format(eval_data)
         evaluator_llm = LangchainLLMWrapper(evaluator_llm)
@@ -74,6 +79,7 @@ class AgentEvaluator:
 
         df = results.to_pandas()
         print(df.head())
+        return df
 
     def _to_ragas_format(self, eval_data: dict, limit: int = None) -> EvaluationDataset:
         if limit is None or limit < 1:

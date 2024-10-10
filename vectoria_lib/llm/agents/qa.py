@@ -8,7 +8,7 @@
 import logging
 from typing_extensions import Annotated, TypedDict
 from typing import Sequence
-
+from pathlib import Path
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -120,3 +120,17 @@ class QAAgent:
             for message in chat_history:
                 message.pretty_print()
         return chat_history
+
+    def inference(self, test_set_path: str):
+        import json
+        with open(test_set_path, 'r') as file:
+            data = json.load(file)
+        breakpoint()
+        for q in data["question"]:
+            answer = self.ask(q)
+            breakpoint()
+        
+        output_file = Path(test_set_path).parent / f"{Path(test_set_path).stem}_annotated.json"
+        with open(output_file, 'w') as file:
+            json.dump(data, file, indent=4)
+

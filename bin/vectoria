@@ -54,6 +54,9 @@ def cli():
     parser_ask_question_task = subparsers.add_parser('evaluate', formatter_class=argparse.RawTextHelpFormatter, help='Run the ask_question behavior')
     create_cl_parser_from_json(parser_ask_question_task, 'evaluate.json')
 
+    parser_ask_question_task = subparsers.add_parser('inference', formatter_class=argparse.RawTextHelpFormatter, help='Run the inference behavior')
+    create_cl_parser_from_json(parser_ask_question_task, 'inference.json')
+
     return parser.parse_args()
 
 def main():
@@ -74,6 +77,9 @@ def main():
     elif args["command"] == 'evaluate':
         from vectoria_lib.tasks.evaluate import evaluate
         evaluate(**args)
+    elif args["command"] == 'inference':
+        from vectoria_lib.tasks.inference import inference
+        inference(**args)
 
 if __name__ == "__main__":
     main()

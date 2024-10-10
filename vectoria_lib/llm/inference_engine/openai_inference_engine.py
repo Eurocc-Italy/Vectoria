@@ -16,6 +16,6 @@ class OpenAIInferenceEngine(InferenceEngineBase):
             #temperature=self.args("temperature"),
             #max_retries=self.args("max_retries"),
             model = self.args["model_name"],
-            base_url=self.args["url"],
-            api_key=self.args["api_key"]
+            base_url = self.args["url"],
+            api_key = self.args["api_key"]
         )

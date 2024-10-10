@@ -21,9 +21,8 @@
             "param": {
                 "type": "str",
                 "required": "True",
-                "help": "A yaml file defining a set of questions to evaluate the model on."
+                "help": "A json file containing questions"
             }
         }
-
     ]
 }

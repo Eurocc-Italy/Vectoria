@@ -22,8 +22,10 @@ def build_index(
     fvs = FaissVectorStore(Config().get("hf_embedder_model_name")).make_index(docs)
     logger.info("Created index in %.2f seconds", time.time() - start_time)
 
-    return fvs.dump_to_pickle(kwargs["output_index_dir"]), fvs
+    pkl_path = fvs.dump_to_pickle(kwargs["output_index_dir"])
+    logger.info("Index created at: %s", pkl_path)
 
+    return pkl_path, fvs
 
 # TODO: AL MOMENTO ABBIAMO SOLO LA FUNZIONE CHE GENERA UN INDEX A PARTIRE DAI DOCS
 # DOBBIAMO IMPLEMENTARE LA FUNZIONE CHE FA LA DELETION E UPDATE

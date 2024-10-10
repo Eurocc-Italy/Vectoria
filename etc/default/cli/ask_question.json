@@ -1,7 +1,7 @@
 {
     "flag": [
         {
-            "name": "--faiss_index",
+            "name": "--faiss-index-path",
             "param": {
                 "type": "str",
                 "required": "True",

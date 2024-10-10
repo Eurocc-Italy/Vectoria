@@ -4,10 +4,15 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 # ----------------------------------------------------------------------------------------------
-from vectoria_lib.llm.agent_builder import AgentBuilder
 from vectoria_lib.llm.agent_evaluator import AgentEvaluator
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.common.config import Config
+
+def load_yaml(path: str):
+    import yaml
+    with open(path, 'r', encoding='utf-8') as file:
+        data = yaml.safe_load(file)
+    return data
 
 def evaluate(
     **kwargs: dict
@@ -17,17 +22,7 @@ def evaluate(
 
     config = Config()
 
-    config.set("inference_engine", dict(
-        name='openai',
-        model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
-        url="http://localhost:8899/v1",
-        api_key="abcd"
-    ))
-
-    if "generate_answers" in kwargs and kwargs["generate_answers"]:
-        data = evaluator.generate_answers(kwargs["test_set_path"], dump=True)
-    else:
-        data = evaluator.load_from_yaml(kwargs["test_set_path"])
+    data = load_yaml(kwargs["test_set_path"])
     
     evaluator.ragas_eval(
         data,
