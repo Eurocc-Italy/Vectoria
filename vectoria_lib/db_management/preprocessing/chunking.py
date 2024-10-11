@@ -47,10 +47,11 @@ def recursive_character_text_splitter(
 
     for chunk in chunks:
         chunk.metadata = doc.metadata.copy()
-        
+        chunk.page_content = "(Nome paragrafo: " + doc.metadata["name"] + ") " + chunk.page_content # TODO: add the name of the document to the chunk. Are we sure?
+
     # delete each character in the filename that is not a letter 
     doc_metadata_str = ''.join(char for char in doc.metadata["name"] if char.isalpha())
-    output_name = f'chunk_{doc_metadata_str.lower()}_{doc.metadata["level"]}_{doc.metadata["id"]}'
+    output_name = f'doc_{doc.metadata["source"]}_chunk_{doc_metadata_str.lower()}_{doc.metadata["level"]}_{doc.metadata["id"]}'
     
     if log_in_folder is not None:
         Path(log_in_folder).mkdir(parents=True, exist_ok=True)  
