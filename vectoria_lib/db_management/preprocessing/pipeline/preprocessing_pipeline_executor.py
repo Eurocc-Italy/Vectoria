@@ -23,6 +23,9 @@ class PreprocessingPipelineExecutor:
         files = get_files_in_folder(input_docs)
         self.logger.info("Found %d files", len(files))
 
+        if len(files) == 0:
+            raise ValueError(f"No files found in the input folder {input_docs}")
+
         if Config().get("pp_multiprocessing"):
             self.logger.info("Running preprocessing pipeline with multiprocessing")
             with mp.Pool(processes=mp.cpu_count()) as pool:
