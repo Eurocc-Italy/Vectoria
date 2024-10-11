@@ -40,9 +40,18 @@ vllm serve hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4 --dtype auto  --ho
 Quantized model with GGUF:
 https://docs.vllm.ai/en/latest/quantization/gguf.html
 
+Download the model version:
 ```
 wget https://huggingface.co/second-state/E5-Mistral-7B-Instruct-Embedding-GGUF/resolve/main/e5-mistral-7b-instruct-Q5_K_M.gguf
+```
 
+Download the tokenizer of the original model
+```
+from transformers import AutoTokenizer
+AutoTokenizer.from_pretrained("intfloat/e5-mistral-7b-instruct")
+```
+Start vllm:
+```
 vllm serve ./e5-mistral-7b-instruct-Q5_K_M.gguf --tokenizer intfloat/e5-mistral-7b-instruct --dtype auto --host 127.0.0.1 --port 8899 --api-key abcd --gpu-memory-utilization 0.8 --quantization awq --max_model_len 30000
 ```
 
