@@ -122,15 +122,41 @@ class QAAgent:
         return chat_history
 
     def inference(self, test_set_path: str):
+        """
+        {
+            "question": [
+                "Da quali fasi si compone l'attività di gestione delle richieste di acquisto?",
+                "Qual'è l'obbiettivo dell'attività di gestione delle richieste di acquisto?"
+            ],
+            "answer": [
+                "answer1",
+            ],
+            "contexts": [
+                ["context1", "context2", "context3"],
+            ],
+            "ground_truth": [
+                "L'attività di gestione delle richieste di acquisto è composta dalle seguenti fasi: Emissione della RdA (manuale / MRP). Approvazione / Autorizzazione della RdA. Presa in carico della RdA da parte del Procurement/LGS.",
+                "L'obbiettivo dell'attività di gestione delle richieste di acquisto è Garantire che il fabbisogno espresso da un Ente Aziendale sia correttamente trasformato in una richiesta di acquisto gestibile dall'Unità Operativa Procurement."
+            ]  
+        }    
+        """
         import json
-        with open(test_set_path, 'r') as file:
+        with open(test_set_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
-        breakpoint()
+        
+        output = data.copy()
+        output["contexts"] = []
+        output["answer"] = []
         for q in data["question"]:
-            answer = self.ask(q)
-            breakpoint()
+            result = self.ask(q)
+            contexts = result["context"]
+            answer = result["answer"]
+            output["contexts"].append([c.page_content for c in contexts])
+            output["answer"].append(answer)
         
         output_file = Path(test_set_path).parent / f"{Path(test_set_path).stem}_annotated.json"
-        with open(output_file, 'w') as file:
-            json.dump(data, file, indent=4)
+        with open(output_file, 'w', encoding='utf-8') as file:
+            json.dump(output, file, indent=4, ensure_ascii=False)
+
+        self.logger.info("Annotated test set saved to %s", output_file)
 

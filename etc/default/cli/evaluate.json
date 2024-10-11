@@ -1,22 +1,6 @@
 {
     "flag": [
         {
-            "name": "--faiss-index-path",
-            "param": {
-                "type": "str",
-                "required": "True",
-                "help": "The path to the faiss index (in pickle format)"
-            }
-        },
-        {
-            "name": "--k",
-            "param": {
-                "type": "int",
-                "required": "True",
-                "help": "The number of retrieved chunks"
-            }
-        },
-        {
             "name": "--test-set-path",
             "param": {
                 "type": "str",

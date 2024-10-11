@@ -30,3 +30,19 @@ streamlit run vectoria_lib/gui/gui_v1.py
 ```
 pytest -v test/ -m "not slow"
 ```
+
+# Running vLLM
+Quantized model with AWQ:
+```
+vllm serve hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4 --dtype auto  --host 127.0.0.1 --port 8899 --api-key abcd  --gpu-memory-utilization 0.8  --quantization awq  --max_model_len 25000
+```
+
+Quantized model with GGUF:
+https://docs.vllm.ai/en/latest/quantization/gguf.html
+
+```
+wget https://huggingface.co/second-state/E5-Mistral-7B-Instruct-Embedding-GGUF/resolve/main/e5-mistral-7b-instruct-Q5_K_M.gguf
+
+vllm serve ./e5-mistral-7b-instruct-Q5_K_M.gguf --tokenizer intfloat/e5-mistral-7b-instruct --dtype auto --host 127.0.0.1 --port 8899 --api-key abcd --gpu-memory-utilization 0.8 --quantization awq --max_model_len 30000
+```
+

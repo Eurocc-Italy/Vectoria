@@ -46,7 +46,8 @@ dependencies = [
 [project.optional-dependencies]
 evaluation = [
     "ragas==0.2.0b0",
-    "nltk"
+    "nltk",
+    "rouge_score"
 ]
 dev = [
     "jupyterlab",
