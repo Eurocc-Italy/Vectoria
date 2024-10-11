@@ -47,7 +47,8 @@ dependencies = [
 evaluation = [
     "ragas==0.2.0b0",
     "nltk",
-    "rouge_score"
+    "rouge_score",
+    "matplotlib"
 ]
 dev = [
     "jupyterlab",

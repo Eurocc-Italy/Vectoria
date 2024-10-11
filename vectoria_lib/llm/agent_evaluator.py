@@ -1,7 +1,8 @@
 import json, yaml, time
 import logging
 from pathlib import Path
-
+import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 import pandas as pd
 from ragas.metrics import (
@@ -110,14 +111,14 @@ class AgentEvaluator:
         evaluator_llm = LangchainLLMWrapper(evaluator_llm)
         metrics = [
             # Context Retrieval
-            #LLMContextRecall(),
-            #LLMContextPrecisionWithoutReference(),
+            LLMContextRecall(),
+            LLMContextPrecisionWithoutReference(),
 
             # Natural Language Comparison
             #FactualCorrectness(mode="precision", atomicity="low", coverage="low")
             #SemanticSimilarity()
             
-            #NonLLMStringSimilarity(),
+            NonLLMStringSimilarity(),
             #BleuScore(weights=(0.25, 0.25, 0.25, 0.25)), # TODO: AssertionError: The number of hypotheses and their reference(s) should be the same
             RougeScore(rogue_type="rougeL", measure_type="fmeasure")
         ]
@@ -133,6 +134,9 @@ class AgentEvaluator:
         )
         
         scores = results.scores.to_pandas()
+
+        scores.dropna(inplace=True)
+        
         # TODO: make mean() and std() for each metric
     
         self.logger.info(f"Ragas evaluation results: {scores}")
@@ -145,7 +149,15 @@ class AgentEvaluator:
             out_format="yaml"
         )
         
+        metrics_means, metrics_stds = self._get_mean_std(scores.to_dict())
+        print(f"Mean: {metrics_means}, Std: {metrics_stds}")
+
+        output_path, output_name = self.output_root_path, f"{self.test_set_name}_ragas_eval_results_bar_plot.png"
+        self._make_bar_plot(metrics_means, metrics_stds, output_path, output_name)
+
+
         return results
+
 
     def _to_ragas_format(self, eval_data: dict) -> EvaluationDataset:
         samples = []
@@ -160,3 +172,51 @@ class AgentEvaluator:
 
         return EvaluationDataset(samples=samples)
 
+
+
+    def _get_mean_std(self, data: dict) -> tuple[float, float]:
+        # Returns a tuple (mean, std) for each metric
+        metrics_means = {}
+        metrics_stds = {}
+        for metric_name, metric_values in data.items():
+            metrics_means[metric_name] = np.mean(list(metric_values.values()))
+            metrics_stds[metric_name] = np.std(list(metric_values.values()))
+        return metrics_means, metrics_stds
+
+    def _make_bar_plot(self, metrics_means: dict, metrics_stds: dict, output_path: Path, output_name: str):
+        plt.rcParams.update({
+            'axes.labelsize': 14,     # Axis labels
+            'axes.titlesize': 16,     # Title
+            'xtick.labelsize': 12,    # X-axis tick labels
+            'ytick.labelsize': 12,    # Y-axis tick labels
+            'font.size': 12           # General text font size
+        })        
+        metrics = list(metrics_means.keys())
+        mean_values = list(metrics_means.values())
+        std_values = list(metrics_stds.values())
+
+        x = np.arange(len(metrics))
+        width = 0.35
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Bar plot with error bars
+        bars = ax.bar(x, mean_values, width, yerr=std_values, capsize=5, label='Mean')
+
+        # Add labels, title, and custom x-axis tick labels
+        ax.set_ylabel('Scores')
+        ax.set_title('Metrics Mean with Standard Deviation')
+        ax.set_xticks(x)
+        ax.set_xticklabels(metrics, rotation=15, ha="right")
+        for bar in bars:
+            height = bar.get_height()
+            ax.annotate(f'{height:.2f}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3),  # 3 points vertical offset
+                        textcoords="offset points",
+                        ha='center', va='bottom')
+        # Display the plot
+        plt.tight_layout()
+        plt.show()
+
+        fig.savefig(output_path / output_name)
