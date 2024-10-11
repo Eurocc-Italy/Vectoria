@@ -141,20 +141,29 @@ class QAAgent:
         }    
         """
         import json
+        from time import time
+        import numpy as np
         with open(test_set_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         
+        times = []
         output = data.copy()
         output["contexts"] = []
         output["answer"] = []
         for q in data["question"]:
+            start_time = time()
             result = self.ask(q)
+            took = time() - start_time
+            self.logger.info("Time taken to answer question: %.2f seconds", took)
+            times.append(took)
             contexts = result["context"]
             answer = result["answer"]
             output["contexts"].append([c.page_content for c in contexts])
             output["answer"].append(answer)
         
-        output_file = Path(test_set_path).parent / f"{Path(test_set_path).stem}_annotated.json"
+        self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", np.mean(times), np.std(times))
+
+        output_file = Path(test_set_path).parent / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4, ensure_ascii=False)
 
