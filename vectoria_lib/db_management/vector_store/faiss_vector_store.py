@@ -108,7 +108,7 @@ class FaissVectorStore:
             
         return self.index.as_retriever(**kwargs)
 
-    def dump_to_pickle(self, output_path: str | Path = ".") -> Path:
+    def dump_to_pickle(self, output_path: str | Path = ".", output_suffix: str = "") -> Path:
         """
         Serialize the FAISS index to a pickle file.
 
@@ -121,7 +121,7 @@ class FaissVectorStore:
         pkl = self.index.serialize_to_bytes()
         model_name = self.model_name.replace('/','__') # repo/name => repo__name
         Path(output_path).mkdir(exist_ok=True, parents=True)
-        pkl_path = Path(output_path) / f"{model_name}_faiss_index.pkl"
+        pkl_path = Path(output_path) / f"{model_name}_faiss_index{output_suffix}.pkl"
         with open(pkl_path, "wb") as f:
             f.write(pkl)
         return pkl_path

@@ -1,19 +1,28 @@
 {
     "flag": [
         {
-            "name": "--input_docs_dir",
+            "name": "--input-docs-dir",
             "param": {
                 "type": "str",
                 "required": "True",
                 "help": ""
             }
         },
-        {   
-            "name": "--output_index_dir",
+        {
+            "name": "--output-dir",
             "param": {
                 "type": "str",
                 "required": "True",
-                "help": ""
+                "help": "The path to the output directory"
+            }
+        },
+        {
+            "name": "--output-suffix",
+            "param": {
+                "type": "str",
+                "required": "False",
+                "default": "",
+                "help": "The suffix to add to the output file name"
             }
         }
     ]

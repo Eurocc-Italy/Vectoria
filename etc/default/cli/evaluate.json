@@ -7,7 +7,14 @@
                 "required": "True",
                 "help": "A yaml file defining a set of questions to evaluate the model on."
             }
+        },
+        {
+            "name": "--output-dir",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": "The path to the output directory"
+            }
         }
-
     ]
 }

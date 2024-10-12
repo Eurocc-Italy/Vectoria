@@ -23,6 +23,14 @@
                 "required": "True",
                 "help": "A json file containing questions"
             }
+        },
+        {
+            "name": "--output-dir",
+            "param": {
+                "type": "str",
+                "required": "True",
+                "help": "The path to the output directory"
+            }
         }
     ]
 }

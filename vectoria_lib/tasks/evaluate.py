@@ -20,7 +20,7 @@ def evaluate(
 ):
 
     evaluator = AgentEvaluator(
-        output_root_path = Path(kwargs["test_set_path"]).parent, 
+        output_root_path = Path(kwargs["test_set_path"]).parent,
         test_set_name    = Path(kwargs["test_set_path"]).stem
     )
 

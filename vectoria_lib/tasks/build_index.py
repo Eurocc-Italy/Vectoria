@@ -22,7 +22,7 @@ def build_index(
     fvs = FaissVectorStore(Config().get("hf_embedder_model_name")).make_index(docs)
     logger.info("Created index in %.2f seconds", time.time() - start_time)
 
-    pkl_path = fvs.dump_to_pickle(kwargs["output_index_dir"])
+    pkl_path = fvs.dump_to_pickle(kwargs["output_dir"], kwargs["output_suffix"])
     logger.info("Index created at: %s", pkl_path)
 
     return pkl_path, fvs

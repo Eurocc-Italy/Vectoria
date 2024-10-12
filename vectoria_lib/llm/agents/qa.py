@@ -121,7 +121,7 @@ class QAAgent:
                 message.pretty_print()
         return chat_history
 
-    def inference(self, test_set_path: str):
+    def inference(self, test_set_path: str, output_dir: str):
         """
         {
             "question": [
@@ -163,7 +163,8 @@ class QAAgent:
         
         self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", np.mean(times), np.std(times))
 
-        output_file = Path(test_set_path).parent / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
+        Path(output_dir).mkdir(exist_ok=True, parents=True)
+        output_file = Path(output_dir) / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4, ensure_ascii=False)
 
