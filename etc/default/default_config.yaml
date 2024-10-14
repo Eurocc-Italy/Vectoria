@@ -35,7 +35,8 @@ pp_steps:
 
 
 # Vector store
-hf_embedder_model_name: BAAI/bge-m3
+# hf_embedder_model_name: BAAI/bge-m3 # LEO
+hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
 embedder_device: cuda
 normalize_embeddings: false
 
@@ -52,8 +53,8 @@ inference_engine:
   name: 'huggingface'
   url: null
   api_key: null
-  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
-  #model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
+  # model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # LEO
+  model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150

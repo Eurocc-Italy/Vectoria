@@ -23,6 +23,7 @@ def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in
     """
     logger.debug("Extracting text from %s", file_path.stem)
 
+    print(file_path)
     document = docx.Document(file_path)
 
     document_flat_structure = _extract_flat_structure(document)
