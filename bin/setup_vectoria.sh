@@ -32,4 +32,4 @@ export PYTHONPATH=$VECTORIA_PATH:$PYTHONPATH
 # define cleaning alias
 alias pyccleandir="find . -name '*.pyc' -delete"
 alias vectoriacleandir='cd $VECTORIA_HOME ; pyccleandir ; cd $OLDPWD'
-alias sclean='rm 7*.out 7*.err; echo ""; echo "Old files (.out & .err) removed..."; echo ""'
+alias sclean='rm 8*.out 8*.err; echo ""; echo "Old files (.out & .err) removed..."; echo ""'

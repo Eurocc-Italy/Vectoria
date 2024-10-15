@@ -26,9 +26,10 @@ echo "All modules loaded..."
 source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
-INPUT_DOCS_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/docx # [pdf, docx]
+#INPUT_DOCS_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/docx # [pdf, docx]
+INPUT_DOCS_DIR=/leonardo/home/userinternal/aproia00/leo_docs # new documents
 OUTPUT_INDEX_DIR=/leonardo_work/PhDLR_prod/vectoria/test/index
-OUTPUT_SUFFIX=_docx_lorem
+OUTPUT_SUFFIX=_leo_docs
 
 echo "START"
 python vectoria build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
