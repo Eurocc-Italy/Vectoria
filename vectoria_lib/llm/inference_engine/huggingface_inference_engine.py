@@ -4,6 +4,9 @@ from langchain_huggingface import HuggingFacePipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
 
+import time
+import logging 
+
 class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
     Wrapper on Hugging Face: 
@@ -20,11 +23,19 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     def __init__(self, args: dict):
         super().__init__(args)
 
+        self.logger = logging.getLogger('llm')
+
+        start_time = time.perf_counter()
         tokenizer = AutoTokenizer.from_pretrained(self.args["model_name"])
+        self.logger.debug("Loading tokenizer took %.2f seconds", time.perf_counter() - start_time)
+        
+        start_time = time.perf_counter()
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             load_in_8bit = self.args["load_in_8bit"]
         )
+        self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
+
         if self.args["load_in_8bit"]:
             self.args["device"] = None
         
