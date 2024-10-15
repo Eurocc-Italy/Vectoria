@@ -6,9 +6,11 @@
 # ----------------------------------------------------------------------------------------------
 
 import logging
+import time
 from typing_extensions import Annotated, TypedDict
 from typing import Sequence
 from pathlib import Path
+
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
@@ -109,7 +111,6 @@ class QAAgent:
             config = {"configurable": {"thread_id": session_id}}
         
         output = self.rag_chain.invoke({"input" : question}, config=config)
-        
         self.logger.info("Answer: %s", output["answer"])
         
         return output
@@ -141,7 +142,6 @@ class QAAgent:
         }    
         """
         import json
-        from time import time
         import numpy as np
         with open(test_set_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -151,9 +151,9 @@ class QAAgent:
         output["contexts"] = []
         output["answer"] = []
         for q in data["question"]:
-            start_time = time()
+            start_time = time.perf_counter()
             result = self.ask(q)
-            took = time() - start_time
+            took = time.perf_counter() - start_time
             self.logger.info("Time taken to answer question: %.2f seconds", took)
             times.append(took)
             contexts = result["context"]
@@ -165,8 +165,9 @@ class QAAgent:
 
         Path(output_dir).mkdir(exist_ok=True, parents=True)
         output_file = Path(output_dir) / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
+        start_time = time.perf_counter()
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump(output, file, indent=4, ensure_ascii=False)
 
-        self.logger.info("Annotated test set saved to %s", output_file)
+        self.logger.info("Annotated test set saved to %s and took %.2f seconds", output_file, time.perf_counter() - start_time)
 

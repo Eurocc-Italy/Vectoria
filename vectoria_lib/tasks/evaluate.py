@@ -5,6 +5,8 @@
 #
 # ----------------------------------------------------------------------------------------------
 from pathlib import Path
+import time
+import logging
 from vectoria_lib.llm.agent_evaluator import AgentEvaluator
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.common.config import Config
@@ -13,6 +15,7 @@ def load_json(path: str):
     import json
     with open(path, 'r', encoding='utf-8') as file:
         data = json.load(file)
+    
     return data
 
 def evaluate(
@@ -25,9 +28,14 @@ def evaluate(
     )
 
     config = Config()
+    logger = logging.getLogger('db_management')
 
+    start_time = time.perf_counter()
     data = load_json(kwargs["test_set_path"])
+    logger.debug("Loading test_set %s took %.2f seconds", kwargs["test_set_path"], time.perf_counter() - start_time)
     
+    start_time = time.perf_counter()
+
     evaluator.ragas_eval(
         data,
         InferenceEngineBuilder.build_inference_engine(
@@ -41,6 +49,7 @@ def evaluate(
         #     )
         # ).as_langchain_llm()
     )
+    logger.debug("Ragas evaluation took %.2f seconds", time.perf_counter() - start_time)
 
 # if __name__ == "__main__":
 #     Config().load_config("/home/leobaro/workspace/labs/vectoria-project/led_use_case/config_docx.yaml")

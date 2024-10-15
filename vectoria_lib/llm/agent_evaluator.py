@@ -155,7 +155,6 @@ class AgentEvaluator:
         output_path, output_name = self.output_root_path, f"{self.test_set_name}_ragas_eval_results_bar_plot.png"
         self._make_bar_plot(metrics_means, metrics_stds, output_path, output_name)
 
-
         return results
 
 
