@@ -8,9 +8,10 @@
 #SBATCH --time 00:15:00     # format: HH:MM:SS
 #SBATCH -N 1                # 1 node
 #SBATCH --ntasks-per-node=1 # 1 task
-#SBATCH --cpus-per-task=8   # 8 cores out of 32
+##SBATCH --cpus-per-task=8   # 8 cores out of 32
 #SBATCH --gres=gpu:1        # 1 gpus per node out of 4
-#SBATCH --mem=300000        # memory per node out of 494000MB (481GB)
+##SBATCH --mem=300000        # memory per node out of 494000MB (481GB)
+#SBATCH --exclusive
 
 ##SBATCH --qos=boost_qos_dbg
 

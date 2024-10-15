@@ -15,3 +15,5 @@ led_use_case
 *.out
 clean
 *_key.txt
+
+results/

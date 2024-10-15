@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 import multiprocessing as mp
 from functools import partial
+import time
 
 from langchain_core.runnables import chain, RunnableConfig
 from langchain.docstore.document import Document
@@ -37,12 +38,17 @@ class PreprocessingPipelineExecutor:
         # at this point we have a list of lists of Document objects (one sublist per file)
         # and we need to flatten the list
 
+        start_time = time.perf_counter()
         preprocessed_docs = [doc for document_chunks in preprocessed_docs for paragraph_chunks in document_chunks for doc in paragraph_chunks]
-        
+        self.logger.debug("Flattening list of chunks took %.2f seconds", time.perf_counter() - start_time)
+
         self.logger.info("Total number of chunks: %d", len(preprocessed_docs))
         
         return preprocessed_docs
 
     def run_on_file(self, file_path: Path):
-        self.logger.info("Processing file %s", file_path)
-        return self.chain.invoke(file_path)
+        start_time = time.perf_counter()
+        output = self.chain.invoke(file_path)
+        self.logger.debug("Processing file %s took %.2f seconds", file_path, time.perf_counter() - start_time)
+        
+        return output

@@ -18,12 +18,13 @@ def build_index(
             )
     logger.info("Created %d documents from %s in %.2f seconds", len(docs), kwargs['input_docs_dir'], time.time() - start_time)
         
-    start_time = time.time()
+    start_time = time.perf_counter()
     fvs = FaissVectorStore(Config().get("hf_embedder_model_name")).make_index(docs)
-    logger.info("Created index in %.2f seconds", time.time() - start_time)
+    logger.debug("Creation of FAISS index (.from_documents) took %.2f seconds", time.perf_counter() - start_time)
 
+    start_time = time.perf_counter()
     pkl_path = fvs.dump_to_pickle(kwargs["output_dir"], kwargs["output_suffix"])
-    logger.info("Index created at: %s", pkl_path)
+    logger.info("Index pkl dumped at: %s took %.2f seconds", pkl_path, time.perf_counter() - start_time)
 
     return pkl_path, fvs
 
