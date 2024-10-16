@@ -32,7 +32,9 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         start_time = time.perf_counter()
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
-            load_in_8bit = self.args["load_in_8bit"]
+            load_in_8bit = self.args["load_in_8bit"],
+            device_map="auto"
+            #load_in_4bit = True,
         )
         self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
 

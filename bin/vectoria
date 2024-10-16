@@ -68,6 +68,14 @@ def main():
     for k, v in args.items():
         print(k, v)
 
+    print(Config().config["inference_engine"]["model_name"])
+    dir = Config().config["inference_engine"]["model_name"]
+    if os.path.isdir(dir):
+        print("Directory exists")
+    else:
+        print("Directory does not exist")
+        exit()
+
     if args["command"] == 'build_index':
         from vectoria_lib.tasks.build_index import build_index
         build_index(**args)
