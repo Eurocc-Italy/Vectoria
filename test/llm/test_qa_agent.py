@@ -41,8 +41,11 @@ def test_qa_agent_engines(inference_config):
     )
 
     answer = agent.ask("What is the name of the movie?")
+    assert "answer" in answer
+    assert "context" in answer
+    assert "input" in answer
 
-    assert "matrix" in answer.lower()
+    assert "matrix" in answer["answer"].lower()
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")

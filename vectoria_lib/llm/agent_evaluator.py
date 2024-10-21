@@ -8,11 +8,11 @@ import pandas as pd
 from ragas.metrics import (
     LLMContextRecall, 
     LLMContextPrecisionWithoutReference, 
-    Faithfulness, 
-    FactualCorrectness,
-    SemanticSimilarity,
+    #Faithfulness, 
+    #FactualCorrectness,
+    #SemanticSimilarity,
     NonLLMStringSimilarity,
-    BleuScore,
+    #BleuScore,
     RougeScore
 )
 
@@ -115,7 +115,7 @@ class AgentEvaluator:
             LLMContextPrecisionWithoutReference(),
 
             # Natural Language Comparison
-            #FactualCorrectness(mode="precision", atomicity="low", coverage="low")
+            #FactualCorrectness(mode="precision", atomicity="low", coverage="low") # TODO: bug of 
             #SemanticSimilarity()
             
             NonLLMStringSimilarity(),
@@ -133,7 +133,7 @@ class AgentEvaluator:
             )
         )
         
-        scores = results.scores.to_pandas()
+        scores = results.scores.to_pandas() # TODO: results is now a dict without mean and std
 
         scores.dropna(inplace=True)
         

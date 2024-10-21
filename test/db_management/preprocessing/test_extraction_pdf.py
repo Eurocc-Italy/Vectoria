@@ -13,4 +13,7 @@ def test_extract_text_from_pdf_file():
     assert isinstance(doc[0], Document)
     assert len(doc) == 1
     assert "arXiv:1906.02243v1" in doc[0].page_content
-    assert doc[0].metadata == {}
+    assert "source" in doc[0].metadata
+    assert "name" in doc[0].metadata
+    assert "level" in doc[0].metadata
+    assert "id" in doc[0].metadata

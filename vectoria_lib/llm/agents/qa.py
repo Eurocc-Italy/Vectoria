@@ -101,7 +101,7 @@ class QAAgent:
         - session_id (str): The ID of the session to use for chat history.
 
         Returns:
-        - str: The generated answer to the input.
+        - dict: The generated answer to the input.
         """
 
         config = {}

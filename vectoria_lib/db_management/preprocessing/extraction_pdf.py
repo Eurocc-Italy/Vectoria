@@ -33,5 +33,5 @@ def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None, log_in_f
 
     logger.debug("Loaded %d characters", len(pages_str))
 
-    return [Document(page_content=pages_str, metadata=dict(name=file_path.name, level=0, id=0))]
+    return [Document(page_content=pages_str, metadata=dict(source=file_path.stem,name=file_path.name, level=0, id=0))]
 
