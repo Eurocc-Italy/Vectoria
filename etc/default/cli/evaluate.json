@@ -15,6 +15,16 @@
                 "required": "True",
                 "help": "The path to the output directory"
             }
+        },
+        {
+            "name": "--evaluation-tool",
+            "param": {
+                "type": "str",
+                "required": "False",
+                "default": "ragas",
+                "help": "The evaluation tool to use",
+                "choices": ["ragas"]
+            }
         }
     ]
 }

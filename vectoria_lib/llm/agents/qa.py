@@ -5,23 +5,16 @@
 #
 # ----------------------------------------------------------------------------------------------
 
-import logging
-import time
-from typing_extensions import Annotated, TypedDict
-from typing import Sequence
+import logging, datetime, time
 from pathlib import Path
 
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables import RunnablePassthrough
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langsmith import traceable
 
 from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
 from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.llm.helpers import format_docs
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 class QAAgent:
@@ -111,8 +104,10 @@ class QAAgent:
             config = {"configurable": {"thread_id": session_id}}
         
         output = self.rag_chain.invoke({"input" : question}, config=config)
-        self.logger.info("Answer: %s", output["answer"])
         
+        self.logger.debug("\n------%s-------\n > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
+        self.logger.info(" > Answer: %s", output["answer"])
+
         return output
 
     def get_chat_history(self, session_id: str, pretty_print=True):

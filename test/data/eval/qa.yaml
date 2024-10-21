@@ -1,0 +1,29 @@
+{
+    "question": [
+        "What is the name of the movie?",
+        "In which year the movie came out?",
+        "What's the movie about?"
+    ],
+    "answer": [
+        "The movie is title The Matrix.",
+        "The movie came out in the 1999.",
+        "In a dystopian future, humans are unknowingly trapped in a simulated reality called the Matrix, created by machines using them as energy. When Neo, a hacker, learns the truth, he joins a rebellion to fight the machines."
+    ],
+    "contexts": [
+        [
+            "The Matrix is a science fiction action film written and directed by the Wachowskis.",
+        ],
+        [
+            "The Matrix opened in theaters in the United States on March 31, 1999, to widespread acclaim from critics, who praised its innovative visual effects, action sequences, cinematography and entertainment value."
+        ],
+        [
+            "it depicts a dystopian future in which humanity is unknowingly trapped inside the Matrix, a simulated reality that intelligent machines have created to distract humans while using their bodies as an energy source.",
+            "When computer programmer Thomas Anderson, under the hacker alias Neo, uncovers the truth, he joins a rebellion against the machines along with other people who have been freed from the Matrix."
+        ]
+    ],
+    "ground_truth": [
+        "The name of the movie is 'The Matrix'.",
+        "The directors are Lana Wachowski and Lini Wachowski.",
+        "It describes a dystopian future where humans are unknowingly trapped in the Matrix, a simulated reality created by intelligent machines to use human bodies as energy sources. When Thomas Anderson, a computer programmer known as Neo, discovers the truth, he joins a rebellion with others who have escaped the Matrix to fight against the machines."
+    ]
+}

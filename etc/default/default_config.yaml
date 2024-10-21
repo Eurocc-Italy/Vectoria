@@ -35,8 +35,7 @@ pp_steps:
 
 
 # Vector store
-# hf_embedder_model_name: BAAI/bge-m3 # LEO
-hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
+hf_embedder_model_name: BAAI/bge-m3 
 embedder_device: cuda
 normalize_embeddings: false
 
@@ -50,16 +49,22 @@ system_prompts_lang: it
 
 # Inference engine
 inference_engine:
-  name: 'huggingface'
+  name: huggingface
   url: null
   api_key: null
   model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
-  # model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # CINECA
-  # model_name: /leonardo_scratch/large/userinternal/aproia00/Meta-Llama-3-70B-Instruct # TEST WITH 70B
-  # model_name: /leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct # FAST
-  # model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
-  # model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct
-
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150
+  trust_remote_code: true
+
+evaluation_tool: ragas
+evaluation_engine:
+  name: huggingface
+  url: null
+  api_key: null
+  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  device: cuda
+  load_in_8bit: false
+  max_new_tokens: 150
+  trust_remote_code: false

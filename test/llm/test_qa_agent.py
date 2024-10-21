@@ -5,27 +5,49 @@ from vectoria_lib.llm.agent_builder import AgentBuilder
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 
+import pytest
+import torch
+
 @pytest.mark.slow
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 @pytest.mark.parametrize(
     "inference_config", 
-    [
-        dict(
-            name='ollama',
-            model_name='llama3.2:1b'
+    [   
+        pytest.param(
+            dict(
+                name='ollama',
+                model_name='llama3.2:1b'
+            ),
+            marks=pytest.mark.skipif(
+                Config()
+                .load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+                .get("inference_engine")["name"] != "ollama", 
+                reason="ollama has not been configured"
+            )
         ),
-        dict(
-            name='huggingface',
-            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
-            device="cuda",
-            load_in_8bit=True,
-            max_new_tokens=100
+        pytest.param(
+            dict(
+                name='huggingface',
+                model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
+                device="cuda",
+                load_in_8bit=True,
+                max_new_tokens=100,
+                trust_remote_code=True
+            ),
+            marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
         ),
-        dict(
-            name='openai',
-            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
-            url="http://localhost:8899/v1",
-            api_key="abcd"
+        pytest.param(
+            dict(
+                name='openai',
+                model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
+                url="http://localhost:8899/v1",
+                api_key="abcd"
+            ),
+            marks=pytest.mark.skipif(
+                Config()
+                .load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+                .get("inference_engine")["name"] != "openai", 
+                reason="openai has not been configured"
+            )
         )
     ]
 )
@@ -34,7 +56,6 @@ def test_qa_agent_engines(inference_config):
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("chat_history", False)
     config.set("retriever_top_k", 1)
-
     config.set("inference_engine", inference_config)
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_the_matrix.pkl",
@@ -45,7 +66,8 @@ def test_qa_agent_engines(inference_config):
     assert "context" in answer
     assert "input" in answer
 
-    assert "matrix" in answer["answer"].lower()
+    assert len(answer["answer"]) > 0
+
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")

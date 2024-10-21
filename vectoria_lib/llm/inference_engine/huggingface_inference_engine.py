@@ -22,18 +22,22 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
     def __init__(self, args: dict):
         super().__init__(args)
-
+        
         self.logger = logging.getLogger('llm')
 
         start_time = time.perf_counter()
-        tokenizer = AutoTokenizer.from_pretrained(self.args["model_name"])
+        tokenizer = AutoTokenizer.from_pretrained(
+            self.args["model_name"],
+            trust_remote_code = self.args["trust_remote_code"]
+        )
         self.logger.debug("Loading tokenizer took %.2f seconds", time.perf_counter() - start_time)
-        
+
         start_time = time.perf_counter()
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             load_in_8bit = self.args["load_in_8bit"],
-            device_map="auto"
+            #device_map="auto",
+            trust_remote_code = self.args["trust_remote_code"],
             #load_in_4bit = True,
         )
         self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)

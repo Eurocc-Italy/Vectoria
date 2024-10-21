@@ -32,6 +32,18 @@ pytest -v test/ -m "not slow"
 ```
 
 # Running vLLM
+
+Non-quantized model:
+```
+vllm serve meta-llama/Meta-Llama-3.1-8B-Instruct --dtype auto  --host 127.0.0.1 --port 8899 --api-key abcd  --gpu-memory-utilization 0.8  --max_model_len 25000
+```
+
+Embedding model:
+```
+vllm serve BAAI/bge-multilingual-gemma2 --dtype auto  --host 127.0.0.1 --port 8898 --api-key abcd  --gpu-memory-utilization 0.8
+```
+
+
 Quantized model with AWQ:
 ```
 vllm serve hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4 --dtype auto  --host 127.0.0.1 --port 8899 --api-key abcd  --gpu-memory-utilization 0.8  --quantization awq  --max_model_len 25000

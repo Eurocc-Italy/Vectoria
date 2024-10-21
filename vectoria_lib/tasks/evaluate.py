@@ -7,7 +7,7 @@
 from pathlib import Path
 import time
 import logging
-from vectoria_lib.llm.agent_evaluator import AgentEvaluator
+from vectoria.vectoria_lib.llm.eval.agent_evaluator import AgentEvaluator
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.common.config import Config
 
@@ -24,7 +24,8 @@ def evaluate(
 
     evaluator = AgentEvaluator(
         output_root_path = Path(kwargs["test_set_path"]).parent,
-        test_set_name    = Path(kwargs["test_set_path"]).stem
+        test_set_name    = Path(kwargs["test_set_path"]).stem,
+        evaluation_tool  = kwargs["evaluation_tool"]
     )
 
     config = Config()
@@ -36,7 +37,7 @@ def evaluate(
     
     start_time = time.perf_counter()
 
-    evaluator.ragas_eval(
+    evaluator.eval(
         data,
         InferenceEngineBuilder.build_inference_engine(
             config.get("inference_engine")
@@ -49,10 +50,4 @@ def evaluate(
         #     )
         # ).as_langchain_llm()
     )
-    logger.debug("Ragas evaluation took %.2f seconds", time.perf_counter() - start_time)
-
-# if __name__ == "__main__":
-#     Config().load_config("/home/leobaro/workspace/labs/vectoria-project/led_use_case/config_docx.yaml")
-#     evaluate(
-#         test_set_path = "/home/leobaro/workspace/labs/vectoria-project/led_use_case/data/annotated/dataset_v1_annotated.json"
-#     )
+    logger.debug("Evaluation took %.2f seconds", time.perf_counter() - start_time)
