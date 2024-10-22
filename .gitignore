@@ -19,3 +19,6 @@ clean
 results/
 
 push_to_origin_gh.sh
+
+!test/data/index/BAAI__bge-m3_faiss_index_airxv_papers.pkl
+!test/data/index/BAAI__bge-m3_faiss_index_the_matrix.pkl
