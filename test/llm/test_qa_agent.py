@@ -79,7 +79,8 @@ def test_qa_agent_with_history():
             model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
             device="cuda",
             load_in_8bit=True,
-            max_new_tokens=200
+            max_new_tokens=200,
+            trust_remote_code=False
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
@@ -121,7 +122,8 @@ def test_qa_agent_without_history():
             model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
             device="cuda",
             load_in_8bit=True,
-            max_new_tokens=200
+            max_new_tokens=200,
+            trust_remote_code=False
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
