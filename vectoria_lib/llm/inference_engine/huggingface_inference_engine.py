@@ -1,6 +1,5 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 from langchain_huggingface import HuggingFacePipeline
-
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
 
@@ -32,26 +31,30 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         )
         self.logger.debug("Loading tokenizer took %.2f seconds", time.perf_counter() - start_time)
 
+        quantization_config = None
+        if self.args["load_in_8bit"]:
+            quantization_config = BitsAndBytesConfig(
+                load_in_8bit=True
+            )
+            self.args["device"] = None
+
         start_time = time.perf_counter()
+
+        # TODO: device_map="auto" will not deallocate memory between tests
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
-            load_in_8bit = self.args["load_in_8bit"],
-            device_map="auto",
+            quantization_config = quantization_config,
+            device_map=self.args["device_map"],
             trust_remote_code = self.args["trust_remote_code"],
-            #load_in_4bit = True,
         )
         self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
 
-        if self.args["load_in_8bit"]:
-            self.args["device"] = None
-        
         self.pipe = pipeline(
             "text-generation", 
             model = model,
             tokenizer = tokenizer,
             max_new_tokens = self.args["max_new_tokens"], # https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
             repetition_penalty=1.03, # TODO: move in configuration
-            device = self.args["device"],
             return_full_text = False
         )
         

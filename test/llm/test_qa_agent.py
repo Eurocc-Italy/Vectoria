@@ -32,7 +32,8 @@ import torch
                 device="cuda",
                 load_in_8bit=True,
                 max_new_tokens=100,
-                trust_remote_code=True
+                trust_remote_code=True,
+                device_map=None
             ),
             marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
         ),
@@ -81,7 +82,8 @@ def test_qa_agent_with_history():
             device="cuda",
             load_in_8bit=True,
             max_new_tokens=200,
-            trust_remote_code=False
+            trust_remote_code=False,
+            device_map=None
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
@@ -124,7 +126,8 @@ def test_qa_agent_without_history():
             device="cuda",
             load_in_8bit=True,
             max_new_tokens=200,
-            trust_remote_code=False
+            trust_remote_code=False,
+            device_map=None
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
@@ -154,7 +157,8 @@ def test_qa_agent_with_custom_context():
             device="cuda",
             load_in_8bit=True,
             max_new_tokens=200,
-            trust_remote_code=False
+            trust_remote_code=False,
+            device_map=None
         )   
     config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")

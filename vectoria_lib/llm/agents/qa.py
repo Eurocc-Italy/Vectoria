@@ -44,15 +44,22 @@ class QAAgent:
 
         self.logger = logging.getLogger('llm')
         
-        retriever = rag_retriever.as_langchain_retriever()
+        if rag_retriever is not None:
+            retriever = rag_retriever.as_langchain_retriever()
+        else:
+            self.logger.warning("No retriever provided, the RAG retriever will be not be initialized")
+            retriever = None
+        
         inference_engine = inference_engine.as_langchain_llm()
 
-        self.use_chat_history = chat_history
-
         prompt_builder = PromptBuilder(system_prompts_lang)
-        
-        if self.use_chat_history:
 
+        self.use_chat_history = chat_history
+        self.rag_chain = None
+        self.oracle_chain = None
+        if self.use_chat_history is True and retriever is not None:
+
+            self.logger.info("Creating QA agent with the RAG retriever and chat history")
             combine_docs_chain = create_stuff_documents_chain(
                 inference_engine,
                 prompt_builder.get_qa_prompt_with_history(),
@@ -71,15 +78,15 @@ class QAAgent:
             )
             self.rag_chain = StatefulWorkflow.to_stateful_workflow(self.rag_chain)
 
-        else:
-            # chain to answer questions with the ground truth context
-            self.oracle_chain = create_stuff_documents_chain(
-                inference_engine,
-                prompt_builder.get_qa_prompt(),
-                output_parser=CustomResponseParser()
-            )
-            
-            # chain to answer questions with the retrieved documents
+        self.logger.info("Creating QA agent with the oracle retriever")
+        self.oracle_chain = create_stuff_documents_chain(
+            inference_engine,
+            prompt_builder.get_qa_prompt(),
+            output_parser=CustomResponseParser()
+        )
+
+        if retriever is not None and self.use_chat_history is False:
+            self.logger.info("Creating QA agent with the RAG retriever")
             self.rag_chain = create_retrieval_chain(
                 retriever,
                 self.oracle_chain
@@ -107,8 +114,8 @@ class QAAgent:
         
         output = self.rag_chain.invoke({"input" : question}, config=config)
         
-        self.logger.debug("\n------%s-------\n > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
-        self.logger.info(" > Answer: %s", output["answer"])
+        self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
+        self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), output["answer"])
 
         return output
 

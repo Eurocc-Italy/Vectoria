@@ -55,7 +55,7 @@ inference_engine:
   load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: false
-
+  device_map: auto
 
 evaluation_tool: ragas
 evaluation_engine:
