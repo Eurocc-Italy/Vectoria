@@ -7,7 +7,7 @@ import time
 from langchain_core.runnables import chain, RunnableConfig
 from langchain.docstore.document import Document
 
-from vectoria_lib.io.folder_reader import get_files_in_folder
+from vectoria_lib.common.io.folder_reader import get_files_in_folder
 from vectoria_lib.common.config import Config
 
 class PreprocessingPipelineExecutor:

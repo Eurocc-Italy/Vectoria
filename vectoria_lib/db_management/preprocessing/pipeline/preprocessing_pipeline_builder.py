@@ -1,5 +1,8 @@
 import logging
 from vectoria_lib.common.config import Config
+
+# ----------------------------------------------------------------------------------------------------------------------
+# DO NOT REMOVE THESE IMPORTS, they are get from global namespace
 from vectoria_lib.db_management.preprocessing.extraction_pdf import extract_text_from_pdf_file
 from vectoria_lib.db_management.preprocessing.extraction_docx import extract_text_from_docx_file
 from vectoria_lib.db_management.preprocessing.cleaning import (
@@ -9,9 +12,10 @@ from vectoria_lib.db_management.preprocessing.cleaning import (
     remove_bullets,
     remove_multiple_spaces  
 )
-from functools import partial
-from langchain_core.runnables import RunnableLambda
 from vectoria_lib.db_management.preprocessing.chunking import recursive_character_text_splitter
+# ----------------------------------------------------------------------------------------------------------------------from functools import partial
+
+from langchain_core.runnables import RunnableLambda
 from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
 
 logger = logging.getLogger('db_management')
