@@ -10,6 +10,7 @@ from pathlib import Path
 
 from langchain.chains import create_history_aware_retriever, create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
+from langchain.docstore.document import Document
 from langsmith import traceable
 
 from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
@@ -71,17 +72,18 @@ class QAAgent:
             self.rag_chain = StatefulWorkflow.to_stateful_workflow(self.rag_chain)
 
         else:
-            combine_docs_chain = create_stuff_documents_chain(
+            # chain to answer questions with the ground truth context
+            self.oracle_chain = create_stuff_documents_chain(
                 inference_engine,
                 prompt_builder.get_qa_prompt(),
                 output_parser=CustomResponseParser()
             )
-
+            
+            # chain to answer questions with the retrieved documents
             self.rag_chain = create_retrieval_chain(
                 retriever,
-                combine_docs_chain
+                self.oracle_chain
             )
-
     # --------------------------------------------------------------------------------
     @traceable
     def ask(self, question: str, session_id: str = None) -> str:
@@ -109,6 +111,12 @@ class QAAgent:
         self.logger.info(" > Answer: %s", output["answer"])
 
         return output
+
+    def ask_with_custom_context(self, question: str, context: list[Document]) -> str:
+        if self.use_chat_history:
+            self.logger.warning("This method is not supported when using chat history.")
+            return None
+        return self.oracle_chain.invoke({"input" : question, "context" : context})
 
     def get_chat_history(self, session_id: str, pretty_print=True):
         chat_history = self.rag_chain.get_state({"configurable": {"thread_id": session_id}}).values["chat_history"]

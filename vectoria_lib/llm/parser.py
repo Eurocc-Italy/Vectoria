@@ -13,7 +13,7 @@ logger = logging.getLogger("llm")
 class CustomResponseParser(BaseOutputParser):
     
     def filter_prefix(self, text: str):
-        start_keywords = ["RISPOSTA:"]
+        start_keywords = ["RISPOSTA:", "ANSWER:"]
         for keyword in start_keywords:
             if keyword in text:
                 logger.debug("Filter prefix match '%s'!", keyword)
@@ -34,5 +34,5 @@ class CustomResponseParser(BaseOutputParser):
         return text
 
     def parse(self, text: str) -> str:
-        logger.debug("CustomResponseParser: parsing:%s", text)
+        #logger.debug("CustomResponseParser: parsing:%s", text)
         return self.filter_postfix(self.filter_prefix(text))
