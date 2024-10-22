@@ -36,7 +36,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             load_in_8bit = self.args["load_in_8bit"],
-            #device_map="auto",
+            device_map="auto",
             trust_remote_code = self.args["trust_remote_code"],
             #load_in_4bit = True,
         )

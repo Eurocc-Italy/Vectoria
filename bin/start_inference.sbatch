@@ -50,9 +50,10 @@ FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__
 K=5
 TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/led_question_answer.json
 OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
+CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
-python vectoria inference --faiss-index-path $FAISS_INDEX_PATH --k $K --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --k $K --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
 echo "END"
 
 # Interactive node

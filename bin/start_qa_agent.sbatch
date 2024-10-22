@@ -30,7 +30,8 @@ echo "Environment loaded..."
 K=5
 FAISS_INDEX=/leonardo_work/PhDLR_prod/vectoria/eurocc_prod/test/index/BAAI__bge-m3_faiss_index.pkl
 QUERY="Which are the energy and policy considerations for deep learning in NLP?"
+CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
-python vectoria ask_question --faiss_index $FAISS_INDEX --k $K --query "$QUERY"
+python vectoria --config $CONFIG_FILE_PATH ask_question --faiss_index $FAISS_INDEX --k $K --query "$QUERY"
 echo "END"

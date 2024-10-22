@@ -31,7 +31,8 @@ echo "Environment loaded..."
 INPUT_DOCS_DIR=/leonardo/home/userinternal/aproia00/leo_docs # new documents
 OUTPUT_INDEX_DIR=/leonardo_work/PhDLR_prod/vectoria/test/index
 OUTPUT_SUFFIX=_leo_docs
+CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
-python vectoria build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
+python vectoria --config $CONFIG_FILE_PATH build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
 echo "END"

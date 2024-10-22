@@ -18,7 +18,7 @@ import sys
 import argparse
 
 from vectoria_lib.common.paths import ETC_DIR
-from vectoria_lib.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
+from vectoria_lib.common.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
 from vectoria_lib.common.config import Config
 
 """

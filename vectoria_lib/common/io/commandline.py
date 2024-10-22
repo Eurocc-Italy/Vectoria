@@ -8,7 +8,7 @@ import logging
 import argparse
 import sys
 from vectoria_lib.common import utils
-from vectoria_lib.io import file_reader
+from vectoria_lib.common.io import file_reader
 from pathlib import Path
 
 ####--------------------------------------------------------------------------------------------------------------

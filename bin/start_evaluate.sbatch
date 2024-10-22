@@ -29,9 +29,10 @@ echo "Environment loaded..."
 
 TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/led_question_answer_with_answers_and_contexts.json
 OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
+CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
-python vectoria evaluate --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+python vectoria --config $CONFIG_FILE_PATH evaluate --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
 echo "END"
 
 # Interactive node
