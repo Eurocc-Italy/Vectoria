@@ -5,7 +5,7 @@ output
 **/*/.ipynb_checkpoints
 
 **/*.pkl
-
+.idea
 vectoria_logs/
 log/
 *-env/
@@ -17,3 +17,5 @@ clean
 *_key.txt
 
 results/
+
+push_to_origin_gh.sh
