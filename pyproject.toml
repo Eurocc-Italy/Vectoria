@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "eurocc_prod"
+name = "vectoria_lib"
 version = "0.0.1"
 description = ""
 readme = "README.md"
@@ -33,29 +33,48 @@ dependencies = [
     "pandas",
     "langchain",
     "langchain-huggingface",
+    "langchain-community",
+    "langchain-ollama",
+    "langchain-openai",
+    "langsmith",
+    "langgraph",
     "pypdf",
+    "python-docx",
     "tqdm"
 ]
+
 [project.optional-dependencies]
+evaluation = [
+    "ragas==0.2.1",
+    "nltk",
+    "rouge_score",
+    "matplotlib"
+]
 dev = [
-    "jupyterlab"
+    "jupyterlab",
+    "ipykernel",
+    "grandalf"
 ]
 test = [
-    "pytest==8.2.0",
-    "IPython==8.12.3"
+    "pytest",
+    "IPython",
 ]
-experiments = [
-    "pdfminer.six",
-    "langchain_openai",
-    "ragas",
+ui = [
     "streamlit",
     "plotly",
     "GPUtil"
 ]
+engines = [
+    "vllm",
+    "ollama"
+]
 
 [project.urls]
-"Repository" = "https://gitlab.hpc.cineca.it/aproia00/llm_eucc"
+"Repository" = "https://gitlab.hpc.cineca.it/aproia00/vectoria"
 "Issues" = "https://gitlab.hpc.cineca.it/aproia00/issues"
 
 [tool.pytest.ini_options]
 addopts = "-v --pdbcls=IPython.terminal.debugger:TerminalPdb"
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+] 
