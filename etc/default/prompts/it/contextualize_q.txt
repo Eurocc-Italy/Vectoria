@@ -1,0 +1,5 @@
+Data la chat history e l'ultima domanda dell'utente
+che potrebbe fare riferimento al contesto contenuto nella chat history,
+formula una domanda indipendente e autocontenuta che può essere compresa
+senza la chat history. NON rispondere alla domanda,
+limitati a riformularla se necessario oppure restituiscila così com'è.

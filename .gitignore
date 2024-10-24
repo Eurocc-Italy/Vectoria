@@ -5,6 +5,20 @@ output
 **/*/.ipynb_checkpoints
 
 **/*.pkl
-
+.idea
 vectoria_logs/
 log/
+*-env/
+led_use_case
+
+*.err
+*.out
+clean
+*_key.txt
+
+results/
+
+push_to_origin_gh.sh
+
+!test/data/index/BAAI__bge-m3_faiss_index_airxv_papers.pkl
+!test/data/index/BAAI__bge-m3_faiss_index_the_matrix.pkl
