@@ -11,6 +11,7 @@ from vectoria_lib.db_management.preprocessing.extraction_docx import (
     _to_document_objects
 )
 from vectoria_lib.common.paths import TEST_DIR
+from vectoria_lib.common.config import Config
 
 def test_extract_flat_structure_from_googledocs():
     """
@@ -87,23 +88,36 @@ def test_filter_unstructured_data():
     assert isinstance(unstructured_data, Document)
 
 def test_extract_text_from_docx_file():
-
-    def metadata_extractor(doc: Document) -> dict:
-        return {
-            "number_of_breaks": doc.page_content.count("\n")
-        }
+    config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
 
     docs: list[Document] = extract_text_from_docx_file(
         TEST_DIR / "data/docx/docx_from_word.docx",
         filter_paragraphs=[],
-        log_in_folder="/tmp/test_extract_text_from_docx_file",
-        unstructured_data_parser = metadata_extractor
+        dump_doc_structure_on_file=True,
+        regexes_for_metadata_extraction = [{
+            "metadata_name": "first_symbol",
+            "regex_pattern": r"^[A-Za-z]",
+            "regex_function": "search"
+        }]
     )
 
     assert isinstance(docs, list)
     assert isinstance(docs[0], Document)
     assert len(docs) == 15
 
-    assert Path("/tmp/test_extract_text_from_docx_file/docx_from_word_structure.txt").exists()
+    assert Path(config.get("vectoria_logs_dir") / "docs_structure" / "docx_from_word_structure.txt").exists()
 
-    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "number_of_breaks"])
+    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "first_symbol"])
+    assert docs[0].metadata["first_symbol"] == "D"
+
+    """
+    id = re.search(r"IDENTIFICATIVO\s*:\s*(.*)", text).group(1).strip()
+
+    date = re.search(r"DATA\s*:\s*(.*)", text).group(1).strip()
+    
+    doc_type = re.search(r"TIPO DOCUMENTO\s*:\s*(.*)", text).group(1).strip()
+    
+    app = re.search(r"APPLICAZIONE\s*:\s*(.*)", text).group(1).strip()
+    summary = re.search(r"SOMMARIO\s*:\s*(.*(?:\n.*)*)", text).group(1).strip()
+    """

@@ -3,22 +3,36 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-
+import re
 import logging
 from pathlib import Path
-from typing import Callable
 import docx
 from langchain.docstore.document import Document
-
-from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
+from vectoria_lib.common.config import Config
+from re import search, sub, match, fullmatch
 
 logger = logging.getLogger('db_management')
-    
+config = Config()
+
+def _apply_regex(text: str, regex: str, regex_function: str) -> str:
+    compiled_regex = re.compile(regex)
+    result = globals()[regex_function](compiled_regex, text) # TODO: not very generic
+    if result:
+        return result.group(0).strip() # TODO: not very generic
+    raise ValueError(f"No match found for regex {regex} in text")
+
+def _extract_metadata_from_unstructured_data(unstructured_data: list[Document], regexes: list[dict]) -> dict:
+    raw_text = "".join([doc.page_content for doc in unstructured_data])
+    metadata = {}
+    for regex in regexes:
+        metadata[regex["metadata_name"]] = _apply_regex(raw_text, regex["regex_pattern"], regex["regex_function"])
+    return metadata
+
 def extract_text_from_docx_file(
         file_path: Path,
-        filter_paragraphs: list,
-        log_in_folder: Path = None,
-        unstructured_data_parser: Callable = None
+        filter_paragraphs: list = [], # TODO: implement this feature
+        dump_doc_structure_on_file: bool = False,
+        regexes_for_metadata_extraction: list[dict] = []
 ) -> list[Document]:
     """
     Extracts text from a DOCX file. 
@@ -45,11 +59,14 @@ def extract_text_from_docx_file(
     document_flat_structure = _to_document_objects(document_flat_structure)
 
     document_flat_structure, paragraphs_numbers, unstructured_data = _filter_unstructured_data(document_flat_structure, paragraphs_numbers)
-    metadata_from_unstructured_data = {}
-    if unstructured_data_parser is not None:
-        logger.debug("Parsing unstructured data")
-        metadata_from_unstructured_data = unstructured_data_parser(unstructured_data)
 
+
+    metadata_from_unstructured_data = _extract_metadata_from_unstructured_data(
+        unstructured_data,
+        regexes_for_metadata_extraction
+    )
+    
+    # TODO: add paragraph name for each chunk that belongs to the same paragraph
     _add_metadata(
         document_flat_structure,
         paragraphs_numbers,
@@ -59,7 +76,8 @@ def extract_text_from_docx_file(
 
     logger.debug("Extracted %d documents from %s", len(document_flat_structure), file_path.stem)
 
-    _log_document_structure_on_file(document_flat_structure, log_in_folder, file_path.stem) 
+    if dump_doc_structure_on_file:
+        _log_document_structure_on_file(document_flat_structure, config.get("vectoria_logs_dir") / "docs_structure", file_path.stem) 
     
     return document_flat_structure
 
@@ -138,17 +156,17 @@ def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]
         for element in document_flat_structure
     ]
 
-def _filter_unstructured_data(docs: list[Document], paragraphs_numbers: list[str]) -> Document:
+def _filter_unstructured_data(docs: list[Document], paragraphs_numbers: list[str]):
     """
     Everything Document objects that do not have a paragraph number are considered unstructured data
     and they are removed from the list.
     The unstructured data is returned as a Document object.
     """
-    unstructured_data = Document(page_content="", metatada={})
+    unstructured_data = []
     docs_to_keep = []
     for doc, number in zip(docs, paragraphs_numbers):
         if number == "":
-            unstructured_data.page_content += str(doc.page_content)+"\n"
+            unstructured_data.append(Document(page_content=str(doc.page_content), metadata={}))
         else:
             docs_to_keep.append(doc)
     paragraphs_numbers_to_keep = [number for number in paragraphs_numbers if number != ""]
@@ -173,18 +191,17 @@ def _log_document_structure_on_file(
         log_in_folder: Path, 
         output_file_prefix: str
 ) -> None:
-    if log_in_folder is not None:
-        Path(log_in_folder).mkdir(parents=True, exist_ok=True)
-        file_path = Path(log_in_folder) / f"{output_file_prefix}_structure.txt"
-        with open(file_path, "w", encoding="utf-8") as f:
-            # Print the document structure, including where tables are located
-            for doc in docs:
-                if doc.metadata["layout_tag"].startswith("Heading"):
-                    print(f"{doc.metadata['paragraph_number']}   {doc.metadata['layout_tag']}: {doc.page_content}", file=f)
-                elif doc.metadata["layout_tag"] == "Paragraph":
-                    print(f"{doc.metadata['paragraph_number']}   Paragraph: {doc.page_content}", file=f)
-                elif doc.metadata["layout_tag"] == "Table":
-                    print(f"{doc.metadata['paragraph_number']}   Table under Heading: {doc.page_content}", file=f)
+    Path(log_in_folder).mkdir(parents=True, exist_ok=True)
+    file_path = Path(log_in_folder) / f"{output_file_prefix}_structure.txt"
+    with open(file_path, "w", encoding="utf-8") as f:
+        # Print the document structure, including where tables are located
+        for doc in docs:
+            if doc.metadata["layout_tag"].startswith("Heading"):
+                print(f"{doc.metadata['paragraph_number']}   {doc.metadata['layout_tag']}: {doc.page_content}", file=f)
+            elif doc.metadata["layout_tag"] == "Paragraph":
+                print(f"{doc.metadata['paragraph_number']}   Paragraph: {doc.page_content}", file=f)
+            elif doc.metadata["layout_tag"] == "Table":
+                print(f"{doc.metadata['paragraph_number']}   Table under Heading: {doc.page_content}", file=f)
 
 def _get_heading_level(paragraph): 
     # A helper function to determine the level of a heading based on style
@@ -200,10 +217,19 @@ def _check_table_empty(table):
                 return False
     return True
 
+# def _extract_table_data(table, doc):
+#     table = docx.table.Table(table, doc)
+#     table_data = []
+#     for row in table.rows:
+#         row_data = [cell.text for cell in row.cells]
+#         table_data.append(row_data)
+#     return table_data
+
+# TODO: verificare che l'LLM capisca la tabella in questo formato (senza "[ [], [] ]")
 def _extract_table_data(table, doc):
     table = docx.table.Table(table, doc)
-    table_data = []
+    table_data = ""
     for row in table.rows:
-        row_data = [cell.text for cell in row.cells]
-        table_data.append(row_data)
+        row_data = "".join([f"{cell.text} " for cell in row.cells])
+        table_data += "\n" + row_data
     return table_data
