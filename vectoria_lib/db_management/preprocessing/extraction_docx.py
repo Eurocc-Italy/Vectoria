@@ -6,7 +6,7 @@
 
 import logging
 from pathlib import Path
-
+from typing import Callable
 import docx
 from langchain.docstore.document import Document
 
@@ -14,57 +14,113 @@ from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
 logger = logging.getLogger('db_management')
     
-def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in_folder: Path = None) -> list[Document]:
+def extract_text_from_docx_file(
+        file_path: Path,
+        filter_paragraphs: list,
+        log_in_folder: Path = None,
+        unstructured_data_parser: Callable = None
+) -> list[Document]:
     """
-    Extracts text from a DOCX file and returns a list of Document objects.
+    Extracts text from a DOCX file. 
+    The extraction process relies on the tags: "heading", "paragraph", and "table".
+    Anything that is not a heading, paragraph, or table is considered unstructured data.
 
-    Each Document object contains the page content and metadata.
-    The metadata must include the keys: name, level, and id.
+    You can pass a unstrucured data parser to the function, which will be used to parse the unstructured data.
+    The unstructured data parser will extract metadata from the unstructured data. 
+    
+    The metadata will be added to the Document objects.
+    Returns a list of Document objects, containing page content and metadata.
     """
     logger.debug("Extracting text from %s", file_path.stem)
 
     print(file_path)
+
+    metadata = {
+        "source": file_path.name
+    }
     document = docx.Document(file_path)
 
     document_flat_structure = _extract_flat_structure(document)
+    paragraphs_numbers      = _recover_paragraphs_numbers(document_flat_structure)
+    document_flat_structure = _to_document_objects(document_flat_structure)
 
-    if log_in_folder is not None:
-        Path(log_in_folder).mkdir(parents=True, exist_ok=True)  
-        _log_document_structure_on_file(document_flat_structure, Path(log_in_folder) / f"{file_path.stem}_structure.txt")    
+    unstructured_data = _filter_unstructured_data(document_flat_structure, paragraphs_numbers)
+    if unstructured_data_parser is not None:
+        logger.debug("Parsing unstructured data")
+        metadata.update(unstructured_data_parser(unstructured_data))
     
-    # TODO: what to do with unstructured_data? Maybe extract the procedure ID
-    structured_data, unstructured_data = _extract_text_structure(document_flat_structure) 
+    _add_metadata(document_flat_structure, paragraphs_numbers, metadata)
 
-    structured_data = _get_flat_docs_list(structured_data)
+    logger.debug("Extracted %d documents from %s", len(document_flat_structure), file_path.stem)
 
-    logger.debug("Extracted %d documents from %s", len(structured_data), file_path.stem)
-    for doc in structured_data:
-        doc.metadata["source"] = file_path.stem
+    _log_document_structure_on_file(document_flat_structure, log_in_folder, file_path.stem) 
+    
+    return document_flat_structure
 
-    return structured_data
+def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]:
+    return [
+        Document(
+            page_content=str(element[1]), 
+            metadata={"type": element[0]}
+        ) 
+        for element in document_flat_structure
+    ]
 
-def _log_document_structure_on_file(structure, file_path: Path):
-    with open(file_path, "w", encoding="utf-8") as f:
-        # Print the document structure, including where tables are located
-        for element in structure:
-            if element[0].startswith("Heading"):
-                print(f"{element[0]}: {element[1]}", file=f)
-            elif element[0] == "Paragraph":
-                print(f"   Paragraph: {element[1]}", file=f)
-            elif element[0] == "Table":
-                print(f"   Table under Heading: {element[2]}", file=f)
-                for row in element[1]:
-                    print(f"      {row}", file=f)
+def _add_metadata(
+        document_flat_structure: list[Document],
+        paragraphs_numbers: list[str],
+        metadata: dict
+) -> None:
+    for doc, number in zip(document_flat_structure, paragraphs_numbers):
+        doc.metadata["source"] = metadata["source"]
+        doc.metadata["number"] = number
 
-def _extract_flat_structure(doc):
+def _filter_unstructured_data(docs: list[Document], paragraphs_numbers: list[str]) -> Document:
+    """
+    Everything Document objects that do not have a paragraph number are considered unstructured data
+    and they are removed from the list.
+    The unstructured data is returned as a Document object.
+    """
+    c = 0
+    unstructured_data = Document(page_content="", metadata={"type": "unstructured"})
+    for doc, number in zip(docs, paragraphs_numbers):
+        if number == "":
+            unstructured_data.page_content += str(doc.page_content)
+            c += 1
+            docs.remove(doc)
+    logger.debug("Found %d unstructured data", c)
 
+    return unstructured_data
+
+def _log_document_structure_on_file(docs: list[Document], log_in_folder: Path, output_file_prefix: str):
+    if log_in_folder is not None:
+        Path(log_in_folder).mkdir(parents=True, exist_ok=True)
+        file_path = Path(log_in_folder) / f"{output_file_prefix}_structure.txt"
+        with open(file_path, "w", encoding="utf-8") as f:
+            # Print the document structure, including where tables are located
+            for doc in docs:
+                if doc.metadata["type"].startswith("Heading"):
+                    print(f"{doc.metadata['number']}   {doc.metadata['type']}: {doc.page_content}", file=f)
+                elif doc.metadata["type"] == "Paragraph":
+                    print(f"{doc.metadata['number']}   Paragraph: {doc.page_content}", file=f)
+                elif doc.metadata["type"] == "Table":
+                    print(f"{doc.metadata['number']}   Table under Heading: {doc.page_content}", file=f)
+
+def _extract_flat_structure(doc: str) -> list[tuple]:
+    """
+    Extracts the flat structure of the document.
+    """
     current_heading = None  # Track the current heading
     structure = []  # Store content structure
 
     for element in doc.element.body:
+        #print(element.tag, element.text)
+        
         if element.tag.endswith('p'):  # It's a paragraph
             paragraph = docx.text.paragraph.Paragraph(element, doc)
+    
             heading_level = _get_heading_level(paragraph)
+            
             if heading_level:
                 current_heading = paragraph.text  # Update current heading
                 structure.append((f"Heading {heading_level}", paragraph.text))
@@ -79,13 +135,47 @@ def _extract_flat_structure(doc):
 
     return structure
 
+def _recover_paragraphs_numbers(flat_structure: list[tuple]) -> list[str]:
+    heading_levels = []
 
-def _get_heading_level(paragraph):
+    # To store the result
+    result = []
+
+    for element in flat_structure:
+        element_type = element[0]
+
+        if element_type.startswith("Heading"):
+            # Extract the level of heading (e.g., 'Heading 2' -> level 2)
+            level = int(element_type.split()[1])
+
+            # Ensure the heading_levels list has the correct size
+            while len(heading_levels) < level:
+                heading_levels.append(0)
+            
+            # Increment the correct level, reset lower levels if needed
+            heading_levels[level - 1] += 1
+            heading_levels = heading_levels[:level]
+
+            # Generate the heading number string
+            heading_number = ".".join(map(str, heading_levels))
+            result.append(heading_number)
+        
+        elif element_type == 'Paragraph' or element_type == 'Table':
+            # Paragraphs or tables inherit the current heading numbering
+            current_number = ".".join(map(str, heading_levels))
+            result.append(current_number)
+        
+        else:
+            # For any other types like 'Table', process as needed
+            result.append(".".join(map(str, heading_levels)))
+
+    return result
+
+def _get_heading_level(paragraph): 
     # A helper function to determine the level of a heading based on style
     if paragraph.style.name.startswith("Heading"):
         return int(paragraph.style.name.split()[-1])  # Extract heading level number
     return None  # Not a heading
-
 
 def _check_table_empty(table):
     # Check if a table is empty
@@ -95,7 +185,6 @@ def _check_table_empty(table):
                 return False
     return True
 
-
 def _extract_table_data(table, doc):
     table = docx.table.Table(table, doc)
     table_data = []
@@ -104,10 +193,7 @@ def _extract_table_data(table, doc):
         table_data.append(row_data)
     return table_data
     
-
-
-
-def _extract_text_structure(document_flat_structure):
+def _extract_text_structure(document_flat_structure: list[tuple], paragraphs_numbers: list[tuple]):
     """
     ######## From:
 
@@ -183,7 +269,7 @@ def _extract_text_structure(document_flat_structure):
     current_level = None
     current_id = 0
     
-    for item in document_flat_structure:
+    for paragraph_number, item in zip(paragraphs_numbers, document_flat_structure):
 
         # Check if the item is a heading (e.g., 'Heading 1', 'Heading 2', etc.)
         if item[0].startswith('Heading'):
@@ -193,6 +279,7 @@ def _extract_text_structure(document_flat_structure):
             current_id = 0
             heading_dict = {
                 "name": item[1],
+                "number": paragraph_number,
                 "doc": None,
                 "childs": []
             }
@@ -225,7 +312,6 @@ def _extract_text_structure(document_flat_structure):
                             
 
     return structured_data, unstructured_data
-
 
 def _get_flat_docs_list(structured_data) -> list[Document]:
     # recursively extract all the Document objects from the children of structured_data
