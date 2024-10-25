@@ -1,8 +1,15 @@
+import re
 import pytest
 from pathlib import Path
 from langchain.docstore.document import Document
 import docx
-from vectoria_lib.db_management.preprocessing.extraction_docx import extract_text_from_docx_file, _extract_flat_structure, _recover_paragraphs_numbers
+from vectoria_lib.db_management.preprocessing.extraction_docx import (
+    extract_text_from_docx_file,
+    _extract_flat_structure,
+    _recover_paragraphs_numbers,
+    _filter_unstructured_data,
+    _to_document_objects
+)
 from vectoria_lib.common.paths import TEST_DIR
 
 def test_extract_flat_structure_from_googledocs():
@@ -35,14 +42,6 @@ def test_extract_flat_structure_from_googledocs():
         ('Heading 4', 'Heading 4')
     ]
 
-def test_recover_paragraphs_numbers():
-    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
-    flat_structure = _extract_flat_structure(document)
-    paragraphs_numbers = _recover_paragraphs_numbers(flat_structure)
-    assert paragraphs_numbers == [
-        '', '', '1', '1', '1.1', '1.1', '1.1.1', '1.1.1', '1.1.1.1', '1.1.1.1', '1.1.1.1.1', '1.1.1.1.1', '2', '2', '2', '2.1', '2.1'
-    ]
-
 def test_extract_flat_structure_from_word():
     """
     Word docx file supports the tbl tag.
@@ -50,38 +49,63 @@ def test_extract_flat_structure_from_word():
     document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
     flat_structure = _extract_flat_structure(document)
     assert flat_structure == [
-        ('Paragraph', 'Document Title'), 
-        ('Paragraph', 'Here’s a summary:'), 
-        ('Heading 1', 'Title 1'), 
+        ('Paragraph', 'Document Title'),
+        ('Paragraph', 'Here’s a summary:'),
+        ('Heading 1', 'Title 1'),
         ('Paragraph', 'Content of title 1: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'), 
-        ('Heading 2', 'Title 2'), 
+        ('Heading 2', 'Title 2'),
         ('Paragraph', 'Content of title 2: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'), 
-        ('Heading 3', 'Title 3'), 
+        ('Heading 3', 'Title 3'),
         ('Paragraph', 'Content of title 3: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'), 
-        ('Heading 4', 'Title 4'), 
+        ('Heading 4', 'Title 4'),
         ('Paragraph', 'Content of title 4: Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'), 
-        ('Heading 5', 'Title 5'), 
-        ('Paragraph', 'Content of title 5: pefffforza!'), 
-        ('Heading 1', 'Another title 1'), 
-        ('Paragraph', 'Here’s a table:'), 
+        ('Heading 5', 'Title 5'),
+        ('Paragraph', 'Content of title 5: pefffforza!'),
+        ('Heading 1', 'Another title 1'),
+        ('Paragraph', 'Here’s a table:'),
         ('Table', [['Row1 Col1', 'Row1 Col2'], ['Row2 Col1', 'Row2 Col2']], 'Another title 1'), 
-        ('Heading 2', 'Another title 2'), 
+        ('Heading 2', 'Another title 2'),
         ('Paragraph', 'Here’s an image:')
     ]
 
+def test_recover_paragraphs_numbers():
+    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
+    flat_structure = _extract_flat_structure(document)
+    paragraphs_numbers = _recover_paragraphs_numbers(flat_structure)
+    assert paragraphs_numbers == [
+        '', '', '1', '1', '1.1', '1.1', '1.1.1', '1.1.1', '1.1.1.1', '1.1.1.1', '1.1.1.1.1', '1.1.1.1.1', '2', '2', '2', '2.1', '2.1'
+    ]
+    
+def test_filter_unstructured_data():
+    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
+    flat_structure = _extract_flat_structure(document)
+    paragraphs_numbers = _recover_paragraphs_numbers(flat_structure)
+    docs = _to_document_objects(flat_structure)
+    docs_to_keep, paragraphs_numbers_to_keep, unstructured_data = _filter_unstructured_data(docs, paragraphs_numbers)
+    assert len(docs_to_keep) == 15
+    assert len(paragraphs_numbers_to_keep) == 15
+    assert isinstance(unstructured_data, Document)
 
 def test_extract_text_from_docx_file():
-    doc: list[Document] = extract_text_from_docx_file(
-        TEST_DIR / "data/docx/docx_from_word.docx", 
+
+    def metadata_extractor(doc: Document) -> dict:
+        return {
+            "number_of_breaks": doc.page_content.count("\n")
+        }
+
+    docs: list[Document] = extract_text_from_docx_file(
+        TEST_DIR / "data/docx/docx_from_word.docx",
         filter_paragraphs=[],
         log_in_folder="/tmp/test_extract_text_from_docx_file",
-        unstructured_data_parser = None
+        unstructured_data_parser = metadata_extractor
     )
 
-    assert isinstance(doc, list)
-    assert isinstance(doc[0], Document)
-    #assert len(doc) == 7
-    assert doc[0].metadata is not None
+    assert isinstance(docs, list)
+    assert isinstance(docs[0], Document)
+    assert len(docs) == 15
+    
     assert Path("/tmp/test_extract_text_from_docx_file/docx_from_word_structure.txt").exists()
-    print("\n-----------",doc)
+    
+    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "number_of_breaks"])
 
+    
