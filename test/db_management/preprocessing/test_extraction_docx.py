@@ -103,9 +103,7 @@ def test_extract_text_from_docx_file():
     assert isinstance(docs, list)
     assert isinstance(docs[0], Document)
     assert len(docs) == 15
-    
-    assert Path("/tmp/test_extract_text_from_docx_file/docx_from_word_structure.txt").exists()
-    
-    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "number_of_breaks"])
 
-    
+    assert Path("/tmp/test_extract_text_from_docx_file/docx_from_word_structure.txt").exists()
+
+    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "number_of_breaks"])

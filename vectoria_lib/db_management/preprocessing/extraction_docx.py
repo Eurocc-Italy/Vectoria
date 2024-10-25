@@ -54,7 +54,7 @@ def extract_text_from_docx_file(
         document_flat_structure,
         paragraphs_numbers,
         metadata_from_unstructured_data,
-        file_path.stem
+        file_path.name
     )
 
     logger.debug("Extracted %d documents from %s", len(document_flat_structure), file_path.stem)
