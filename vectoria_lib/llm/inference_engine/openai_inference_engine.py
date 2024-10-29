@@ -13,9 +13,9 @@ class OpenAIInferenceEngine(InferenceEngineBase):
     # TODO: OpenAI or ChatOpenAI?
     def as_langchain_llm(self) -> BaseLanguageModel:
         return OpenAI(
-            #temperature=self.args("temperature"),
             #max_retries=self.args("max_retries"),
             model = self.args["model_name"],
             base_url = self.args["url"],
-            api_key = self.args["api_key"]
+            api_key = self.args["api_key"],
+            temperature=self.args["temperature"]
         )

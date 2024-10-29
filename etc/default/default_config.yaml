@@ -59,6 +59,7 @@ inference_engine:
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto
+  temperature: 0.1
 
 evaluation_tool: ragas
 evaluation_engine:
