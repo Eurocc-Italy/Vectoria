@@ -56,10 +56,10 @@ import torch
 )
 def test_qa_agent_engines(inference_config):
     config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("chat_history", False)
     config.set("retriever_top_k", 1)
     config.set("inference_engine", inference_config)
+
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_the_matrix.pkl",
     )
@@ -169,7 +169,7 @@ def test_qa_agent_with_custom_context():
     config.set("chat_history", False)
 
     agent = AgentBuilder.build_qa_agent(
-        faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_airxv_papers.pkl"
+        faiss_index_path=None
     )
     context = [
         Document("Deep learning in Natural Language Processing (NLP) is resource-intensive, and the energy and policy considerations are becoming increasingly important as models grow in size and complexity."),

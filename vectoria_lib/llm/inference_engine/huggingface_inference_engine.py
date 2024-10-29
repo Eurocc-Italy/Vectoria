@@ -39,7 +39,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             self.args["device"] = None
 
         start_time = time.perf_counter()
-
+        
         # TODO: device_map="auto" will not deallocate memory between tests
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],

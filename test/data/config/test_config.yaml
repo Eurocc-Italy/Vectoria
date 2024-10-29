@@ -9,7 +9,7 @@ pp_steps:
   - name: extract_text_from_docx_file
     filter_paragraphs: null
     dump_doc_structure_on_file: true
-    regexes_for_metadata_extraction: null
+    regexes_for_metadata_extraction: []
 
   - name: remove_header
     regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
@@ -57,7 +57,7 @@ inference_engine:
   load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: false
-  device_map: auto
+  device_map: null
   temperature: 0.1
 
 evaluation_tool: ragas

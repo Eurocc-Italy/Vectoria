@@ -51,15 +51,13 @@ def recursive_character_text_splitter(
         chunk.page_content = chunk.page_content
 
     if dump_chunks_on_file:
-        # delete each character in the filename that is not a letter 
-        doc_metadata_str = ''.join(char for char in doc.metadata["doc_file_name"] if char.isalpha())
-        output_name = f'doc_{doc_metadata_str.lower()}'
-        _log_chunks_on_file(chunks, Path(config.get("vectoria_logs_dir") / "chunks" / f"{output_name}_chunk.txt")) 
+        output_name = f'{doc.metadata["doc_file_name"]}_{doc.metadata["paragraph_number"]}'
+        _log_chunks_on_file(chunks, Path(config.get("vectoria_logs_dir") / "chunks" / f"{output_name}_chunks.txt")) 
 
     return chunks
 
 def _log_chunks_on_file(documents, file_path: Path):
     Path(file_path.parent).mkdir(parents=True, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as f:
-        for doc in documents:
+        for doc in enumerate(documents):
             print(doc, file=f)

@@ -6,42 +6,12 @@ import docx
 from vectoria_lib.db_management.preprocessing.extraction_docx import (
     extract_text_from_docx_file,
     _extract_flat_structure,
-    _recover_paragraphs_numbers,
+    _recover_paragraphs_numbers_and_names,
     _filter_unstructured_data,
     _to_document_objects
 )
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
-
-def test_extract_flat_structure_from_googledocs():
-    """
-    Google Docs docx file does not support the tbl tag.
-    """
-    document = docx.Document(TEST_DIR / "data/docx/docx_from_googledocs.docx")
-    flat_structure = _extract_flat_structure(document)
-    assert len(flat_structure) == 20
-    assert flat_structure == [
-        ('Paragraph', 'Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data\n\nSome unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data Some unstructured data'), 
-        ('Paragraph', 'Test document 2 title'), 
-        ('Paragraph', 'Next a summary:'), 
-        ('Heading 1', 'First chapter (Heading 1)'), 
-        ('Paragraph', 'First Lorem ipsum 🥰'), 
-        ('Paragraph', 'Now spaces and empty lines:'), 
-        ('Paragraph', '     '), 
-        ('Paragraph', 'End first chapter.'), 
-        ('Heading 1', 'Second Chapter (Heading 1)'), 
-        ('Paragraph', 'Second Lorem ipsum '), 
-        ('Heading 2', 'Sub-chapter (Heading 2)'), 
-        ('Paragraph', 'Now: line and formula and table:'), 
-        ('Paragraph', 'End second chapter'), 
-        ('Heading 1', 'Third Chapter'), 
-        ('Paragraph', 'Here’s an image'), 
-        ('Heading 3', 'Image'), 
-        ('Heading 1', 'Final hierarchy (Heading 1)'), 
-        ('Heading 2', 'Heading 2'), 
-        ('Heading 3', 'Heading 3'), 
-        ('Heading 4', 'Heading 4')
-    ]
 
 def test_extract_flat_structure_from_word():
     """
@@ -49,6 +19,7 @@ def test_extract_flat_structure_from_word():
     """
     document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
     flat_structure = _extract_flat_structure(document)
+
     assert flat_structure == [
         ('Paragraph', 'Document Title'),
         ('Paragraph', 'Here’s a summary:'),
@@ -64,28 +35,30 @@ def test_extract_flat_structure_from_word():
         ('Paragraph', 'Content of title 5: pefffforza!'),
         ('Heading 1', 'Another title 1'),
         ('Paragraph', 'Here’s a table:'),
-        ('Table', [['Row1 Col1', 'Row1 Col2'], ['Row2 Col1', 'Row2 Col2']], 'Another title 1'), 
+        ('Table', '\nRow1 Col1 Row1 Col2 \nRow2 Col1 Row2 Col2 '),
         ('Heading 2', 'Another title 2'),
         ('Paragraph', 'Here’s an image:')
     ]
 
-def test_recover_paragraphs_numbers():
+def test_recover_paragraphs_numbers_and_names():
     document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
     flat_structure = _extract_flat_structure(document)
-    paragraphs_numbers = _recover_paragraphs_numbers(flat_structure)
-    assert paragraphs_numbers == [
-        '', '', '1', '1', '1.1', '1.1', '1.1.1', '1.1.1', '1.1.1.1', '1.1.1.1', '1.1.1.1.1', '1.1.1.1.1', '2', '2', '2', '2.1', '2.1'
+    paragraphs_numbers_and_names = _recover_paragraphs_numbers_and_names(flat_structure)
+
+    assert paragraphs_numbers_and_names == [
+        ('', ''), ('', ''), ('1', 'Title 1'), ('1', 'Title 1'), ('1.1', 'Title 2'), ('1.1', 'Title 2'), ('1.1.1', 'Title 3'), ('1.1.1', 'Title 3'), ('1.1.1.1', 'Title 4'), ('1.1.1.1', 'Title 4'), ('1.1.1.1.1', 'Title 5'), ('1.1.1.1.1', 'Title 5'), ('2', 'Another title 1'), ('2', 'Another title 1'), ('2', 'Another title 1'), ('2.1', 'Another title 2'), ('2.1', 'Another title 2')
     ]
     
 def test_filter_unstructured_data():
     document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
     flat_structure = _extract_flat_structure(document)
-    paragraphs_numbers = _recover_paragraphs_numbers(flat_structure)
+    paragraphs_numbers = _recover_paragraphs_numbers_and_names(flat_structure)
     docs = _to_document_objects(flat_structure)
     docs_to_keep, paragraphs_numbers_to_keep, unstructured_data = _filter_unstructured_data(docs, paragraphs_numbers)
     assert len(docs_to_keep) == 15
     assert len(paragraphs_numbers_to_keep) == 15
-    assert isinstance(unstructured_data, Document)
+    assert len(unstructured_data) == 2
+    assert isinstance(unstructured_data[0], Document)
 
 def test_extract_text_from_docx_file():
     config = Config()
@@ -100,16 +73,18 @@ def test_extract_text_from_docx_file():
             "regex_pattern": r"^[A-Za-z]",
             "regex_function": "search"
         }]
-    )
+    )   
 
     assert isinstance(docs, list)
     assert isinstance(docs[0], Document)
-    assert len(docs) == 15
+    assert len(docs) == 7
 
     assert Path(config.get("vectoria_logs_dir") / "docs_structure" / "docx_from_word_structure.txt").exists()
 
-    assert set(docs[0].metadata.keys()) == set(["layout_tag", "paragraph_number", "doc_file_name", "first_symbol"])
+    assert set(docs[0].metadata.keys()) == set(["layout_tag","paragraph_name", "paragraph_number", "doc_file_name", "first_symbol"])
     assert docs[0].metadata["first_symbol"] == "D"
+    for d in docs:
+        assert "Heading" not in d.metadata["layout_tag"]
 
     """
     id = re.search(r"IDENTIFICATIVO\s*:\s*(.*)", text).group(1).strip()

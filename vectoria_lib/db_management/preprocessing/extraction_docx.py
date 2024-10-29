@@ -9,6 +9,7 @@ from pathlib import Path
 import docx
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
+# Do not remove the follwing imports (they are used by globals())
 from re import search, sub, match, fullmatch
 
 logger = logging.getLogger('db_management')
@@ -22,6 +23,7 @@ def _apply_regex(text: str, regex: str, regex_function: str) -> str:
     raise ValueError(f"No match found for regex {regex} in text")
 
 def _extract_metadata_from_unstructured_data(unstructured_data: list[Document], regexes: list[dict]) -> dict:
+    if regexes is None: regexes = []
     raw_text = "".join([doc.page_content for doc in unstructured_data])
     metadata = {}
     for regex in regexes:
@@ -55,21 +57,21 @@ def extract_text_from_docx_file(
     document = docx.Document(file_path)
 
     document_flat_structure = _extract_flat_structure(document)
-    paragraphs_numbers      = _recover_paragraphs_numbers(document_flat_structure)
+
+    paragraphs_numbers_and_names = _recover_paragraphs_numbers_and_names(document_flat_structure)
+
     document_flat_structure = _to_document_objects(document_flat_structure)
 
-    document_flat_structure, paragraphs_numbers, unstructured_data = _filter_unstructured_data(document_flat_structure, paragraphs_numbers)
-
+    document_flat_structure, paragraphs_numbers_and_names, unstructured_data = _filter_unstructured_data(document_flat_structure, paragraphs_numbers_and_names)
 
     metadata_from_unstructured_data = _extract_metadata_from_unstructured_data(
         unstructured_data,
         regexes_for_metadata_extraction
     )
     
-    # TODO: add paragraph name for each chunk that belongs to the same paragraph
     _add_metadata(
         document_flat_structure,
-        paragraphs_numbers,
+        paragraphs_numbers_and_names,
         metadata_from_unstructured_data,
         file_path.name
     )
@@ -78,9 +80,30 @@ def extract_text_from_docx_file(
 
     if dump_doc_structure_on_file:
         _log_document_structure_on_file(document_flat_structure, config.get("vectoria_logs_dir") / "docs_structure", file_path.stem) 
-    
+
+
+    document_flat_structure = _filter_headings(document_flat_structure)
+
+    document_flat_structure = _merge_paragraphs_contents(document_flat_structure)
+
     return document_flat_structure
 
+def _merge_paragraphs_contents(document_flat_structure: list[Document]):
+    merged_paragraphs = []
+    
+    paragraphs = sorted(list(set([doc.metadata["paragraph_number"] for doc in document_flat_structure])))
+
+    for p in paragraphs:
+        documents_with_same_paragraph_number = [doc for doc in document_flat_structure if doc.metadata["paragraph_number"] == p]
+
+        merged_content = "\n".join([doc.page_content for doc in documents_with_same_paragraph_number])
+
+        merged_paragraphs.append(Document(page_content=merged_content, metadata=documents_with_same_paragraph_number[0].metadata))
+
+    return merged_paragraphs
+
+def _filter_headings(document_flat_structure: list[Document]):
+    return [doc for doc in document_flat_structure if "Heading" not in doc.metadata["layout_tag"]]    
 
 def _extract_flat_structure(doc: str) -> list[tuple]:
     """
@@ -107,20 +130,23 @@ def _extract_flat_structure(doc: str) -> list[tuple]:
         elif element.tag.endswith('tbl'):  # It's a table
             table_data = _extract_table_data(element, doc)
             if not _check_table_empty(table_data):
-                structure.append(("Table", table_data, current_heading))
+                structure.append(("Table", table_data))
 
     return structure
 
-def _recover_paragraphs_numbers(flat_structure: list[tuple]) -> list[str]:
+def _recover_paragraphs_numbers_and_names(flat_structure: list[tuple]) -> list[str]:
     heading_levels = []
 
     # To store the result
     result = []
 
+    element_text = ""
     for element in flat_structure:
         element_type = element[0]
 
         if element_type.startswith("Heading"):
+            element_text = element[1]
+
             # Extract the level of heading (e.g., 'Heading 2' -> level 2)
             level = int(element_type.split()[1])
 
@@ -134,17 +160,14 @@ def _recover_paragraphs_numbers(flat_structure: list[tuple]) -> list[str]:
 
             # Generate the heading number string
             heading_number = ".".join(map(str, heading_levels))
-            result.append(heading_number)
+            result.append((heading_number, element_text))
         
         elif element_type == 'Paragraph' or element_type == 'Table':
             # Paragraphs or tables inherit the current heading numbering
             current_number = ".".join(map(str, heading_levels))
-            result.append(current_number)
-        
-        else:
-            # For any other types like 'Table', process as needed
-            result.append(".".join(map(str, heading_levels)))
+            result.append((current_number, element_text))
 
+    #breakpoint()
     return result
 
 def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]:
@@ -156,7 +179,7 @@ def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]
         for element in document_flat_structure
     ]
 
-def _filter_unstructured_data(docs: list[Document], paragraphs_numbers: list[str]):
+def _filter_unstructured_data(docs: list[Document], paragraphs_numbers_and_names: list[tuple[str, str]]):
     """
     Everything Document objects that do not have a paragraph number are considered unstructured data
     and they are removed from the list.
@@ -164,26 +187,28 @@ def _filter_unstructured_data(docs: list[Document], paragraphs_numbers: list[str
     """
     unstructured_data = []
     docs_to_keep = []
-    for doc, number in zip(docs, paragraphs_numbers):
-        if number == "":
+    paragraphs_numbers_to_keep = []
+    for doc, number_and_name in zip(docs, paragraphs_numbers_and_names):
+        if number_and_name[0] == "":
             unstructured_data.append(Document(page_content=str(doc.page_content), metadata={}))
         else:
             docs_to_keep.append(doc)
-    paragraphs_numbers_to_keep = [number for number in paragraphs_numbers if number != ""]
+            paragraphs_numbers_to_keep.append(number_and_name)
     return docs_to_keep, paragraphs_numbers_to_keep, unstructured_data
 
 def _add_metadata(
         document_flat_structure: list[Document],
-        paragraphs_numbers: list[str],
+        paragraphs_numbers_and_names: list[tuple[str, str]],
         metadata_from_unstructured_data: dict,
         doc_file_name: str
 ) -> None:
-    if len(document_flat_structure) != len(paragraphs_numbers):
-        raise ValueError(f"The number of documents {len(document_flat_structure)} and the number of paragraphs numbers {len(paragraphs_numbers)} do not match")
+    if len(document_flat_structure) != len(paragraphs_numbers_and_names):
+        raise ValueError(f"The number of documents {len(document_flat_structure)} and the number of paragraphs numbers {len(paragraphs_numbers_and_names)} do not match")
     
-    for doc, number in zip(document_flat_structure, paragraphs_numbers):
+    for doc, number_and_name in zip(document_flat_structure, paragraphs_numbers_and_names):
         doc.metadata["doc_file_name"] = doc_file_name
-        doc.metadata["paragraph_number"] = number
+        doc.metadata["paragraph_number"] = number_and_name[0]
+        doc.metadata["paragraph_name"] = number_and_name[1]
         doc.metadata.update(metadata_from_unstructured_data)
 
 def _log_document_structure_on_file(
