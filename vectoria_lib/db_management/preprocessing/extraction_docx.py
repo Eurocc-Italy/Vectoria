@@ -3,68 +3,123 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-
+import re
 import logging
 from pathlib import Path
-
 import docx
 from langchain.docstore.document import Document
-
-from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
+from vectoria_lib.common.config import Config
+# Do not remove the follwing imports (they are used by globals())
+from re import search, sub, match, fullmatch
 
 logger = logging.getLogger('db_management')
-    
-def extract_text_from_docx_file(file_path: Path, filter_paragraphs: list, log_in_folder: Path = None) -> list[Document]:
-    """
-    Extracts text from a DOCX file and returns a list of Document objects.
+config = Config()
 
-    Each Document object contains the page content and metadata.
-    The metadata must include the keys: name, level, and id.
+def _apply_regex(text: str, regex: str, regex_function: str) -> str:
+    compiled_regex = re.compile(regex)
+    result = globals()[regex_function](compiled_regex, text) # TODO: not very generic
+    if result:
+        return result.group(0).strip() # TODO: not very generic
+    raise ValueError(f"No match found for regex {regex} in text")
+
+def _extract_metadata_from_unstructured_data(unstructured_data: list[Document], regexes: list[dict]) -> dict:
+    if regexes is None: regexes = []
+    raw_text = "".join([doc.page_content for doc in unstructured_data])
+    metadata = {}
+    for regex in regexes:
+        metadata[regex["metadata_name"]] = _apply_regex(raw_text, regex["regex_pattern"], regex["regex_function"])
+    return metadata
+
+def extract_text_from_docx_file(
+        file_path: Path,
+        filter_paragraphs: list = [], # TODO: implement this feature
+        dump_doc_structure_on_file: bool = False,
+        regexes_for_metadata_extraction: list[dict] = []
+) -> list[Document]:
+    """
+    Extracts text from a DOCX file. 
+    The extraction process relies on the tags: "heading", "paragraph", and "table".
+    Anything that is not a heading, paragraph, or table is considered unstructured data.
+
+    You can pass a unstrucured data parser to the function, which will be used to parse the unstructured data.
+    The unstructured data parser will extract metadata (as a dictionary) from the unstructured data. 
+    The metadata will be added to the Document objects.
+
+    In addition to unstructured data metadata, the function adds the following metadata keys:
+    * doc_file_name: the name of the DOCX file
+    * paragraph_number: the number of the paragraph
+    * layout_tag: the tag of the layout element (Heading, Paragraph, Table)
+
+    Returns a list of Document objects, containing page content and metadata.
     """
     logger.debug("Extracting text from %s", file_path.stem)
 
-    print(file_path)
     document = docx.Document(file_path)
 
     document_flat_structure = _extract_flat_structure(document)
 
-    if log_in_folder is not None:
-        Path(log_in_folder).mkdir(parents=True, exist_ok=True)  
-        _log_document_structure_on_file(document_flat_structure, Path(log_in_folder) / f"{file_path.stem}_structure.txt")    
+    paragraphs_numbers_and_names = _recover_paragraphs_numbers_and_names(document_flat_structure)
+
+    document_flat_structure = _to_document_objects(document_flat_structure)
+
+    document_flat_structure, paragraphs_numbers_and_names, unstructured_data = _filter_unstructured_data(document_flat_structure, paragraphs_numbers_and_names)
+
+    metadata_from_unstructured_data = _extract_metadata_from_unstructured_data(
+        unstructured_data,
+        regexes_for_metadata_extraction
+    )
     
-    # TODO: what to do with unstructured_data? Maybe extract the procedure ID
-    structured_data, unstructured_data = _extract_text_structure(document_flat_structure) 
+    _add_metadata(
+        document_flat_structure,
+        paragraphs_numbers_and_names,
+        metadata_from_unstructured_data,
+        file_path.name
+    )
 
-    structured_data = _get_flat_docs_list(structured_data)
+    logger.debug("Extracted %d documents from %s", len(document_flat_structure), file_path.stem)
 
-    logger.debug("Extracted %d documents from %s", len(structured_data), file_path.stem)
-    for doc in structured_data:
-        doc.metadata["source"] = file_path.stem
+    if dump_doc_structure_on_file:
+        _log_document_structure_on_file(document_flat_structure, config.get("vectoria_logs_dir") / "docs_structure", file_path.stem) 
 
-    return structured_data
 
-def _log_document_structure_on_file(structure, file_path: Path):
-    with open(file_path, "w", encoding="utf-8") as f:
-        # Print the document structure, including where tables are located
-        for element in structure:
-            if element[0].startswith("Heading"):
-                print(f"{element[0]}: {element[1]}", file=f)
-            elif element[0] == "Paragraph":
-                print(f"   Paragraph: {element[1]}", file=f)
-            elif element[0] == "Table":
-                print(f"   Table under Heading: {element[2]}", file=f)
-                for row in element[1]:
-                    print(f"      {row}", file=f)
+    document_flat_structure = _filter_headings(document_flat_structure)
 
-def _extract_flat_structure(doc):
+    document_flat_structure = _merge_paragraphs_contents(document_flat_structure)
 
+    return document_flat_structure
+
+def _merge_paragraphs_contents(document_flat_structure: list[Document]):
+    merged_paragraphs = []
+    
+    paragraphs = sorted(list(set([doc.metadata["paragraph_number"] for doc in document_flat_structure])))
+
+    for p in paragraphs:
+        documents_with_same_paragraph_number = [doc for doc in document_flat_structure if doc.metadata["paragraph_number"] == p]
+
+        merged_content = "\n".join([doc.page_content for doc in documents_with_same_paragraph_number])
+
+        merged_paragraphs.append(Document(page_content=merged_content, metadata=documents_with_same_paragraph_number[0].metadata))
+
+    return merged_paragraphs
+
+def _filter_headings(document_flat_structure: list[Document]):
+    return [doc for doc in document_flat_structure if "Heading" not in doc.metadata["layout_tag"]]    
+
+def _extract_flat_structure(doc: str) -> list[tuple]:
+    """
+    Extracts the flat structure of the document.
+    """
     current_heading = None  # Track the current heading
     structure = []  # Store content structure
 
     for element in doc.element.body:
+        #print(element.tag, element.text)
+        
         if element.tag.endswith('p'):  # It's a paragraph
             paragraph = docx.text.paragraph.Paragraph(element, doc)
+    
             heading_level = _get_heading_level(paragraph)
+            
             if heading_level:
                 current_heading = paragraph.text  # Update current heading
                 structure.append((f"Heading {heading_level}", paragraph.text))
@@ -75,17 +130,109 @@ def _extract_flat_structure(doc):
         elif element.tag.endswith('tbl'):  # It's a table
             table_data = _extract_table_data(element, doc)
             if not _check_table_empty(table_data):
-                structure.append(("Table", table_data, current_heading))
+                structure.append(("Table", table_data))
 
     return structure
 
+def _recover_paragraphs_numbers_and_names(flat_structure: list[tuple]) -> list[str]:
+    heading_levels = []
 
-def _get_heading_level(paragraph):
+    # To store the result
+    result = []
+
+    element_text = ""
+    for element in flat_structure:
+        element_type = element[0]
+
+        if element_type.startswith("Heading"):
+            element_text = element[1]
+
+            # Extract the level of heading (e.g., 'Heading 2' -> level 2)
+            level = int(element_type.split()[1])
+
+            # Ensure the heading_levels list has the correct size
+            while len(heading_levels) < level:
+                heading_levels.append(0)
+            
+            # Increment the correct level, reset lower levels if needed
+            heading_levels[level - 1] += 1
+            heading_levels = heading_levels[:level]
+
+            # Generate the heading number string
+            heading_number = ".".join(map(str, heading_levels))
+            result.append((heading_number, element_text))
+        
+        elif element_type == 'Paragraph' or element_type == 'Table':
+            # Paragraphs or tables inherit the current heading numbering
+            current_number = ".".join(map(str, heading_levels))
+            result.append((current_number, element_text))
+
+    #breakpoint()
+    return result
+
+def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]:
+    return [
+        Document(
+            page_content=str(element[1]), 
+            metadata={"layout_tag": element[0]}
+        ) 
+        for element in document_flat_structure
+    ]
+
+def _filter_unstructured_data(docs: list[Document], paragraphs_numbers_and_names: list[tuple[str, str]]):
+    """
+    Everything Document objects that do not have a paragraph number are considered unstructured data
+    and they are removed from the list.
+    The unstructured data is returned as a Document object.
+    """
+    unstructured_data = []
+    docs_to_keep = []
+    paragraphs_numbers_to_keep = []
+    for doc, number_and_name in zip(docs, paragraphs_numbers_and_names):
+        if number_and_name[0] == "":
+            unstructured_data.append(Document(page_content=str(doc.page_content), metadata={}))
+        else:
+            docs_to_keep.append(doc)
+            paragraphs_numbers_to_keep.append(number_and_name)
+    return docs_to_keep, paragraphs_numbers_to_keep, unstructured_data
+
+def _add_metadata(
+        document_flat_structure: list[Document],
+        paragraphs_numbers_and_names: list[tuple[str, str]],
+        metadata_from_unstructured_data: dict,
+        doc_file_name: str
+) -> None:
+    if len(document_flat_structure) != len(paragraphs_numbers_and_names):
+        raise ValueError(f"The number of documents {len(document_flat_structure)} and the number of paragraphs numbers {len(paragraphs_numbers_and_names)} do not match")
+    
+    for doc, number_and_name in zip(document_flat_structure, paragraphs_numbers_and_names):
+        doc.metadata["doc_file_name"] = doc_file_name
+        doc.metadata["paragraph_number"] = number_and_name[0]
+        doc.metadata["paragraph_name"] = number_and_name[1]
+        doc.metadata.update(metadata_from_unstructured_data)
+
+def _log_document_structure_on_file(
+        docs: list[Document], 
+        log_in_folder: Path, 
+        output_file_prefix: str
+) -> None:
+    Path(log_in_folder).mkdir(parents=True, exist_ok=True)
+    file_path = Path(log_in_folder) / f"{output_file_prefix}_structure.txt"
+    with open(file_path, "w", encoding="utf-8") as f:
+        # Print the document structure, including where tables are located
+        for doc in docs:
+            if doc.metadata["layout_tag"].startswith("Heading"):
+                print(f"{doc.metadata['paragraph_number']}   {doc.metadata['layout_tag']}: {doc.page_content}", file=f)
+            elif doc.metadata["layout_tag"] == "Paragraph":
+                print(f"{doc.metadata['paragraph_number']}   Paragraph: {doc.page_content}", file=f)
+            elif doc.metadata["layout_tag"] == "Table":
+                print(f"{doc.metadata['paragraph_number']}   Table under Heading: {doc.page_content}", file=f)
+
+def _get_heading_level(paragraph): 
     # A helper function to determine the level of a heading based on style
     if paragraph.style.name.startswith("Heading"):
         return int(paragraph.style.name.split()[-1])  # Extract heading level number
     return None  # Not a heading
-
 
 def _check_table_empty(table):
     # Check if a table is empty
@@ -95,145 +242,19 @@ def _check_table_empty(table):
                 return False
     return True
 
+# def _extract_table_data(table, doc):
+#     table = docx.table.Table(table, doc)
+#     table_data = []
+#     for row in table.rows:
+#         row_data = [cell.text for cell in row.cells]
+#         table_data.append(row_data)
+#     return table_data
 
+# TODO: verificare che l'LLM capisca la tabella in questo formato (senza "[ [], [] ]")
 def _extract_table_data(table, doc):
     table = docx.table.Table(table, doc)
-    table_data = []
+    table_data = ""
     for row in table.rows:
-        row_data = [cell.text for cell in row.cells]
-        table_data.append(row_data)
+        row_data = "".join([f"{cell.text} " for cell in row.cells])
+        table_data += "\n" + row_data
     return table_data
-    
-
-
-
-def _extract_text_structure(document_flat_structure):
-    """
-    ######## From:
-
-    document_flat_structure = [
-        ('Paragraph', 'Questa è benzina'),
-        ('Paragraph', 'non strutturata.'),
-        ('Heading 1', 'INTRODUZIONE'), # capitolo 1
-        ('Heading 2', 'Scopo'), # capitolo 1.1
-        ('Paragraph', 'Lo scopo del presente documento è la descrizione delle regole per la gestione, l’elaborazione ed emissione dei documenti del sistema normativo della Divisione Elettronica.'),
-        ('Paragraph', 'Il BMS è lo strumento per la pubblicazione, la diffusione e l’archiviazione dei documenti di origine interna, i modelli/moduli ad essi associati, la documentazione emessa da Corporate e ogni altro documento esterno con particolare riferimento a leggi internazionali e standard, che si ritenga opportuno diffondere, purché non coperti da copyright di terze parti.'),
-        ('Heading 2', 'Applicabilità'), # capitolo 1.2
-        ('Paragraph', 'Il presente documento si applica alla Divisione Elettronica (perimetro Italia).'),
-        ('Heading 1', 'RIFERIMENTI'), # capitolo 2
-        ('Heading 2', 'Documenti'), # capitolo 2.1
-        ('Paragraph', 'I documenti sotto riportati sono da intendere nell’ultima versione correntemente emessa, se non diversamente riportato.'),
-        ('Table', [['Codice', 'Titolo'], ['AQAP-2110', 'NATO Quality Assurance Requirement for Design Development and Production'], ['AQAP-2210', 'NATO Supplementary Software Quality Assurance Requirement to AQAP2110 or AQAP2310']], 'Documenti'),
-        ('Paragraph', 'NOTA: I documenti indicati con (*) sono in fase di emissione alla data di pubblicazione del presente documento. Nel transitorio si applicano i corrispondenti documenti Legacy.')
-    ]
-
-    ######### to:
-    
-    [{'childs': [{'childs': [],
-                'name': 'Scopo',
-                'docs': [Document('Lo scopo del presente documento è la descrizione delle '
-                        'regole per la gestione, l’elaborazione ed emissione '
-                        'dei documenti del sistema normativo della Divisione '
-                        'Elettronica.'),
-                        Document('Il BMS è lo strumento per la pubblicazione, la '
-                        'diffusione e l’archiviazione dei documenti di origine '
-                        'interna, i modelli/moduli ad essi associati, la '
-                        'documentazione emessa da Corporate e ogni altro '
-                        'documento esterno con particolare riferimento a leggi '
-                        'internazionali e standard, che si ritenga opportuno '
-                        'diffondere, purché non coperti da copyright di terze '
-                        'parti.')]},
-                {'childs': [],
-                'name': 'Applicabilità',
-                'docs': [Document('Il presente documento si applica alla Divisione '
-                        'Elettronica (perimetro Italia).')]}],
-    'name': 'INTRODUZIONE',
-    'docs': []},
-    {'childs': [{'childs': [],
-                'name': 'Documenti',
-                'docs': [Document('I documenti sotto riportati sono da intendere '
-                        'nell’ultima versione correntemente emessa, se non '
-                        'diversamente riportato.'),
-                        Document("[['Codice', 'Titolo'], ['AQAP-2110', 'NATO Quality "
-                        'Assurance Requirement for Design Development and '
-                        "Production'], ['AQAP-2210', 'NATO Supplementary "
-                        'Software Quality Assurance Requirement to AQAP2110 or '
-                        "AQAP2310']]"),
-                        Document('NOTA: I documenti indicati con (*) sono in fase di '
-                        'emissione alla data di pubblicazione del presente '
-                        'documento. Nel transitorio si applicano i '
-                        'corrispondenti documenti Legacy.')]}],
-    'name': 'RIFERIMENTI',
-    'docs': []}]
-    """
-
-        
-    structured_data = []
-    unstructured_data = Document(page_content="", metadata={"type": "unstructured"})
-    heading_stack = []  # This stack will keep track of current headings at different levels
-
-    # Find for unstructured data first
-    for item in document_flat_structure:
-        if not item[0].startswith('Heading'):
-            unstructured_data.page_content += str(item[1])
-        else:
-            break
-        
-    current_name = None
-    current_level = None
-    current_id = 0
-    
-    for item in document_flat_structure:
-
-        # Check if the item is a heading (e.g., 'Heading 1', 'Heading 2', etc.)
-        if item[0].startswith('Heading'):
-            level = int(item[0].split()[1])  # Extract heading level (e.g., 1, 2, 3, etc.)
-            current_name = item[1]
-            current_level = level
-            current_id = 0
-            heading_dict = {
-                "name": item[1],
-                "doc": None,
-                "childs": []
-            }
-            
-            # Adjust the stack based on heading level
-            while len(heading_stack) >= level:
-
-                heading_stack.pop()  # Go up to the correct parent level by popping
-
-            if heading_stack:
-                
-                # Add the new heading as a child of the current top of the stack
-                heading_stack[-1]["childs"].append(heading_dict)
-            else:
-                # If the stack is empty, it means we're at the top level
-                structured_data.append(heading_dict)
-                
-            # Push the new heading onto the stack
-            heading_stack.append(heading_dict)
-        
-        # If the item is a paragraph or table, add it to the current section
-        elif item[0] == 'Paragraph' or item[0] == 'Table':
-            text = str(item[1])
-            if heading_stack:
-                if heading_stack[-1]["doc"] is None:
-                    heading_stack[-1]["doc"] = Document(page_content=text, metadata={"name": current_name, "level": current_level, "id": current_id})
-                    current_id += 1
-                else:
-                    heading_stack[-1]["doc"].page_content += text
-                            
-
-    return structured_data, unstructured_data
-
-
-def _get_flat_docs_list(structured_data) -> list[Document]:
-    # recursively extract all the Document objects from the children of structured_data
-    docs = []
-    for item in structured_data:
-        if item["doc"] is not None:
-            docs.append(
-                item["doc"]
-            )
-        docs.extend(_get_flat_docs_list(item["childs"]))
-    return docs

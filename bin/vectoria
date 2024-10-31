@@ -16,18 +16,12 @@ sys.path.insert(1,lib_path)
 
 import sys
 import argparse
+from pathlib import Path
 
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.common.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
 from vectoria_lib.common.config import Config
 
-"""
-logger_name = 'basic'
-logger = logging.getLogger(logger_name)
-logger.setLevel( "INFO" )
-ch = logging.StreamHandler()
-logger.addHandler(ch)
-"""
 
 def cli():
     parser = argparse.ArgumentParser(description="Main script entry point with multiple behaviors.")
@@ -59,6 +53,14 @@ def cli():
 
     return parser.parse_args()
 
+def _check_if_model_exists_in_ram(model_name):
+
+    if Path(model_name).exists():
+        print(f"Model {model_name} exists")
+    else:
+        print(f"\n\n < ! > Model {model_name} does not exist")
+        exit()
+
 def main():
     
     args = cli()
@@ -68,13 +70,7 @@ def main():
     for k, v in args.items():
         print(k, v)
 
-    print(Config().config["inference_engine"]["model_name"])
-    dir = Config().config["inference_engine"]["model_name"]
-    if os.path.isdir(dir):
-        print("Directory exists")
-    else:
-        print("Directory does not exist")
-        exit()
+    # _check_if_model_exists_in_ram(Config().config["inference_engine"]["model_name"])
 
     if args["command"] == 'build_index':
         from vectoria_lib.tasks.build_index import build_index

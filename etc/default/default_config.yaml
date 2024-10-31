@@ -8,8 +8,9 @@ langchain_tracking: null
 pp_multiprocessing: true
 pp_steps: 
   - name: extract_text_from_docx_file
-    filter_paragraphs: ["1", "2", "3"]
-    log_in_folder: ~/vectoria_logs/docs_structure
+    filter_paragraphs: null
+    dump_doc_structure_on_file: true
+    regexes_for_metadata_extraction: null
 
   - name: remove_header
     regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
@@ -31,7 +32,7 @@ pp_steps:
     chunk_overlap: 256
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]
-    log_in_folder: ~/vectoria_logs/docs_structure
+    dump_chunks_on_file: true
 
 
 # Vector store
@@ -58,6 +59,7 @@ inference_engine:
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto
+  temperature: 0.1
 
 evaluation_tool: ragas
 evaluation_engine:

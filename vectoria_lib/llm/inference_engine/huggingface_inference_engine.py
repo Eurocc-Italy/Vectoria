@@ -39,7 +39,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             self.args["device"] = None
 
         start_time = time.perf_counter()
-
+        
         # TODO: device_map="auto" will not deallocate memory between tests
         model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
@@ -54,8 +54,9 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             model = model,
             tokenizer = tokenizer,
             max_new_tokens = self.args["max_new_tokens"], # https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
-            repetition_penalty=1.03, # TODO: move in configuration
-            return_full_text = False
+            #repetition_penalty=1.03, # TODO: move in configuration
+            return_full_text = False,
+            temperature = self.args["temperature"]
         )
         
     def as_langchain_llm(self) -> BaseLanguageModel:

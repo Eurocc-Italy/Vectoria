@@ -22,5 +22,5 @@ def test_pipeline_executor(multiproc):
     print("Time taken:", time() - t)
 
     # A list of LangChain Document (chunks) for each input document
-    assert len(processed_docs) == 97
+    assert len(processed_docs) == 73
     
