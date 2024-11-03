@@ -15,7 +15,12 @@ def test_build_index(extraction_fn):
     with TemporaryDirectory() as temp_dir:
         config = Config()
         config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
-        config.config["pp_steps"][0]["name"] = extraction_fn
+        config.config["pp_steps"][0] = {
+            "name": extraction_fn,
+            "filter_paragraphs": None,
+            "dump_doc_structure_on_file": False,
+            "regexes_for_metadata_extraction": []
+        }
         
         if "docx" in extraction_fn:
             doc_format = "docx"
@@ -27,7 +32,7 @@ def test_build_index(extraction_fn):
             "output_dir" : temp_dir,
             "output_suffix" : "test"
             }
-        
+
         fvs_path, fvs = build_index(**args)
 
         assert fvs_path.exists()
