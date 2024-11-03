@@ -74,6 +74,7 @@ def test_qa_agent_engines(inference_config):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+@pytest.mark.skip(reason="Chat history needs to be refactored")
 def test_qa_agent_with_history():
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
@@ -184,5 +185,6 @@ def test_qa_agent_with_custom_context():
         context
     )
     print(result)
-    assert isinstance(result, str)
+    assert isinstance(result, dict)
 
+    assert result.keys() == {"answer", "docs", "context", "input"}

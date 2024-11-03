@@ -14,7 +14,12 @@ from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
 
 logger = logging.getLogger('db_management')
 
-def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None, log_in_folder=None) -> list[Document]:
+def extract_text_from_pdf_file(
+        file_path: Path,
+        filter_paragraphs: list = [],
+        dump_doc_structure_on_file: bool = False,
+        regexes_for_metadata_extraction: list[dict] = []
+) -> list[Document]:
     """
     Extracts text from a PDF file and returns a list of Document objects.
 
@@ -33,5 +38,14 @@ def extract_text_from_pdf_file(file_path: Path, filter_paragraphs=None, log_in_f
 
     logger.debug("Loaded %d characters", len(pages_str))
 
-    return [Document(page_content=pages_str, metadata=dict(source=file_path.stem,name=file_path.name, level=0, id=0))]
+    return [
+        Document(
+            page_content=pages_str,
+            metadata=dict(
+                doc_file_name=file_path.stem,
+                paragraph_name="document_name",
+                paragraph_number=0
+            )
+        )
+    ]
 
