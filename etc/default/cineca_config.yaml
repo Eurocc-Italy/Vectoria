@@ -48,6 +48,11 @@ retriever_lambda_mult: 0.5
 chat_history: false
 system_prompts_lang: it
 
+reranker:
+  model_name: /leonardo_work/PhDLR_prod/all-mpnet-base-v2
+  name: cos_sim
+  reranked_top_k: 7
+
 # Inference engine
 inference_engine:
   name: 'huggingface'

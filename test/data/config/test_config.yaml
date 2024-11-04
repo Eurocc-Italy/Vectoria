@@ -32,22 +32,38 @@ pp_steps:
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]
     dump_chunks_on_file: true
-
-
+  
 # Vector store
 hf_embedder_model_name: BAAI/bge-m3
 embedder_device: cuda
 normalize_embeddings: false
 
-# QA agent
+
 retriever_top_k: 5
 retriever_search_type: 'mmr'
 retriever_fetch_k: 5
 retriever_lambda_mult: 0.5
-chat_history: true
 system_prompts_lang: eng
 
-# Inference engine
+reranker:
+  enabled: false
+  reranked_top_k: 3
+  inference_engine:
+    name: huggingface
+    url: null
+    api_key: null
+    model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+    device: cuda
+    load_in_8bit: true
+    max_new_tokens: 150
+    trust_remote_code: false
+    device_map: null
+    temperature: 0.1
+
+chat_history:
+  enabled: false
+
+# QA agent
 inference_engine:
   name: huggingface
   url: null
@@ -60,6 +76,7 @@ inference_engine:
   device_map: null
   temperature: 0.1
 
+# Evaluation
 evaluation_tool: ragas
 evaluation_engine:
   name: huggingface

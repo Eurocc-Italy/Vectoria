@@ -36,3 +36,9 @@ class CustomResponseParser(BaseOutputParser):
     def parse(self, text: str) -> str:
         #logger.debug("CustomResponseParser: parsing:%s", text)
         return self.filter_postfix(self.filter_prefix(text))
+
+
+class RerankerOutputParser(BaseOutputParser):
+    def parse(self, text: str) -> list[int]:
+        return [int(i) for i in text.split(",")]
+        

@@ -7,16 +7,15 @@
 
 import logging, datetime, time
 from pathlib import Path
-
 from langsmith import traceable
 
-from vectoria_lib.llm.agents.chains import create_qa_chain
 from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.llm.parser import CustomResponseParser
+from vectoria_lib.db_management.reranking.reranker_base import BaseReranker
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from langchain.docstore.document import Document
+from langchain_core.output_parsers import BaseOutputParser
+from langchain_core.prompts import BasePromptTemplate
 
 class QAAgent:
     """
@@ -27,73 +26,19 @@ class QAAgent:
 
     def __init__(
         self,
-        retriever: FaissRetriever,
-        inference_engine: InferenceEngineBase,
-        chat_history: bool,
-        system_prompts_lang: str
+        oracle_chain,
+        chain = None
     ):
         """
-        Initialize the QAAgent object with the provided retriever and inference engine.
+        Initialize the QAAgent object with the corresponding chains
 
         Parameters:
-        - retriever (Retriever): A retriever object to fetch relevant documents from a FAISS-based vector store.
-        - inference_engine (InferenceEngineBase): An inference engine object to generate answers based on the retrieved documents.
-        - use_chat_history (bool): A flag to indicate whether to use chat history to contextualize the answers.
-        - system_prompts_lang (str): The language of the prompts to load.
-        """
 
+        """
         self.logger = logging.getLogger('llm')
+        self.oracle_chain = oracle_chain
+        self.chain = chain
 
-        self.logger.info("Creating QA agent with the oracle retriever")
-
-        self.oracle_chain = create_qa_chain(
-            PromptBuilder(system_prompts_lang).get_qa_prompt(),
-            inference_engine.as_langchain_llm(),
-            CustomResponseParser(),
-            retriever = None
-        )
-
-        if retriever is None:
-            self.logger.warning("No retriever provided, the RAG retriever will be not be initialized")
-            self.chain = None
-            return
-
-        self.logger.info("Creating QA agent with the RAG retriever")
- 
-        self.chain = create_qa_chain(
-            PromptBuilder(system_prompts_lang).get_qa_prompt(),
-            inference_engine.as_langchain_llm(),
-            CustomResponseParser(),
-            retriever=retriever.as_langchain_retriever()
-        )
-
-
-        #self.use_chat_history = chat_history
-        #self.rag_chain = None
-        #self.oracle_chain = None
-
-        """
-        if self.use_chat_history is True and retriever is not None:
-
-            self.logger.info("Creating QA agent with the RAG retriever and chat history")
-            combine_docs_chain = create_generation_chain(
-                prompt_builder.get_qa_prompt_with_history(),
-                inference_engine,
-                output_parser=CustomResponseParser()
-            )
-
-            history_aware_retriever = create_history_aware_retriever(
-                inference_engine,
-                retriever,
-                prompt_builder.get_contextualize_q_prompt()
-            )
-
-            self.rag_chain = create_retrieval_chain(
-                history_aware_retriever,
-                combine_docs_chain
-            )
-            self.rag_chain = StatefulWorkflow.to_stateful_workflow(self.rag_chain)
-        """
 
 
     # --------------------------------------------------------------------------------

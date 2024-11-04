@@ -6,7 +6,9 @@ from langchain_core.language_models.llms import BaseLanguageModel
 import time
 import logging 
 
-class HuggingFaceInferenceEngine(InferenceEngineBase):
+from vectoria_lib.common.utils import Singleton
+
+class HuggingFaceInferenceEngine(metaclass=Singleton):
     """
     Wrapper on Hugging Face: 
 
@@ -18,9 +20,12 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     How to
     https://python.langchain.com/docs/how_to/#chat-models
 
+    
+    TODO: HuggingFaceInferenceEngine does not inherit from InferenceEngineBase anymore because of the metaclass Singleton.
     """
     def __init__(self, args: dict):
-        super().__init__(args)
+        #super().__init__(args)
+        self.args = args
         
         self.logger = logging.getLogger('llm')
 

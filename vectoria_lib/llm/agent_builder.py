@@ -6,12 +6,18 @@ from vectoria_lib.llm.agents.qa import QAAgent
 from vectoria_lib.common.config import Config
 from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
+from vectoria_lib.db_management.reranking.reranker_builder import RerankerBuilder
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.llm.agents.chains import create_qa_chain
+from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
+from vectoria_lib.llm.parser import CustomResponseParser, RerankerOutputParser
+
+
 class AgentBuilder:
 
     @staticmethod
     def _create_retriever_from_faiss_index(
-            faiss_index_path: Path, 
+            faiss_index_path: Path,
         ) -> FaissRetriever:
         config = Config()
         logger = logging.getLogger("llm")
@@ -44,17 +50,71 @@ class AgentBuilder:
 
         config = Config()
         logger = logging.getLogger("llm")
-                
-        retriever = None
+                                        
+        retriever_config = None
         if 'faiss_index_path' not in kwargs or kwargs['faiss_index_path'] is None:
             logger.warning("No FAISS index path provided, the RAG retriever will be not be initialized")
         else:
-            retriever = AgentBuilder._create_retriever_from_faiss_index(kwargs['faiss_index_path'])
+            retriever_config = {
+                "retriever": AgentBuilder._create_retriever_from_faiss_index(kwargs['faiss_index_path'])
+            }
+
+        reranker_config = None
+        if config.get("reranker")["enabled"]:
+            reranker_config = {
+                "inference_engine": InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"]),
+                "prompt": PromptBuilder(None).get_reranking_prompt(),
+                "output_parser": RerankerOutputParser()
+            }
+
+        logger.info("Creating QA agent with the RAG retriever")
+
+        chain_without_retriever = create_qa_chain(
+            PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
+            InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+            CustomResponseParser(),
+            retriever_config = None,
+            reranker_config = reranker_config
+        )
+
+        logger.info("Creating QA agent with the RAG retriever")
+
+        chain_with_retriever = None
+        if retriever_config is not None:
+            chain_with_retriever = create_qa_chain(
+                PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
+                InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+                CustomResponseParser(),
+                retriever_config = retriever_config,
+                reranker_config = reranker_config
+            )
 
         # Create QA agent
         return QAAgent(
-            retriever,
-            InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
-            chat_history = config.get("chat_history"),
-            system_prompts_lang = config.get("system_prompts_lang")
+            chain_without_retriever,
+            chain_with_retriever
         )
+    
+
+        """
+        if self.use_chat_history is True and retriever is not None:
+
+            self.logger.info("Creating QA agent with the RAG retriever and chat history")
+            combine_docs_chain = create_generation_chain(
+                prompt_builder.get_qa_prompt_with_history(),
+                inference_engine,
+                output_parser=CustomResponseParser()
+            )
+
+            history_aware_retriever = create_history_aware_retriever(
+                inference_engine,
+                retriever,
+                prompt_builder.get_contextualize_q_prompt()
+            )
+
+            self.rag_chain = create_retrieval_chain(
+                history_aware_retriever,
+                combine_docs_chain
+            )
+            self.rag_chain = StatefulWorkflow.to_stateful_workflow(self.rag_chain)
+        """    

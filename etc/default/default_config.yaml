@@ -40,6 +40,11 @@ hf_embedder_model_name: BAAI/bge-m3
 embedder_device: cuda
 normalize_embeddings: false
 
+reranker:
+  model_name: sentence-transformers/all-mpnet-base-v2
+  name: cos_sim
+  reranked_top_k: 7
+
 # QA agent
 retriever_top_k: 5
 retriever_search_type: 'mmr'

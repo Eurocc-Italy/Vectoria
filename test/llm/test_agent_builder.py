@@ -12,6 +12,9 @@ def test_agent_builder():
     assert agent.chain is not None
     assert agent.oracle_chain is not None
 
+    assert len(agent.chain.middle) == 2
+    assert len(agent.oracle_chain.middle) == 1
+
 def test_agent_builder_no_index():
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
@@ -20,3 +23,17 @@ def test_agent_builder_no_index():
     )
     assert agent.chain is None
     assert agent.oracle_chain is not None
+    assert len(agent.oracle_chain.middle) == 1
+
+
+def test_agent_builder_no_reranker():
+    config = Config()
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.set("reranker", {"enabled": False})
+    agent = AgentBuilder.build_qa_agent(
+        faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_the_matrix.pkl"
+    )
+    assert agent.chain is not None
+    assert agent.oracle_chain is not None
+    assert len(agent.chain.middle) == 1
+    assert len(agent.oracle_chain.middle) == 0
