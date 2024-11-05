@@ -11,9 +11,7 @@ from langchain_huggingface import ChatHuggingFace
 import time
 import logging 
 
-from vectoria_lib.common.utils import Singleton
-
-class HuggingFaceInferenceEngine():
+class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
     Wrapper on Hugging Face: 
 
@@ -29,8 +27,7 @@ class HuggingFaceInferenceEngine():
     TODO: HuggingFaceInferenceEngine does not inherit from InferenceEngineBase anymore because of the metaclass Singleton.
     """
     def __init__(self, args: dict):
-        #super().__init__(args)
-        self.args = args
+        super().__init__(args)
         
         self.logger = logging.getLogger('llm')
 
@@ -46,6 +43,11 @@ class HuggingFaceInferenceEngine():
             quantization_config = BitsAndBytesConfig(
                 load_in_8bit=True
             )
+        elif self.args["load_in_4bit"]:
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True
+            )
+        else:
             self.args["device"] = None
 
         start_time = time.perf_counter()
@@ -54,11 +56,14 @@ class HuggingFaceInferenceEngine():
         self.model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             quantization_config = quantization_config,
-            device_map=self.args["device_map"],
-            trust_remote_code = self.args["trust_remote_code"],
+            device_map = self.args["device_map"],
+            trust_remote_code = self.args["trust_remote_code"]
+            #device = self.args["device"]
         )
         self.pipe = None
-        self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
+        self.logger.debug("Loading model %s took %.2f seconds", self.args["model_name"], time.perf_counter() - start_time)
+        self.model.eval()
+
 
     def as_langchain_llm(self) -> BaseLanguageModel:
         # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
@@ -74,5 +79,4 @@ class HuggingFaceInferenceEngine():
         return HuggingFacePipeline(pipeline=self.pipe)
     
     def as_langchain_reranker_llm(self) -> BaseLanguageModel:
-        self.model.eval()
         return HuggingFaceReranker(model=self.model, tokenizer=self.tokenizer)

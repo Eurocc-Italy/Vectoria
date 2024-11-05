@@ -52,7 +52,7 @@ reranker:
     name: huggingface
     url: null
     api_key: null
-    model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_name: BAAI/bge-reranker-v2-gemma
     device: cuda
     load_in_8bit: true
     max_new_tokens: 150
@@ -70,10 +70,11 @@ inference_engine:
   api_key: null
   model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
   device: cuda
-  load_in_8bit: true
+  load_in_4bit: true
+  load_in_8bit: false
   max_new_tokens: 150
   trust_remote_code: false
-  device_map: null
+  device_map: auto
   temperature: 0.1
 
 # Evaluation

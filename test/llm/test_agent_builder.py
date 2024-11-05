@@ -12,8 +12,8 @@ def test_agent_builder():
     assert agent.chain is not None
     assert agent.oracle_chain is not None
 
-    assert len(agent.chain.middle) == 2
-    assert len(agent.oracle_chain.middle) == 1
+    assert len(agent.chain.middle) == 1
+    assert len(agent.oracle_chain.middle) == 0
 
 def test_agent_builder_no_index():
     config = Config()
@@ -23,7 +23,7 @@ def test_agent_builder_no_index():
     )
     assert agent.chain is None
     assert agent.oracle_chain is not None
-    assert len(agent.oracle_chain.middle) == 1
+    assert len(agent.oracle_chain.middle) == 0
 
 
 def test_agent_builder_no_reranker():

@@ -5,7 +5,10 @@ from vectoria_lib.llm.agent_builder import AgentBuilder
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 from langchain.docstore.document import Document
-
+from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+@pytest.fixture(scope="function")
+def clear_inference_engine_cache():
+    InferenceEngineBuilder.clear_cache()
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
@@ -28,10 +31,11 @@ from langchain.docstore.document import Document
                 name='huggingface',
                 model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
                 device="cuda",
-                load_in_8bit=True,
+                load_in_4bit=True,
+                load_in_8bit=False,
                 max_new_tokens=100,
                 trust_remote_code=True,
-                device_map=None,
+                device_map="auto",
                 temperature=0.1
             ),
             marks=pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
@@ -52,9 +56,9 @@ from langchain.docstore.document import Document
         )
     ]
 )
-def test_qa_agent_engines(inference_config):
+def test_qa_agent_engines(inference_config, clear_inference_engine_cache):
     config = Config()
-    config.set("chat_history", False)
+    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("retriever_top_k", 1)
     config.set("inference_engine", inference_config)
 
@@ -73,22 +77,11 @@ def test_qa_agent_engines(inference_config):
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 @pytest.mark.skip(reason="Chat history needs to be refactored")
-def test_qa_agent_with_history():
+def test_qa_agent_with_history(clear_inference_engine_cache):
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
-    inference_config = dict(
-            name='huggingface',
-            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
-            device="cuda",
-            load_in_8bit=True,
-            max_new_tokens=200,
-            trust_remote_code=False,
-            device_map=None,
-            temperature=0.1
-        )   
-    config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
-    config.set("chat_history", True)
+    config.set("chat_history", {"enabled": True})
     config.set("retriever_top_k", 1)
 
     agent = AgentBuilder.build_qa_agent(
@@ -118,22 +111,11 @@ def test_qa_agent_with_history():
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_history():
+def test_qa_agent_without_history(clear_inference_engine_cache):
+
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
-    inference_config = dict(
-            name='huggingface',
-            model_name='meta-llama/Meta-Llama-3.1-8B-Instruct',
-            device="cuda",
-            load_in_8bit=True,
-            max_new_tokens=200,
-            trust_remote_code=False,
-            device_map=None,
-            temperature=0.1
-        )   
-    config.set("inference_engine", inference_config)
     config.set("documents_format", "pdf")
-    config.set("chat_history", False)
     config.set("retriever_top_k", 1)
 
     agent = AgentBuilder.build_qa_agent(
@@ -150,7 +132,7 @@ def test_qa_agent_without_history():
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_with_custom_context():
+def test_qa_agent_with_custom_context(clear_inference_engine_cache):
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("chat_history", {"enabled": False})
@@ -179,7 +161,7 @@ def test_qa_agent_with_custom_context():
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_with_custom_context_and_reranker():
+def test_qa_agent_with_custom_context_and_reranker(clear_inference_engine_cache):
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
     config.set("langchain_tracking", True)
@@ -190,10 +172,11 @@ def test_qa_agent_with_custom_context_and_reranker():
             "name": "huggingface",
             "model_name": "BAAI/bge-reranker-v2-gemma",
             "device": "cuda",
+            "load_in_4bit": True,
             "load_in_8bit": False,
             "max_new_tokens": 150,
             "trust_remote_code": False,
-            "device_map": None,
+            "device_map": "auto",
             "temperature": 0.1
         }
     })
@@ -202,11 +185,11 @@ def test_qa_agent_with_custom_context_and_reranker():
         faiss_index_path=None
     )
     context = [
+        Document("Donald Duck is a cartoon character created by The Walt Disney Company. Donald is an anthropomorphic white duck with a yellow-orange bill, legs, and feet."),
+        Document("Donald Duck appeared in comedic roles in animated cartoons. Donald's first appearance was in The Wise Little Hen (1934), but it was his second appearance in Orphan's Benefit that same year that introduced him as a temperamental comic foil to Mickey Mouse."),
         Document("Deep learning in Natural Language Processing (NLP) is resource-intensive, and the energy and policy considerations are becoming increasingly important as models grow in size and complexity."),
         Document("Energy consumption: Deep learning models, especially large NLP models, require significant computational resources, leading to high energy consumption during both training and inference."),
-        Document("Environmental impact: The energy-intensive nature of deep learning can contribute to increased carbon emissions, raising concerns about sustainability in AI development."),
-        Document("Model efficiency: Optimizing model architectures, using more energy-efficient hardware, and employing techniques like model pruning or quantization can reduce energy demands without sacrificing performance."),
-        Document("Policy frameworks: Governments and organizations are exploring regulations to ensure responsible AI practices, focusing on transparency, sustainability, and the ethical implications of energy use in AI technologies.")
+        Document("Environmental impact: The energy-intensive nature of deep learning can contribute to increased carbon emissions, raising concerns about sustainability in AI development.")
     ]
     
     result = agent.ask_with_custom_context(
@@ -219,4 +202,3 @@ def test_qa_agent_with_custom_context_and_reranker():
 
     assert len(result["reranked_docs"]) == 3
     assert result.keys() == {"answer", "docs", "reranked_docs", "context", "input"}
-

@@ -11,7 +11,6 @@ import logging
 from typing import Any, Dict
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough
 from langchain_core.prompts import PromptTemplate
-from vectoria_lib.db_management.reranking.reranker_base import BaseReranker
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template("{page_content}")
@@ -36,7 +35,6 @@ def format_docs(inputs: dict) -> str:
         f"{i+1}. {format_document(doc, DEFAULT_DOCUMENT_PROMPT)}"
         for i, doc in enumerate(docs)
     )
-    logger.debug("format_docs: formatted_docs: %s", formatted_docs)
     return formatted_docs
 
 def reindex_docs(inputs: dict, reranker_top_k: int) -> dict:

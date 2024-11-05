@@ -23,7 +23,7 @@ def test_ragas_hugging_face():
     "metric", 
     [   
         NonLLMStringSimilarity(),
-        RougeScore(rogue_type="rougeL", measure_type="fmeasure"),
+        RougeScore(measure_type="fmeasure"),
         LLMContextRecall(),
         LLMContextPrecisionWithoutReference()
     ]

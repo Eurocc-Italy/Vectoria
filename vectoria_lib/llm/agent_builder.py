@@ -6,11 +6,10 @@ from vectoria_lib.llm.agents.qa import QAAgent
 from vectoria_lib.common.config import Config
 from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
 from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.db_management.reranking.reranker_builder import RerankerBuilder
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.llm.agents.chains import create_qa_chain
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
-from vectoria_lib.llm.parser import CustomResponseParser, RerankerOutputParser
+from vectoria_lib.llm.parser import CustomResponseParser
 
 
 class AgentBuilder:
@@ -64,7 +63,6 @@ class AgentBuilder:
             reranker_config = {
                 "inference_engine": InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"]),
                 "prompt": None, #PromptBuilder(None).get_reranking_prompt(), TODO: remove this
-                "output_parser": RerankerOutputParser(),
                 "reranked_top_k": config.get("reranker")["reranked_top_k"]
             }
 
