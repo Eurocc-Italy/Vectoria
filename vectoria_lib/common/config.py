@@ -51,18 +51,22 @@ class Config(metaclass=Singleton):
 
     def set(self, key, value):
         self.config[key] = value
+        if key == "langchain_tracking":
+            self._langchain_tracking()
 
     def _langchain_tracking(self):
         if not self.config.get("langchain_tracking"):
             if "LANGCHAIN_TRACING_V2" in os.environ:
+                self.config_stream_logger.warning("Disabling langchain tracking")
                 del os.environ['LANGCHAIN_TRACING_V2']
             return
 
         if "LANGCHAIN_API_KEY" not in os.environ:
-            self.config_stream_logger.info("langchain_tracking is enable but LANGCHAIN_API_KEY environment variable is not set")
+            self.config_stream_logger.warning("langchain_tracking is enabled but LANGCHAIN_API_KEY environment variable is not set")
             if "LANGCHAIN_TRACING_V2" in os.environ:
                 del os.environ['LANGCHAIN_TRACING_V2']
 
+        self.config_stream_logger.info("Langchain tracking enabled")
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
         os.environ["LANGCHAIN_PROJECT"] = "vectoria" # TODO: make my dynamic and fetch the version
 

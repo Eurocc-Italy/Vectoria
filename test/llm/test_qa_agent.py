@@ -6,8 +6,6 @@ from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 from langchain.docstore.document import Document
 
-import pytest
-import torch
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
@@ -184,14 +182,15 @@ def test_qa_agent_with_custom_context():
 def test_qa_agent_with_custom_context_and_reranker():
     config = Config()
     config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.set("langchain_tracking", True)
     config.set("reranker", {
         "enabled": True,
         "reranked_top_k": 3,
         "inference_engine": {
             "name": "huggingface",
-            "model_name": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+            "model_name": "BAAI/bge-reranker-v2-gemma",
             "device": "cuda",
-            "load_in_8bit": True,
+            "load_in_8bit": False,
             "max_new_tokens": 150,
             "trust_remote_code": False,
             "device_map": None,
@@ -212,10 +211,12 @@ def test_qa_agent_with_custom_context_and_reranker():
     
     result = agent.ask_with_custom_context(
         "Which are the energy and policy considerations for deep learning in NLP?",
-        context
+        context,
+        {"run_name": "test_qa_agent_with_custom_context_and_reranker"}
     )
     print(result)
     assert isinstance(result, dict)
 
-    assert result.keys() == {"answer", "docs", "context", "input"}
+    assert len(result["reranked_docs"]) == 3
+    assert result.keys() == {"answer", "docs", "reranked_docs", "context", "input"}
 

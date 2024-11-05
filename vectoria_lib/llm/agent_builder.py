@@ -63,8 +63,9 @@ class AgentBuilder:
         if config.get("reranker")["enabled"]:
             reranker_config = {
                 "inference_engine": InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"]),
-                "prompt": PromptBuilder(None).get_reranking_prompt(),
-                "output_parser": RerankerOutputParser()
+                "prompt": None, #PromptBuilder(None).get_reranking_prompt(), TODO: remove this
+                "output_parser": RerankerOutputParser(),
+                "reranked_top_k": config.get("reranker")["reranked_top_k"]
             }
 
         logger.info("Creating QA agent with the RAG retriever")

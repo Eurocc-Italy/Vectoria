@@ -1,5 +1,4 @@
 # https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/chains 
-
 from typing import Any, Dict, List, Optional, Tuple
 
 from langchain_core.language_models import LanguageModelLike
@@ -7,16 +6,11 @@ from langchain_core.output_parsers import BaseOutputParser, StrOutputParser
 from langchain_core.prompts import BasePromptTemplate, format_document
 from langchain_core.runnables import Runnable, RunnablePassthrough
 from langchain.chains.combine_documents.base import _validate_prompt
-
+from langchain_core.messages import SystemMessage
 import logging
-from typing import Any, Dict, Union
-
-from langchain_core.retrievers import (
-    BaseRetriever,
-)
+from typing import Any, Dict
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough
 from langchain_core.prompts import PromptTemplate
-
 from vectoria_lib.db_management.reranking.reranker_base import BaseReranker
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
@@ -45,9 +39,20 @@ def format_docs(inputs: dict) -> str:
     logger.debug("format_docs: formatted_docs: %s", formatted_docs)
     return formatted_docs
 
-def reindex_docs(inputs: dict) -> dict:
-    inputs["reranked_docs"] = [inputs["docs"][i] for i in inputs["reranked_docs_indices"]]
-    return inputs
+def reindex_docs(inputs: dict, reranker_top_k: int) -> dict:
+    llm_output = [inputs["docs"][i] for i in inputs["reranked_docs_indices"]]
+    return llm_output[:reranker_top_k]
+
+def create_reranking_input_pairs(inputs: dict) -> list[SystemMessage]:
+    # The base_messages list will be converted into a list of strings:
+    # [SystemMessage(content='what is panda?'), SystemMessage(content='hi'), SystemMessage(content='what is panda?'), BaseMessage(content='The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.')]
+    # [['what is panda?', 'hi'], ['what is panda?', 'The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.']]
+    base_messages = []
+    for doc in inputs["docs"]:
+        base_messages.append(SystemMessage(content=inputs["input"]))
+        base_messages.append(SystemMessage(content=doc.page_content))
+
+    return base_messages
 
 def create_qa_chain(
     prompt: BasePromptTemplate,
@@ -79,12 +84,18 @@ def create_qa_chain(
 
     if reranker_config:
         reranking_chain = RunnablePassthrough()
-        reranking_docs_indexes_chain = (reranker_config["prompt"] | reranker_config["inference_engine"].as_langchain_llm() | reranker_config["output_parser"]).with_config(run_name="reranking_docs_indexes_chain")
 
-        reranking_chain = reranking_chain.assign(docs_for_reranking=RunnableLambda(format_docs))
+        reranking_docs_indexes_chain = ( 
+            RunnableLambda(create_reranking_input_pairs) | 
+            reranker_config["inference_engine"].as_langchain_reranker_llm() | 
+            RunnableLambda(lambda x: eval(x))
+        ).with_config(run_name="reranking_docs_indexes_chain")
+
         reranking_chain = reranking_chain.assign(reranked_docs_indices=reranking_docs_indexes_chain)
-        reranking_chain = reranking_chain.assign(reranked_docs=RunnableLambda(reindex_docs))
+        reranking_chain = reranking_chain.assign(reranked_docs=RunnableLambda(reindex_docs).bind(reranker_top_k=reranker_config["reranked_top_k"]))
         reranking_chain = reranking_chain.with_config(run_name="reranking_chain")
+
+        reranking_chain = reranking_chain | RunnableLambda(lambda x: x["reranked_docs"])
 
     combine_docs_chain = RunnableLambda(format_docs).with_config(run_name="combine_docs_chain")
 

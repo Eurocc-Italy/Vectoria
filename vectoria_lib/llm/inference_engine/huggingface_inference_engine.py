@@ -1,14 +1,19 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 from langchain_huggingface import HuggingFacePipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from vectoria_lib.llm.inference_engine.custom_hf.huggingface_reranker import HuggingFaceReranker
+
 from langchain_core.language_models.llms import BaseLanguageModel
+
+from langchain_huggingface import ChatHuggingFace
+
 
 import time
 import logging 
 
 from vectoria_lib.common.utils import Singleton
 
-class HuggingFaceInferenceEngine(metaclass=Singleton):
+class HuggingFaceInferenceEngine():
     """
     Wrapper on Hugging Face: 
 
@@ -30,7 +35,7 @@ class HuggingFaceInferenceEngine(metaclass=Singleton):
         self.logger = logging.getLogger('llm')
 
         start_time = time.perf_counter()
-        tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(
             self.args["model_name"],
             trust_remote_code = self.args["trust_remote_code"]
         )
@@ -46,25 +51,28 @@ class HuggingFaceInferenceEngine(metaclass=Singleton):
         start_time = time.perf_counter()
         
         # TODO: device_map="auto" will not deallocate memory between tests
-        model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             quantization_config = quantization_config,
             device_map=self.args["device_map"],
             trust_remote_code = self.args["trust_remote_code"],
         )
+        self.pipe = None
         self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
 
+    def as_langchain_llm(self) -> BaseLanguageModel:
+        # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
+        # return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
         self.pipe = pipeline(
             "text-generation", 
-            model = model,
-            tokenizer = tokenizer,
+            model = self.model,
+            tokenizer = self.tokenizer,
             max_new_tokens = self.args["max_new_tokens"], # https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
-            #repetition_penalty=1.03, # TODO: move in configuration
             return_full_text = False,
             temperature = self.args["temperature"]
         )
-        
-    def as_langchain_llm(self) -> BaseLanguageModel:
-        # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
-        # ChatHuggingFace(llm=)
         return HuggingFacePipeline(pipeline=self.pipe)
+    
+    def as_langchain_reranker_llm(self) -> BaseLanguageModel:
+        self.model.eval()
+        return HuggingFaceReranker(model=self.model, tokenizer=self.tokenizer)

@@ -43,7 +43,7 @@ class QAAgent:
 
     # --------------------------------------------------------------------------------
     @traceable
-    def ask(self, question: str, session_id: str = None) -> str:
+    def ask(self, question: str, session_id: str = None, config: dict = {}) -> str:
         """
         Ask the QAAgent a input and get an answer based on the retrieved documents 
         and chat history.
@@ -56,24 +56,23 @@ class QAAgent:
         - dict: The generated answer to the input.
         """
 
-        config = {}
         #if self.use_chat_history:
         #    if session_id is None:
         #        raise ValueError("Session ID is required when using chat history.")
         #    config = {"configurable": {"thread_id": session_id}}
         
-        output = self.chain.invoke({"input" : question}, config=config)
+        output = self.chain.invoke({"input" : question}, config)
         
         self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
         self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), output["answer"])
 
         return output
 
-    def ask_with_custom_context(self, question: str, context: list[Document]) -> str:
+    def ask_with_custom_context(self, question: str, context: list[Document], config: dict = {}) -> str:
         #if self.use_chat_history:
         #    self.logger.warning("This method is not supported when using chat history.")
         #    return None
-        return self.oracle_chain.invoke({"input" : question, "docs" : context})
+        return self.oracle_chain.invoke({"input" : question, "docs" : context}, config)
 
     # def get_chat_history(self, session_id: str, pretty_print=True):
     #     chat_history = self.chain.get_state({"configurable": {"thread_id": session_id}}).values["chat_history"]
