@@ -2,7 +2,7 @@ from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEng
 from vectoria_lib.llm.inference_engine.huggingface_inference_engine import HuggingFaceInferenceEngine
 from vectoria_lib.llm.inference_engine.ollama_inference_engine import OllamaInferenceEngine
 from vectoria_lib.llm.inference_engine.openai_inference_engine import OpenAIInferenceEngine
-
+from vectoria_lib.llm.inference_engine.vllm_inference_engine import VLLMInferenceEngine
 class InferenceEngineBuilder:
 
     @staticmethod
@@ -13,5 +13,7 @@ class InferenceEngineBuilder:
             return OllamaInferenceEngine(args)
         elif args["name"] == "openai":
             return OpenAIInferenceEngine(args)
+        elif args["name"] == "vllm":
+            return VLLMInferenceEngine(args)
         else:
             raise ValueError(f"Unknown inference engine: {args['name']}")
