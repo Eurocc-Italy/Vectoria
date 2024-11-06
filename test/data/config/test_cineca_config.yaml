@@ -1,0 +1,90 @@
+# Logging
+vectoria_logs_dir: ~/vectoria_logs
+log_level: DEBUG
+langchain_tracking: null
+
+# Preprocessing
+pp_multiprocessing: true
+pp_steps: 
+  - name: extract_text_from_docx_file
+    filter_paragraphs: null
+    dump_doc_structure_on_file: true
+    regexes_for_metadata_extraction: []
+
+  - name: remove_header
+    regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
+  
+  - name: remove_footer
+    regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
+
+  - name: remove_multiple_spaces
+    regex: null
+
+  - name: replace_ligatures
+    regex: null
+  
+  - name: remove_bullets
+    regex: null
+
+  - name: recursive_character_text_splitter
+    chunk_size: 1024
+    chunk_overlap: 256
+    separators: ["\n\n", "\n", " ", ""]
+    is_separator_regex: [false, false, false, false]
+    dump_chunks_on_file: true
+  
+# Vector store
+hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
+embedder_device: cuda
+normalize_embeddings: false
+
+
+retriever_top_k: 5
+retriever_search_type: 'mmr'
+retriever_fetch_k: 5
+retriever_lambda_mult: 0.5
+system_prompts_lang: eng
+
+reranker:
+  enabled: false
+  reranked_top_k: 3
+  inference_engine:
+    name: huggingface
+    url: null
+    api_key: null
+    model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma
+    device: cuda
+    load_in_8bit: true
+    max_new_tokens: 150
+    trust_remote_code: false
+    device_map: null
+    temperature: 0.1
+
+chat_history:
+  enabled: false
+
+# QA agent
+inference_engine:
+  name: huggingface
+  url: null
+  api_key: null
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  device: cuda
+  load_in_4bit: true
+  load_in_8bit: false
+  max_new_tokens: 150
+  trust_remote_code: false
+  device_map: auto
+  temperature: 0.1
+
+# Evaluation
+evaluation_tool: ragas
+evaluation_engine:
+  name: huggingface
+  url: null
+  api_key: null
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  device: cuda
+  load_in_8bit: true
+  max_new_tokens: 150
+  trust_remote_code: false
