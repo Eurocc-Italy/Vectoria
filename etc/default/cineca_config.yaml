@@ -9,7 +9,7 @@ pp_steps:
   - name: extract_text_from_docx_file
     filter_paragraphs: null
     dump_doc_structure_on_file: true
-    regexes_for_metadata_extraction: null
+    regexes_for_metadata_extraction: []
 
   - name: remove_header
     regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
@@ -45,13 +45,28 @@ retriever_top_k: 5
 retriever_search_type: 'mmr'
 retriever_fetch_k: 5
 retriever_lambda_mult: 0.5
-chat_history: false
-system_prompts_lang: it
+# chat_history: false
+system_prompts_lang: eng
+
+#reranker:
+  #model_name: /leonardo_work/PhDLR_prod/all-mpnet-base-v2
+  #name: cos_sim
+  #reranked_top_k: 7
 
 reranker:
-  model_name: /leonardo_work/PhDLR_prod/all-mpnet-base-v2
-  name: cos_sim
-  reranked_top_k: 7
+  enabled: false
+  reranked_top_k: 3
+  inference_engine:
+    name: huggingface
+    url: null
+    api_key: null
+    model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma
+    device: cuda
+    load_in_8bit: true
+    max_new_tokens: 150
+    trust_remote_code: false
+    device_map: null
+    temperature: 0.1
 
 # Inference engine
 inference_engine:
@@ -62,23 +77,26 @@ inference_engine:
   # model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # WORK 8B
   # model_name: /leonardo_scratch/large/userinternal/aproia00/Meta-Llama-3-70B-Instruct # SCRATCH 70B
   # model_name: /leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct # FAST 8B
-  # model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
-  model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  #model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
   device: cuda
+  load_in_4bit: false
   load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto
   temperature: 0.1
 
+chat_history:
+  enabled: false
 
 evaluation_tool: ragas
 evaluation_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # FIX THIS WITH ACTUAL MODEL PATH AS ABOVE !!!
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B 
   device: cuda
-  load_in_8bit: false
+  load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: false
