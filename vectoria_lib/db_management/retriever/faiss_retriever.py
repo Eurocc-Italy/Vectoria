@@ -9,19 +9,9 @@ from langchain_community.vectorstores.faiss import FAISS
 class FaissRetriever:
 
     def __init__(self, vector_store: FAISS, search_type: str, search_kwargs: dict):
-        self.retriever = vector_store.as_retriever(search_type=search_type, search_kwargs=search_kwargs)
-
-    def get_docs(self, query: str):
-        """
-        Retrieve documents relevant to the provided query using the FAISS retriever.
-
-        Parameters:
-        - query (str): The query string for which to retrieve relevant documents.
-
-        Returns:
-        - list: A list of documents that are most relevant to the provided query.
-        """
-        return self.retriever.get_relevant_documents(query)
+        self.vector_store = vector_store
+        self.retriever = vector_store.as_retriever(
+            search_type=search_type, search_kwargs=search_kwargs)
 
     def as_langchain_retriever(self):
         """
@@ -32,5 +22,8 @@ class FaissRetriever:
         """
         return self.retriever
 
+    def retrieve_paragraphs(self, chunks: List[Document]):
+        self.retriever = self.vector_store.as_retriever(search_type="mmr", search_kwargs={"lambda_mult": 0.5})
+        chunks = self.retriever.get_relevant_documents(chunks)
 
 
