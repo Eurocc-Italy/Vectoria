@@ -32,26 +32,18 @@ pp_steps:
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]
     dump_chunks_on_file: true
-
-
+  
 # Vector store
-# hf_embedder_model_name: BAAI/bge-m3 # LEO
 hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
 embedder_device: cuda
 normalize_embeddings: false
 
-# QA agent
+
 retriever_top_k: 5
 retriever_search_type: 'mmr'
 retriever_fetch_k: 5
 retriever_lambda_mult: 0.5
-# chat_history: false
 system_prompts_lang: eng
-
-#reranker:
-  #model_name: /leonardo_work/PhDLR_prod/all-mpnet-base-v2
-  #name: cos_sim
-  #reranked_top_k: 7
 
 reranker:
   enabled: false
@@ -68,34 +60,30 @@ reranker:
     device_map: null
     temperature: 0.1
 
-# Inference engine
-inference_engine:
-  name: 'huggingface'
-  url: null
-  api_key: null
-  # model_name: meta-llama/Meta-Llama-3.1-8B-Instruct # LEO
-  # model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # WORK 8B
-  # model_name: /leonardo_scratch/large/userinternal/aproia00/Meta-Llama-3-70B-Instruct # SCRATCH 70B
-  # model_name: /leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct # FAST 8B
-  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
-  #model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
-  device: cuda
-  load_in_4bit: false
-  load_in_8bit: true
-  max_new_tokens: 150
-  trust_remote_code: true
-  device_map: auto
-  temperature: 0.1
-
 chat_history:
   enabled: false
 
+# QA agent
+inference_engine:
+  name: huggingface
+  url: null
+  api_key: null
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  device: cuda
+  load_in_4bit: true
+  load_in_8bit: false
+  max_new_tokens: 150
+  trust_remote_code: false
+  device_map: auto
+  temperature: 0.1
+
+# Evaluation
 evaluation_tool: ragas
 evaluation_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B 
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150
