@@ -46,8 +46,9 @@ def recursive_character_text_splitter(
     # since we are processing one document at a time, we can safely return the first element of the list
     chunks = text_splitter.create_documents([doc.page_content])
 
-    for chunk in chunks:
+    for id,chunk in enumerate(chunks):
         chunk.metadata = doc.metadata.copy()
+        chunk.metadata["seq_id"] = id
         chunk.page_content = chunk.page_content
 
     if dump_chunks_on_file:
