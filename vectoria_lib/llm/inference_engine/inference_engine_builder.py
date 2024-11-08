@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from vectoria_lib.llm.inference_engine.huggingface_inference_engine import HuggingFaceInferenceEngine
 from vectoria_lib.llm.inference_engine.ollama_inference_engine import OllamaInferenceEngine

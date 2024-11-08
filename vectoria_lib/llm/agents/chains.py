@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Leonardo Baroncelli
+#
+
 # https://github.com/langchain-ai/langchain/tree/master/libs/langchain/langchain/chains 
 from typing import Any, Dict, List, Optional, Tuple
 

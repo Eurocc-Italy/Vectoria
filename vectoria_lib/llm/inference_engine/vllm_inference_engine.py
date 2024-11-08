@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Leonardo Baroncelli
+#
+
 from langchain_openai import OpenAI
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase

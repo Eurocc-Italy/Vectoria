@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from vectoria_lib.llm.helpers import get_prompt
 
