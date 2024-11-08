@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 import yaml, logging
 from pathlib import Path
 from tqdm import tqdm
