@@ -18,6 +18,14 @@ config = Config()
 class FaissRetriever:
 
     def __init__(self, vector_store: FAISS, search_type: str, search_kwargs: dict):
+        """
+        Constructor that stores the vector_store as it is and a retriever with custom config
+
+        Parameters:
+        - vector_store: FAISS
+        - search_type: str (e.g. "mmr")
+        - search_kwargs: disct (other configs: "k", "fetch_k", "lambda_mult")
+        """
         self.vector_store = vector_store
         self.retriever = vector_store.as_retriever(
             search_type=search_type, search_kwargs=search_kwargs)
@@ -32,6 +40,15 @@ class FaissRetriever:
         return self.retriever
 
     def retrieve_full_paragraphs(self, chunks: List[Document]):
+        """
+        This method retrieve the full paragraph for a given set of chunks (1 or more depending on config)
+
+        Parameters:
+        - chunks: List[Document]
+
+        Returns:
+        - str (full paragraph) or List[str] (list of full paragraph)
+        """
         # 1) create a new retreiver specialized for full paragraph w/ k and fetch_k set to very high value
         logger.debug("Creating Faiss retriever")
         start_time = time.time()
