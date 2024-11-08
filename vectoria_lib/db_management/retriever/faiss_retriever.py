@@ -55,7 +55,7 @@ class FaissRetriever:
         self.full_paragraph_retriever = self.vector_store.as_retriever( # TODO: do we want a separate config for this retriever? 
             search_type="mmr", # config.get("FP_retriever_search_type")
             search_kwargs={
-                "k" = 1000000, # config.get("FP_retriever_top_k")
+                "k": 1000000, # config.get("FP_retriever_top_k")
                 "fetch_k": 1000000, #config.get("FP_retriever_fetch_k")
                 "lambda_mult": 0.5 # config.get("FP_retriever_lambda_mult")
             }
@@ -75,8 +75,8 @@ class FaissRetriever:
         # }
         top_1: Document = chunks[0] # TODO: naive version that retrieve full paragraph only for the most relevant chunk
         filter_metadata = {
-            "paragraph_number" = top_1.metadata["paragraph_number"],
-            "doc_id" = top_1.metadata["doc_id"]
+            "paragraph_number": top_1.metadata["paragraph_number"],
+            "doc_id": top_1.metadata["doc_id"]
         }
 
         # 3) use correct metadata to filter the retrived additional docs
