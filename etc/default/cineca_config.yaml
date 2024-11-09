@@ -2,6 +2,7 @@
 vectoria_logs_dir: ~/vectoria_logs
 log_level: DEBUG
 langchain_tracking: null
+system_prompts_lang: eng
 
 # Preprocessing
 pp_multiprocessing: true
@@ -9,7 +10,7 @@ pp_steps:
   - name: extract_text_from_docx_file
     filter_paragraphs: null
     dump_doc_structure_on_file: true
-    regexes_for_metadata_extraction: []
+    regexes_for_metadata_extraction: null
 
   - name: remove_header
     regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
@@ -33,25 +34,18 @@ pp_steps:
     is_separator_regex: [false, false, false, false]
     dump_chunks_on_file: true
 
+vector_store:
+  model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
+  device: cuda
+  normalize_embeddings: false
 
-# Vector store
-# hf_embedder_model_name: BAAI/bge-m3 # LEO
-hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
-embedder_device: cuda
-normalize_embeddings: false
+retriever:
+  enabled: true
+  retriever_top_k: 5
+  retriever_search_type: 'mmr'
+  retriever_fetch_k: 5
+  retriever_lambda_mult: 0.5
 
-# QA agent
-retriever_top_k: 5
-retriever_search_type: 'mmr'
-retriever_fetch_k: 5
-retriever_lambda_mult: 0.5
-# chat_history: false
-system_prompts_lang: eng
-
-#reranker:
-  #model_name: /leonardo_work/PhDLR_prod/all-mpnet-base-v2
-  #name: cos_sim
-  #reranked_top_k: 7
 
 reranker:
   enabled: false
@@ -62,11 +56,18 @@ reranker:
     api_key: null
     model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma
     device: cuda
-    load_in_8bit: true
+    load_in_4bit: true
+    load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
     device_map: null
     temperature: 0.1
+
+full_paragraphs_retrieval:
+  enable: false
+
+chat_history:
+  enabled: false
 
 # Inference engine
 inference_engine:
@@ -87,8 +88,6 @@ inference_engine:
   device_map: auto
   temperature: 0.1
 
-chat_history:
-  enabled: false
 
 evaluation_tool: ragas
 evaluation_engine:

@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from vectoria_lib.common.config import Config
@@ -7,7 +8,7 @@ from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_ex
 import langchain_core
 def test_pipeline():
     config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
 
     pipeline: PreprocessingPipelineExecutor = PreprocessingPipelineBuilder.build_pipeline()
     

@@ -19,8 +19,7 @@ class QAAgent:
 
     def __init__(
         self,
-        oracle_chain,
-        chain = None
+        chain
     ):
         """
         Initialize the QAAgent object with the corresponding chains
@@ -29,14 +28,13 @@ class QAAgent:
 
         """
         self.logger = logging.getLogger('llm')
-        self.oracle_chain = oracle_chain
         self.chain = chain
 
 
 
     # --------------------------------------------------------------------------------
     @traceable
-    def ask(self, question: str, session_id: str = None, config: dict = {}) -> str:
+    def ask(self, question: str, context: list[Document] = None, session_id: str = None, config: dict = {}) -> str:
         """
         Ask the QAAgent a input and get an answer based on the retrieved documents 
         and chat history.
@@ -53,19 +51,18 @@ class QAAgent:
         #    if session_id is None:
         #        raise ValueError("Session ID is required when using chat history.")
         #    config = {"configurable": {"thread_id": session_id}}
-        
-        output = self.chain.invoke({"input" : question}, config)
+        inputs = {"input" : question}
+
+        if context is not None:
+            inputs["docs"] = context
+
+        output = self.chain.invoke(inputs, config)
         
         self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
         self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), output["answer"])
 
         return output
 
-    def ask_with_custom_context(self, question: str, context: list[Document], config: dict = {}) -> str:
-        #if self.use_chat_history:
-        #    self.logger.warning("This method is not supported when using chat history.")
-        #    return None
-        return self.oracle_chain.invoke({"input" : question, "docs" : context}, config)
 
     # def get_chat_history(self, session_id: str, pretty_print=True):
     #     chat_history = self.chain.get_state({"configurable": {"thread_id": session_id}}).values["chat_history"]

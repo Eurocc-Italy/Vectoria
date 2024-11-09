@@ -1,4 +1,4 @@
-import re
+import re, os
 import pytest
 from pathlib import Path
 from langchain.docstore.document import Document
@@ -62,7 +62,7 @@ def test_filter_unstructured_data():
 
 def test_extract_text_from_docx_file():
     config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
 
     docs: list[Document] = extract_text_from_docx_file(
         TEST_DIR / "data/docx/docx_from_word.docx",

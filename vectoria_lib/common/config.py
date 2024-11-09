@@ -46,13 +46,24 @@ class Config(metaclass=Singleton):
             if value is not None:
                 self.config[key] = value
 
-    def get(self, key):
-        return self.config.get(key)
+    def get(self, key, subkey=None):
+        if subkey is None:
+            return self.config[key]
+        else:
+            return self.config[key][subkey]
 
-    def set(self, key, value):
-        self.config[key] = value
+    def set(self, key, subkey=None, value=None):
+        if value is None:
+            self.logger.warning("Value is None for key: %s, subkey: %s", key, subkey)
+            return
+        if subkey is None:
+            self.config[key] = value
+        else:
+            self.config[key][subkey] = value
         if key == "langchain_tracking":
             self._langchain_tracking()
+
+
 
     def _langchain_tracking(self):
         if not self.config.get("langchain_tracking"):

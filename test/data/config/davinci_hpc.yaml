@@ -1,7 +1,8 @@
 # Logging
-vectoria_logs_dir: ~/vectoria_logs
+vectoria_logs_dir: /tmp/vectoria_logs
 log_level: DEBUG
 langchain_tracking: null
+system_prompts_lang: eng
 
 # Preprocessing
 pp_multiprocessing: true
@@ -33,17 +34,17 @@ pp_steps:
     is_separator_regex: [false, false, false, false]
     dump_chunks_on_file: true
   
-# Vector store
-hf_embedder_model_name: /leonardo_work/PhDLR_prod/bge-m3 # CINECA
-embedder_device: cuda
-normalize_embeddings: false
+vector_store:
+  model_name: BAAI/bge-m3
+  device: cuda
+  normalize_embeddings: false
 
-
-retriever_top_k: 5
-retriever_search_type: 'mmr'
-retriever_fetch_k: 5
-retriever_lambda_mult: 0.5
-system_prompts_lang: eng
+retriever:
+  enabled: true
+  retriever_top_k: 5
+  retriever_search_type: 'mmr'
+  retriever_fetch_k: 5
+  retriever_lambda_mult: 0.5
 
 reranker:
   enabled: false
@@ -52,13 +53,17 @@ reranker:
     name: huggingface
     url: null
     api_key: null
-    model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma
+    model_name: BAAI/bge-reranker-v2-gemma
     device: cuda
-    load_in_8bit: true
+    load_in_4bit: true
+    load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
     device_map: null
     temperature: 0.1
+
+full_paragraphs_retrieval:
+  enable: false
 
 chat_history:
   enabled: false
@@ -68,7 +73,7 @@ inference_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
   device: cuda
   load_in_4bit: true
   load_in_8bit: false
@@ -83,7 +88,7 @@ evaluation_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150

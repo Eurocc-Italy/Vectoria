@@ -1,5 +1,3 @@
-import pytest
-from pathlib import Path
 from langchain.docstore.document import Document
 
 from vectoria_lib.db_management.preprocessing.extraction_pdf import extract_text_from_pdf_file

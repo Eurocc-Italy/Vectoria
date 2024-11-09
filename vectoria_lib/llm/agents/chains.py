@@ -18,12 +18,20 @@ from typing import Any, Dict
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough
 from langchain_core.prompts import PromptTemplate
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-
+from langchain_core.documents import Document
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template("{page_content}")
 
 logger = logging.getLogger("llm")
 
-def format_docs(inputs: dict) -> str:
+def get_correct_input_docs(inputs: dict) -> List[Document]:
+    if "full_paragraphs_docs" in inputs:
+        return inputs["full_paragraphs_docs"]
+    elif "reranked_docs" in inputs:
+        return inputs["reranked_docs"]
+    else:
+        return inputs["docs"]
+
+def format_docs(docs: List[Document]) -> str:
     """
     We assume that the retriver returns a dictionary with the "docs" key.
     DEFAULT_DOCUMENT_PROMPT is the prompt used for formatting each document into a string. 
@@ -32,11 +40,6 @@ def format_docs(inputs: dict) -> str:
     inputs variables will be automatically retrieved from the `Document.metadata` dictionary. 
     Default to a prompt that only contains `Document.page_content`.    
     """
-    if "reranked_docs" in inputs:
-        docs = inputs["reranked_docs"]
-    else:
-        docs = inputs["docs"]
-
     formatted_docs = "\n\n".join(
         f"{i+1}. {format_document(doc, DEFAULT_DOCUMENT_PROMPT)}"
         for i, doc in enumerate(docs)
@@ -64,22 +67,11 @@ def create_qa_chain(
     output_parser: BaseOutputParser,
     *,
     retriever_config: Optional[Dict[str, Any]] = None,
-    reranker_config: Optional[Dict[str, Any]] = None
-    
+    reranker_config: Optional[Dict[str, Any]] = None,
+    full_paragraphs_retrieval_config: Optional[Dict[str, Any]] = None
 ) -> Runnable[Dict[str, Any], Any]:
     """
     Create a chain for passing a list of Documents to a model.
-    Args:
-        llm: Language model.
-        prompt: Prompt template. Must contain input variable "context" (override by
-            setting document_variable), which will be used for passing in the formatted documents.
-        output_parser: Output parser. Defaults to StrOutputParser.
-        retriever_config: Configuration for the retriever.
-        reranker_config: Configuration for the reranker.
-    Returns:
-        An LCEL Runnable. The input is a dictionary that must have a "context" key that
-        maps to a List[Document], and any other input variables expected in the prompt.
-        The Runnable return type depends on output_parser used.
     """
     _validate_prompt(prompt, "context") # Check if prompt has 'context' key
 
@@ -101,7 +93,12 @@ def create_qa_chain(
 
         reranking_chain = reranking_chain | RunnableLambda(lambda x: x["reranked_docs"])
 
-    combine_docs_chain = RunnableLambda(format_docs).with_config(run_name="combine_docs_chain")
+    if full_paragraphs_retrieval_config:
+        full_paragraphs_retrieval_chain = (
+            RunnableLambda(get_correct_input_docs) | full_paragraphs_retrieval_config["retriever"].retrieve_full_paragraphs
+        ).with_config(run_name="full_paragraphs_retrieval_chain")
+
+    combine_docs_chain = (RunnableLambda(get_correct_input_docs) | RunnableLambda(format_docs)).with_config(run_name="combine_docs_chain")
 
     generation_chain = (prompt | llm.as_langchain_llm() | output_parser).with_config(run_name="generation_chain")
 
@@ -120,6 +117,9 @@ def create_qa_chain(
 
     if reranker_config:
         chain = chain.assign(reranked_docs=reranking_chain)
+
+    if full_paragraphs_retrieval_config:
+        chain = chain.assign(full_paragraphs_docs=full_paragraphs_retrieval_chain)
 
     chain = chain.assign(context=combine_docs_chain)
     

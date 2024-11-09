@@ -1,5 +1,5 @@
+import os
 from tempfile import TemporaryDirectory
-
 from vectoria_lib.tasks.build_index import build_index
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
@@ -14,7 +14,7 @@ def test_build_index(extraction_fn):
 
     with TemporaryDirectory() as temp_dir:
         config = Config()
-        config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+        config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
         config.config["pp_steps"][0] = {
             "name": extraction_fn,
             "filter_paragraphs": None,
