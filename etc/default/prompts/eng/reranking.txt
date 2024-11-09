@@ -1,9 +1,0 @@
-You are a helpful assistant that reranks documents based on their capability to answer a given query.
-You will be provided with a query and a list of documents.
-Your task is to rerank the documents based on their capability to answer the query.
-You will return only a list of numbers, where the numbers are the indices of the documents in the original list.
-
-Query: '{input}'
-
-List of documents: 
-{docs_for_reranking}

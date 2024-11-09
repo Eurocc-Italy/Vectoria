@@ -34,7 +34,3 @@ class PromptBuilder:
                 ("human", "{input}")
         ])
     
-    def get_reranking_prompt(self):
-        return ChatPromptTemplate.from_messages([
-                ("system", get_prompt("reranking.txt", "eng"))
-        ])
