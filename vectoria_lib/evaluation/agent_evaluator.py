@@ -13,10 +13,10 @@ from vectoria.vectoria_lib.common.io.file_io import get_file_io
 from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
 from vectoria_lib.common.io.file_io import get_file_io
 from vectoria_lib.common.plots import make_bar_plot
-
+from vectoria_lib.evaluation.tools.base_eval import BaseEval
 class AgentEvaluator:
 
-    def __init__(self, output_root_path: str | Path, test_set_name: str, evaluation_tool: str):
+    def __init__(self, output_root_path: str | Path, test_set_name: str, evaluation_tool: BaseEval):
         self.answers = []
         self.retrived_context = []
         self.questions = None
@@ -24,8 +24,7 @@ class AgentEvaluator:
         self.output_root_path = output_root_path
         self.test_set_name = test_set_name
         self.logger = logging.getLogger('evaluation')
-        if evaluation_tool == "ragas":
-            self.eval_tool = RagasEval()
+        self.eval_tool = evaluation_tool
 
     def generate_answers(
             self,
@@ -61,13 +60,13 @@ class AgentEvaluator:
         )
     
     
-    def eval(
+    def evaluate(
             self,
             eval_data: dict,
             *args
         ) -> dict:
 
-        scores: list[dict] = self.eval_tool.eval(
+        scores: list[dict] = self.eval_tool.evaluate(
             eval_data,
             *args
         )

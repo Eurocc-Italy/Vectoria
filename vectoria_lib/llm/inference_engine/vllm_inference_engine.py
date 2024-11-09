@@ -4,7 +4,7 @@
 # @authors : Andrea Proia, Leonardo Baroncelli
 #
 
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
@@ -19,6 +19,13 @@ class VLLMInferenceEngine(InferenceEngineBase):
     # TODO: OpenAI or ChatOpenAI?
     def as_langchain_llm(self) -> BaseLanguageModel:
         return OpenAI(
+            model = self.args["model_name"],
+            base_url = self.args["url"],
+            api_key = self.args["api_key"]
+        )
+    
+    def as_langchain_chat_model(self) -> BaseLanguageModel:
+        return ChatOpenAI(
             model = self.args["model_name"],
             base_url = self.args["url"],
             api_key = self.args["api_key"]

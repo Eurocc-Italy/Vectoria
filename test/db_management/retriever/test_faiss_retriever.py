@@ -18,9 +18,7 @@ def test_faiss_retriever(k):
     docs = retriever.as_langchain_retriever().get_relevant_documents(query)
     assert len(docs) == k
 
-def test_faiss_retriever_full_paragraph():
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_faiss_retriever_full_paragraph(config):
     config.set("system_prompts_lang", "it")
 
     vector_store = FaissVectorStore.load_from_pickle(

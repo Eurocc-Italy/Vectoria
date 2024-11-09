@@ -10,11 +10,9 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 import pytest
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
-def test_build_index(extraction_fn):
+def test_build_index(config, extraction_fn):
 
     with TemporaryDirectory() as temp_dir:
-        config = Config()
-        config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
         config.config["pp_steps"][0] = {
             "name": extraction_fn,
             "filter_paragraphs": None,

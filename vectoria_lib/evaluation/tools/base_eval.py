@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 import logging
-
 class BaseEval(ABC):
 
     def __init__(self):
@@ -11,5 +10,5 @@ class BaseEval(ABC):
         pass
 
     @abstractmethod
-    def eval(self, data: dict) -> list[dict]:
+    def evaluate(self, data: dict) -> list[dict]:
         pass

@@ -82,13 +82,15 @@ inference_engine:
   device_map: auto
   temperature: 0.1
 
-evaluation_tool: ragas
-evaluation_engine:
-  name: huggingface
-  url: null
-  api_key: null
-  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
-  device: cuda
-  load_in_8bit: false
-  max_new_tokens: 150
-  trust_remote_code: false
+evaluation:
+  tool: ragas
+  inference_engine:
+    name: vllm
+    model_name: hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4
+    url: http://localhost:8899/v1
+    api_key: abcd
+  embeddings_engine:
+    name: vllm
+    model_name: BAAI/bge-multilingual-gemma2
+    url: http://localhost:8898/v1
+    api_key: abcd

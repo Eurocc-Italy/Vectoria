@@ -10,17 +10,21 @@ from vectoria_lib.llm.inference_engine.inference_engine_builder import Inference
 
 
 @pytest.mark.slow
-@pytest.mark.skip(reason="skipif should ping ollama service to check if it's running")
-def test_qa_agent_ollama(clear_inference_engine_cache):
+def test_qa_agent_ollama(config, clear_inference_engine_cache, ollama_server_status_fn):
     inference_config = {
         "name": "ollama",
         "model_name": "llama3.2:1b"
     }
-    _run_engine_test(inference_config, "test_qa_agent_ollama")
+    if not ollama_server_status_fn(inference_config):
+        pytest.skip("Ollama server is not running")
+
+    config.set("inference_engine", inference_config)
+    config.set("retriever", "retriever_top_k", 1)
+    _run_engine_test("test_qa_agent_ollama")
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_huggingface(clear_inference_engine_cache):
+def test_qa_agent_huggingface(config, clear_inference_engine_cache):
     inference_config = {
         "name": "huggingface",
         "model_name": "meta-llama/Meta-Llama-3.1-8B-Instruct",
@@ -32,29 +36,29 @@ def test_qa_agent_huggingface(clear_inference_engine_cache):
         "device_map": "auto",
         "temperature": 0.1
     }
-    _run_engine_test(inference_config, "test_qa_agent_huggingface")
+    config.set("inference_engine", inference_config)
+    config.set("retriever", "retriever_top_k", 1)
+    _run_engine_test("test_qa_agent_huggingface")
 
 @pytest.mark.slow
-@pytest.mark.skip(reason="skipif should ping openai service to check if it's running")
-def test_qa_agent_openai(clear_inference_engine_cache):
+def test_qa_agent_vllm(config, clear_inference_engine_cache, vllm_server_status_fn):
     inference_config = {
-        "name": "openai",
-        "model_name": "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        "name": "vllm",
+        "model_name": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
         "url": "http://localhost:8899/v1",
         "api_key": "abcd"
     }
-    _run_engine_test(inference_config, "test_qa_agent_openai")
+    if not vllm_server_status_fn(inference_config):
+        pytest.skip("VLLM server is not running")
 
-def _run_engine_test(inference_config, run_name):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+    config.set("inference_engine", value=inference_config)
     config.set("retriever", "retriever_top_k", 1)
-    config.set("inference_engine", inference_config)
+    _run_engine_test("test_qa_agent_openai")
 
+def _run_engine_test(run_name):
     agent = AgentBuilder.build_qa_agent(
         faiss_index_path=TEST_DIR / "data" / "index" / "BAAI__bge-m3_faiss_index_the_matrix.pkl",
     )
-
     answer = agent.ask("What is the name of the movie?", config={"run_name": run_name})
     assert "answer" in answer
     assert "context" in answer
@@ -64,9 +68,7 @@ def _run_engine_test(inference_config, run_name):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_retriever(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_without_retriever(config, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
 
     agent = AgentBuilder.build_qa_agent(
@@ -91,9 +93,7 @@ def test_qa_agent_without_retriever(clear_inference_engine_cache):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_retriever_with_reranker(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_without_retriever_with_reranker(config, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
     config.set("reranker", "enabled", True)
     config.set("reranker", "reranked_top_k", 3)
@@ -122,9 +122,7 @@ def test_qa_agent_without_retriever_with_reranker(clear_inference_engine_cache):
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 #@pytest.mark.skip(reason="The index used for this test needs to be replaced")
-def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(config, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
     config.set("reranker", "enabled", True)
     config.set("reranker", "reranked_top_k", 3)
@@ -152,9 +150,7 @@ def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(clear_inf
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 @pytest.mark.skip(reason="The index used for this test needs to be replaced")
-def test_qa_agent_with_retriever_without_reranker_with_full_paragraphs(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_with_retriever_without_reranker_with_full_paragraphs(config, clear_inference_engine_cache):
     config.set("retriever", "retriever_top_k", 2)
     config.set("full_paragraphs_retrieval", "enable", True)
 
@@ -176,9 +172,7 @@ def test_qa_agent_with_retriever_without_reranker_with_full_paragraphs(clear_inf
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 #@pytest.mark.skip(reason="The index used for this test needs to be replaced")
-def test_qa_agent_with_retriever_with_reranker_with_full_paragraphs(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_with_retriever_with_reranker_with_full_paragraphs(config, clear_inference_engine_cache):
     config.set("reranker", "enabled", True)
     config.set("reranker", "reranked_top_k", 3)
     config.set("full_paragraphs_retrieval", "enable", True)
@@ -204,9 +198,7 @@ def test_qa_agent_with_retriever_with_reranker_with_full_paragraphs(clear_infere
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 @pytest.mark.skip(reason="Chat history needs to be refactored")
-def test_qa_agent_with_history(clear_inference_engine_cache):
-    config = Config()
-    config.load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def test_qa_agent_with_history(config, clear_inference_engine_cache):
     config.set("documents_format", "pdf")
     config.set("chat_history", {"enabled": True})
     config.set("retriever_top_k", 1)
