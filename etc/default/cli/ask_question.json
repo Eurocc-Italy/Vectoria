@@ -9,14 +9,6 @@
             }
         },
         {
-            "name": "--k",
-            "param": {
-                "type": "int",
-                "required": "True",
-                "help": "The number of retrieved chunks"
-            }
-        },
-        {
             "name": "--query",
             "param": {
                 "type": "str",
