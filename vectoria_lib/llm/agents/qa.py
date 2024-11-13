@@ -5,7 +5,7 @@
 #
 # ----------------------------------------------------------------------------------------------
 
-import logging, datetime, time
+import json, logging, datetime, time
 from pathlib import Path
 from langsmith import traceable
 from langchain.docstore.document import Document
@@ -56,12 +56,12 @@ class QAAgent:
         if context is not None:
             inputs["docs"] = context
 
-        output = self.chain.invoke(inputs, config)
+        results = self.chain.invoke(inputs, config)
         
         self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
-        self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), output["answer"])
+        self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), results["answer"])
 
-        return output
+        return results
 
 
     # def get_chat_history(self, session_id: str, pretty_print=True):
@@ -70,6 +70,13 @@ class QAAgent:
     #         for message in chat_history:
     #             message.pretty_print()
     #     return chat_history
+    def _get_correct_context_key(self, result: dict):
+        if "full_paragraphs_docs" in result:
+            return "full_paragraphs_docs"
+        elif "reranked_docs" in result:
+            return "reranked_docs"
+        else:
+            return "docs"
 
     def inference(self, test_set_path: str, output_dir: str):
         """
@@ -95,28 +102,42 @@ class QAAgent:
         with open(test_set_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         
+        Path(output_dir).mkdir(exist_ok=True, parents=True)
+
         times = []
-        output = data.copy()
-        output["contexts"] = []
-        output["answer"] = []
+        results = data.copy()
+        results["contexts"] = []
+        results["answer"] = []
         for q in data["question"]:
+
             start_time = time.perf_counter()
-            result = self.ask(q)
+            try:
+                result = self.ask(q)
+            except Exception as e:
+                self.logger.error("Error answering question: %s", e)
+                self._write_inference_results(results, output_dir, Path(test_set_path).stem)
+                return 
             took = time.perf_counter() - start_time
             self.logger.info("Time taken to answer question: %.2f seconds", took)
             times.append(took)
-            contexts = result["context"]
+
+            contexts_key = self._get_correct_context_key(result)
+            contexts = result[contexts_key]
             answer = result["answer"]
-            output["contexts"].append([c.page_content for c in contexts])
-            output["answer"].append(answer)
+            if contexts_key not in results:
+                results[contexts_key] = []
+            results[contexts_key].append([c.page_content for c in contexts])
+            results["answer"].append(answer)
         
         self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", np.mean(times), np.std(times))
 
-        Path(output_dir).mkdir(exist_ok=True, parents=True)
-        output_file = Path(output_dir) / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
+        self._write_inference_results(results, output_dir, Path(test_set_path).stem)
+    
+    def _write_inference_results(self, results, output_dir, output_name):
+        output_file = Path(output_dir) / f"{output_name}_with_answers_and_contexts.json"
         start_time = time.perf_counter()
         with open(output_file, 'w', encoding='utf-8') as file:
-            json.dump(output, file, indent=4, ensure_ascii=False)
+            json.dump(results, file, indent=4, ensure_ascii=False)
 
         self.logger.info("Annotated test set saved to %s and took %.2f seconds", output_file, time.perf_counter() - start_time)
 
