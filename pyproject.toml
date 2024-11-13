@@ -45,7 +45,7 @@ dependencies = [
 
 [project.optional-dependencies]
 evaluation = [
-    "ragas==0.2.3",
+    "ragas==0.2.4",
     "nltk",
     "rouge_score",
     "matplotlib"

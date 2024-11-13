@@ -3,7 +3,7 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-# ----------------------------------------------------------------------------------------------
+
 from vectoria_lib.llm.agent_builder import AgentBuilder
 
 def inference(

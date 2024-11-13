@@ -36,3 +36,4 @@ class CustomResponseParser(BaseOutputParser):
     def parse(self, text: str) -> str:
         #logger.debug("CustomResponseParser: parsing:%s", text)
         return self.filter_postfix(self.filter_prefix(text))
+

@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 import logging
 from pathlib import Path
 import multiprocessing as mp

@@ -1,7 +1,18 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 from langchain_huggingface import HuggingFacePipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from vectoria_lib.llm.inference_engine.custom_hf.huggingface_reranker import HuggingFaceReranker
+
 from langchain_core.language_models.llms import BaseLanguageModel
+
+from langchain_huggingface import ChatHuggingFace
+
 
 import time
 import logging 
@@ -18,6 +29,8 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     How to
     https://python.langchain.com/docs/how_to/#chat-models
 
+    
+    TODO: HuggingFaceInferenceEngine does not inherit from InferenceEngineBase anymore because of the metaclass Singleton.
     """
     def __init__(self, args: dict):
         super().__init__(args)
@@ -25,7 +38,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         self.logger = logging.getLogger('llm')
 
         start_time = time.perf_counter()
-        tokenizer = AutoTokenizer.from_pretrained(
+        self.tokenizer = AutoTokenizer.from_pretrained(
             self.args["model_name"],
             trust_remote_code = self.args["trust_remote_code"]
         )
@@ -36,30 +49,40 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             quantization_config = BitsAndBytesConfig(
                 load_in_8bit=True
             )
+        elif self.args["load_in_4bit"]:
+            quantization_config = BitsAndBytesConfig(
+                load_in_4bit=True
+            )
+        else:
             self.args["device"] = None
 
         start_time = time.perf_counter()
         
         # TODO: device_map="auto" will not deallocate memory between tests
-        model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
             quantization_config = quantization_config,
-            device_map=self.args["device_map"],
-            trust_remote_code = self.args["trust_remote_code"],
+            device_map = self.args["device_map"],
+            trust_remote_code = self.args["trust_remote_code"]
+            #device = self.args["device"]
         )
-        self.logger.debug("Loading model took %.2f seconds", time.perf_counter() - start_time)
+        self.pipe = None
+        self.logger.debug("Loading model %s took %.2f seconds", self.args["model_name"], time.perf_counter() - start_time)
+        self.model.eval()
 
+
+    def as_langchain_llm(self) -> BaseLanguageModel:
+        # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
+        # return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
         self.pipe = pipeline(
             "text-generation", 
-            model = model,
-            tokenizer = tokenizer,
+            model = self.model,
+            tokenizer = self.tokenizer,
             max_new_tokens = self.args["max_new_tokens"], # https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
-            #repetition_penalty=1.03, # TODO: move in configuration
             return_full_text = False,
             temperature = self.args["temperature"]
         )
-        
-    def as_langchain_llm(self) -> BaseLanguageModel:
-        # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
-        # ChatHuggingFace(llm=)
         return HuggingFacePipeline(pipeline=self.pipe)
+    
+    def as_langchain_reranker_llm(self) -> BaseLanguageModel:
+        return HuggingFaceReranker(model=self.model, tokenizer=self.tokenizer)

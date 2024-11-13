@@ -4,24 +4,30 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
+from typing import List, Set
 from langchain_community.vectorstores.faiss import FAISS
+from langchain_core.prompts import format_document
+from langchain.docstore.document import Document
+import logging
+from vectoria_lib.common.config import Config
+import time
+
+logger = logging.getLogger('db_management')
+config = Config()
 
 class FaissRetriever:
 
     def __init__(self, vector_store: FAISS, search_type: str, search_kwargs: dict):
-        self.retriever = vector_store.as_retriever(search_type=search_type, search_kwargs=search_kwargs)
-
-    def get_docs(self, query: str):
         """
-        Retrieve documents relevant to the provided query using the FAISS retriever.
+        Constructor that stores the vector_store as it is and a retriever with custom config
 
         Parameters:
-        - query (str): The query string for which to retrieve relevant documents.
-
-        Returns:
-        - list: A list of documents that are most relevant to the provided query.
+        - vector_store: FAISS
+        - search_type: str (e.g. "mmr")
+        - search_kwargs: disct (other configs: "k", "fetch_k", "lambda_mult")
         """
-        return self.retriever.get_relevant_documents(query)
+        self.retriever = vector_store.as_retriever(
+            search_type=search_type, search_kwargs=search_kwargs)
 
     def as_langchain_retriever(self):
         """
@@ -31,6 +37,3 @@ class FaissRetriever:
         - retriever: The current FAISS retriever instance.
         """
         return self.retriever
-
-
-

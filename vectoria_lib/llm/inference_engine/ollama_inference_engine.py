@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 from langchain_community.chat_models import ChatOllama
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase

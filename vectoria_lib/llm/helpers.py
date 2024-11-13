@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 from vectoria_lib.common.paths import ETC_DIR
 
 def format_docs(docs):

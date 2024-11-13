@@ -5,17 +5,9 @@
 #
 # ----------------------------------------------------------------------------------------------
 
-import logging, datetime, time
+import json, logging, datetime, time
 from pathlib import Path
-
 from langsmith import traceable
-
-from vectoria_lib.llm.agents.chains import create_qa_chain
-from vectoria_lib.llm.agents.stateful_workflow import StatefulWorkflow
-from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from langchain.docstore.document import Document
 
 class QAAgent:
@@ -27,78 +19,22 @@ class QAAgent:
 
     def __init__(
         self,
-        retriever: FaissRetriever,
-        inference_engine: InferenceEngineBase,
-        chat_history: bool,
-        system_prompts_lang: str
+        chain
     ):
         """
-        Initialize the QAAgent object with the provided retriever and inference engine.
+        Initialize the QAAgent object with the corresponding chains
 
         Parameters:
-        - retriever (Retriever): A retriever object to fetch relevant documents from a FAISS-based vector store.
-        - inference_engine (InferenceEngineBase): An inference engine object to generate answers based on the retrieved documents.
-        - use_chat_history (bool): A flag to indicate whether to use chat history to contextualize the answers.
-        - system_prompts_lang (str): The language of the prompts to load.
-        """
 
+        """
         self.logger = logging.getLogger('llm')
+        self.chain = chain
 
-        self.logger.info("Creating QA agent with the oracle retriever")
-
-        self.oracle_chain = create_qa_chain(
-            PromptBuilder(system_prompts_lang).get_qa_prompt(),
-            inference_engine.as_langchain_llm(),
-            CustomResponseParser(),
-            retriever = None
-        )
-
-        if retriever is None:
-            self.logger.warning("No retriever provided, the RAG retriever will be not be initialized")
-            self.chain = None
-            return
-
-        self.logger.info("Creating QA agent with the RAG retriever")
- 
-        self.chain = create_qa_chain(
-            PromptBuilder(system_prompts_lang).get_qa_prompt(),
-            inference_engine.as_langchain_llm(),
-            CustomResponseParser(),
-            retriever=retriever.as_langchain_retriever()
-        )
-
-
-        #self.use_chat_history = chat_history
-        #self.rag_chain = None
-        #self.oracle_chain = None
-
-        """
-        if self.use_chat_history is True and retriever is not None:
-
-            self.logger.info("Creating QA agent with the RAG retriever and chat history")
-            combine_docs_chain = create_generation_chain(
-                prompt_builder.get_qa_prompt_with_history(),
-                inference_engine,
-                output_parser=CustomResponseParser()
-            )
-
-            history_aware_retriever = create_history_aware_retriever(
-                inference_engine,
-                retriever,
-                prompt_builder.get_contextualize_q_prompt()
-            )
-
-            self.rag_chain = create_retrieval_chain(
-                history_aware_retriever,
-                combine_docs_chain
-            )
-            self.rag_chain = StatefulWorkflow.to_stateful_workflow(self.rag_chain)
-        """
 
 
     # --------------------------------------------------------------------------------
     @traceable
-    def ask(self, question: str, session_id: str = None) -> str:
+    def ask(self, question: str, context: list[Document] = None, session_id: str = None, config: dict = {}) -> str:
         """
         Ask the QAAgent a input and get an answer based on the retrieved documents 
         and chat history.
@@ -111,24 +47,22 @@ class QAAgent:
         - dict: The generated answer to the input.
         """
 
-        config = {}
         #if self.use_chat_history:
         #    if session_id is None:
         #        raise ValueError("Session ID is required when using chat history.")
         #    config = {"configurable": {"thread_id": session_id}}
-        
-        output = self.chain.invoke({"input" : question}, config=config)
+        inputs = {"input" : question}
+
+        if context is not None:
+            inputs["docs"] = context
+
+        results = self.chain.invoke(inputs, config)
         
         self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
-        self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), output["answer"])
+        self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), results["answer"])
 
-        return output
+        return results
 
-    def ask_with_custom_context(self, question: str, context: list[Document]) -> str:
-        #if self.use_chat_history:
-        #    self.logger.warning("This method is not supported when using chat history.")
-        #    return None
-        return self.oracle_chain.invoke({"input" : question, "docs" : context})
 
     # def get_chat_history(self, session_id: str, pretty_print=True):
     #     chat_history = self.chain.get_state({"configurable": {"thread_id": session_id}}).values["chat_history"]
@@ -136,6 +70,13 @@ class QAAgent:
     #         for message in chat_history:
     #             message.pretty_print()
     #     return chat_history
+    def _get_correct_context_key(self, result: dict):
+        if "full_paragraphs_docs" in result:
+            return "full_paragraphs_docs"
+        elif "reranked_docs" in result:
+            return "reranked_docs"
+        else:
+            return "docs"
 
     def inference(self, test_set_path: str, output_dir: str):
         """
@@ -161,28 +102,42 @@ class QAAgent:
         with open(test_set_path, 'r', encoding='utf-8') as file:
             data = json.load(file)
         
+        Path(output_dir).mkdir(exist_ok=True, parents=True)
+
         times = []
-        output = data.copy()
-        output["contexts"] = []
-        output["answer"] = []
+        results = data.copy()
+        results["contexts"] = []
+        results["answer"] = []
         for q in data["question"]:
+
             start_time = time.perf_counter()
-            result = self.ask(q)
+            try:
+                result = self.ask(q)
+            except Exception as e:
+                self.logger.error("Error answering question: %s", e)
+                self._write_inference_results(results, output_dir, Path(test_set_path).stem)
+                return 
             took = time.perf_counter() - start_time
             self.logger.info("Time taken to answer question: %.2f seconds", took)
             times.append(took)
-            contexts = result["context"]
+
+            contexts_key = self._get_correct_context_key(result)
+            contexts = result[contexts_key]
             answer = result["answer"]
-            output["contexts"].append([c.page_content for c in contexts])
-            output["answer"].append(answer)
+            if contexts_key not in results:
+                results[contexts_key] = []
+            results[contexts_key].append([c.page_content for c in contexts])
+            results["answer"].append(answer)
         
         self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", np.mean(times), np.std(times))
 
-        Path(output_dir).mkdir(exist_ok=True, parents=True)
-        output_file = Path(output_dir) / f"{Path(test_set_path).stem}_with_answers_and_contexts.json"
+        self._write_inference_results(results, output_dir, Path(test_set_path).stem)
+    
+    def _write_inference_results(self, results, output_dir, output_name):
+        output_file = Path(output_dir) / f"{output_name}_with_answers_and_contexts.json"
         start_time = time.perf_counter()
         with open(output_file, 'w', encoding='utf-8') as file:
-            json.dump(output, file, indent=4, ensure_ascii=False)
+            json.dump(results, file, indent=4, ensure_ascii=False)
 
         self.logger.info("Annotated test set saved to %s and took %.2f seconds", output_file, time.perf_counter() - start_time)
 

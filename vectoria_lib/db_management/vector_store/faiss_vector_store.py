@@ -10,8 +10,9 @@ import time
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from vectoria_lib.common.config import Config
+from vectoria_lib.common.utils import Singleton
 
-class FaissVectorStore:
+class FaissVectorStore(metaclass=Singleton):
     """
     A wrapper around the FAISS library to create and manage a FAISS-based vector store.
 
@@ -68,10 +69,10 @@ class FaissVectorStore:
         self.hf_embedder = HuggingFaceBgeEmbeddings(
             model_name=self.model_name,
             model_kwargs={
-                "device": config.get("embedder_device")
+                "device": config.get("vector_store", "device")
             },
             encode_kwargs={
-                "normalize_embeddings": config.get("normalize_embeddings")
+                "normalize_embeddings": config.get("vector_store", "normalize_embeddings")
             }
         )
         self.index = None

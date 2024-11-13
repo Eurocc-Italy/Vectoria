@@ -3,7 +3,7 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-# ----------------------------------------------------------------------------------------------
+
 from pathlib import Path
 import time
 import logging

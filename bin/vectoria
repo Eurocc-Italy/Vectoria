@@ -64,7 +64,7 @@ def _check_if_model_exists_in_ram(model_name):
 def main():
     
     args = cli()
-    Config().load_config(args.config).update_from_args(args) # <-- override config params with cli params
+    Config().load_config(args.config) #.update_from_args(args) # <-- override config params with cli params
     args = cl_convert_to_dict(args)
 
     for k, v in args.items():

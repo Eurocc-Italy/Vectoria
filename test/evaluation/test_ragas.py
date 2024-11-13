@@ -1,3 +1,4 @@
+import os
 import pytest
 from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
 from vectoria_lib.common.config import Config
@@ -11,128 +12,83 @@ from ragas.metrics import (
     NonLLMStringSimilarity,
     RougeScore,
     FactualCorrectness,
-    SemanticSimilarity
+    SemanticSimilarity,
+    Faithfulness
 )
+from ragas.llms import LangchainLLMWrapper
+from ragas.embeddings import LangchainEmbeddingsWrapper
 
 @pytest.mark.xfail(reason="Hugging Face evaluation raise ../aten/src/ATen/native/cuda/IndexKernel.cu:92: operator(): block: [0,0,0], thread: [0,0,0] Assertion `-sizes[i] <= index && index < sizes[i] && index out of bounds` failed.")
 def test_ragas_hugging_face():
     pass
 
 @pytest.mark.slow
-@pytest.mark.parametrize(
-    "metric", 
-    [   
+@pytest.fixture
+def metrics_with_llm(config: Config, vllm_server_status_fn):
+    
+    if not vllm_server_status_fn(config.get("evaluation", "inference_engine")):
+        pytest.skip("VLLM server is not running")
+    
+    generation_llm = LangchainLLMWrapper(InferenceEngineBuilder.build_inference_engine(
+            config.get("evaluation", "inference_engine")
+        ).as_langchain_chat_model())
+    
+    metrics = [ 
         NonLLMStringSimilarity(),
-        RougeScore(rogue_type="rougeL", measure_type="fmeasure"),
-        LLMContextRecall(),
-        LLMContextPrecisionWithoutReference()
+        RougeScore(measure_type="fmeasure"),
+        LLMContextRecall(llm=generation_llm),
+        LLMContextPrecisionWithoutReference(llm=generation_llm),
+        FactualCorrectness(llm=generation_llm, mode="precision", atomicity="low", coverage="low")
     ]
-)
-@pytest.mark.skipif(True, reason="TODO: ping vllm server")
-def test_ragas_vllm(metric):
+    return metrics
 
-    ragas_eval = RagasEval(
-        dict(
-            metrics = [metric]
-        )
-    )
-
-    config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+@pytest.mark.slow
+@pytest.fixture
+def metrics_with_embeddings(config: Config, vllm_server_status_fn):
+    if not vllm_server_status_fn(config.get("evaluation", "embeddings_engine")):
+        pytest.skip("VLLM server (embeddings_engine) is not running")
     
-    scores = ragas_eval.eval(
-        
-        get_file_io("yaml").read(TEST_DIR / "data" / "eval" / "qa.yaml"),
-        
-        InferenceEngineBuilder.build_inference_engine(
-            dict(
-                name='openai',
-                model_name='hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4',
-                url="http://localhost:8899/v1",
-                api_key="abcd"
-            ),
-        ).as_langchain_llm(),
-        
-        run_config = RunConfig(
-            timeout = 60
-        )
-    )
-
-    assert metric.name in scores
-
-
-
-@pytest.mark.xfail(reason="Bug of trailing slashes")
-def test_ragas_factual_correctness(metric):
-
-    ragas_eval = RagasEval(
-        dict(
-            metrics = [FactualCorrectness(mode="precision", atomicity="low", coverage="low")]
-        )
-    )
-
-    config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
+    embeddings_llm = LangchainEmbeddingsWrapper(InferenceEngineBuilder.build_inference_engine(
+            config.get("evaluation", "embeddings_engine")
+        ))
     
-    scores = ragas_eval.eval(
-        
-        get_file_io("yaml").read(TEST_DIR / "data" / "eval" / "qa.yaml"),
-        
-        InferenceEngineBuilder.build_inference_engine(
-            dict(
-                name='openai',
-                model_name='hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4',
-                url="http://localhost:8899/v1",
-                api_key="abcd"
-            ),
-        ).as_langchain_llm(),
-        
+    metrics = [
+        SemanticSimilarity(embeddings=embeddings_llm)
+    ]
+    return metrics
+
+@pytest.fixture
+def eval_data_qa():
+    return get_file_io("yaml").read(TEST_DIR / "data" / "eval" / "qa.yaml")
+
+
+def test_ragas_vllm_llm(metrics_with_llm, eval_data_qa):
+
+    ragas_eval = RagasEval(metrics_with_llm)
+
+    scores = ragas_eval.evaluate(
+        eval_data_qa,
         run_config = RunConfig(
-            timeout = 60
+            timeout = 20
         )
     )
 
-    assert metric.name in scores
+    for metric in metrics_with_llm:
+        assert metric.name in scores
+        assert bool(scores[metric.name])
 
-@pytest.mark.skipif(True, reason="TODO: ping both vllm servers")
-def test_ragas_semantic_similarity():
+@pytest.mark.skip(reason="Embeddings are not supported yet by vllm: 'VLLMInferenceEngine' object has no attribute 'aembed_documents'")
+def test_ragas_vllm_embeddings(metrics_with_embeddings, eval_data_qa):
 
-    ragas_eval = RagasEval(
-        dict(
-            metrics = [SemanticSimilarity()]
-        )
-    )
+    ragas_eval = RagasEval(metrics_with_embeddings)
 
-    config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
-    
-    scores = ragas_eval.eval(
-        
-        get_file_io("yaml").read(TEST_DIR / "data" / "eval" / "qa.yaml"),
-        
-        InferenceEngineBuilder.build_inference_engine(
-            dict(
-                name='openai',
-                model_name='hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4',
-                url="http://localhost:8899/v1",
-                api_key="abcd"
-            ),
-        ).as_langchain_llm(),
-        
-
-        InferenceEngineBuilder.build_inference_engine(
-            dict(
-                name='openai',
-                model_name='BAAI/bge-multilingual-gemma2',
-                url="http://localhost:8898/v1",
-                api_key="abcd"
-            ),
-        ).as_langchain_llm(),
-
-
+    scores = ragas_eval.evaluate(
+        eval_data_qa,
         run_config = RunConfig(
-            timeout = 60
+            timeout = 20
         )
     )
 
-    assert metric.name in scores
+    for metric in metrics_with_embeddings:
+        assert metric.name in scores
+        assert bool(scores[metric.name])

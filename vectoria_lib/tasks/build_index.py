@@ -1,3 +1,9 @@
+#
+# VECTORIA
+#
+# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+#
+
 import time
 import logging
 from pathlib import Path
@@ -19,7 +25,7 @@ def build_index(
     logger.info("Created %d documents from %s in %.2f seconds", len(docs), kwargs['input_docs_dir'], time.time() - start_time)
         
     start_time = time.perf_counter()
-    fvs = FaissVectorStore(Config().get("hf_embedder_model_name")).make_index(docs)
+    fvs = FaissVectorStore(Config().get("vector_store", "model_name")).make_index(docs)
     logger.debug("Creation of FAISS index (.from_documents) took %.2f seconds", time.perf_counter() - start_time)
 
     start_time = time.perf_counter()

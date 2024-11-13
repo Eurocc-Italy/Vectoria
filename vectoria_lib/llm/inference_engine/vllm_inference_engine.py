@@ -1,15 +1,15 @@
 #
 # VECTORIA
 #
-# @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
+# @authors : Andrea Proia, Leonardo Baroncelli
 #
 
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, ChatOpenAI
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
 
-class OpenAIInferenceEngine(InferenceEngineBase):
+class VLLMInferenceEngine(InferenceEngineBase):
     """
     Wrapper on OpenAI.
     """
@@ -19,9 +19,14 @@ class OpenAIInferenceEngine(InferenceEngineBase):
     # TODO: OpenAI or ChatOpenAI?
     def as_langchain_llm(self) -> BaseLanguageModel:
         return OpenAI(
-            #max_retries=self.args("max_retries"),
             model = self.args["model_name"],
             base_url = self.args["url"],
-            api_key = self.args["api_key"],
-            temperature=self.args["temperature"]
+            api_key = self.args["api_key"]
+        )
+    
+    def as_langchain_chat_model(self) -> BaseLanguageModel:
+        return ChatOpenAI(
+            model = self.args["model_name"],
+            base_url = self.args["url"],
+            api_key = self.args["api_key"]
         )

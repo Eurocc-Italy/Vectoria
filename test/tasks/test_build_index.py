@@ -1,5 +1,5 @@
+import os
 from tempfile import TemporaryDirectory
-
 from vectoria_lib.tasks.build_index import build_index
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
@@ -10,11 +10,9 @@ from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 import pytest
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
-def test_build_index(extraction_fn):
+def test_build_index(config, extraction_fn):
 
     with TemporaryDirectory() as temp_dir:
-        config = Config()
-        config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
         config.config["pp_steps"][0] = {
             "name": extraction_fn,
             "filter_paragraphs": None,

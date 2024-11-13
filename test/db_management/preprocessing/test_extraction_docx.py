@@ -1,4 +1,4 @@
-import re
+import re, os
 import pytest
 from pathlib import Path
 from langchain.docstore.document import Document
@@ -60,10 +60,7 @@ def test_filter_unstructured_data():
     assert len(unstructured_data) == 2
     assert isinstance(unstructured_data[0], Document)
 
-def test_extract_text_from_docx_file():
-    config = Config()
-    config.load_config(TEST_DIR / "data" / "config" / "test_config.yaml")
-
+def test_extract_text_from_docx_file(config):
     docs: list[Document] = extract_text_from_docx_file(
         TEST_DIR / "data/docx/docx_from_word.docx",
         filter_paragraphs=[],
