@@ -3,19 +3,17 @@
 
 "VECTORIA: Una terra fantastica dove le informazioni sono organizzate in vettori."
 
-import os, sys
-venv_path=os.environ["VIRTUAL_ENV"]
-python_version=sys.version[0:4]
-lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
+import os, sys, argparse
 
-# strip it from sys.path
-sys.path.remove(lib_path)
+if "SLURM_JOB_ID" in os.environ:
+    venv_path=os.environ["VIRTUAL_ENV"]
+    python_version=sys.version[0:4]
+    lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
+    # strip it from sys.path
+    sys.path.remove(lib_path)
+    # restore it in the right position
+    sys.path.insert(1,lib_path)
 
-# restore it in the right position
-sys.path.insert(1,lib_path)
-
-import sys
-import argparse
 from pathlib import Path
 
 from vectoria_lib.common.paths import ETC_DIR
@@ -33,6 +31,7 @@ def cli():
         default=ETC_DIR / "default" / "default_config.yaml",
         help='Path to the configuration file'
     )
+
     subparsers = parser.add_subparsers(
         required=True,
         dest='command',
@@ -53,17 +52,10 @@ def cli():
 
     return parser.parse_args()
 
-def _check_if_model_exists_in_ram(model_name):
-
-    if Path(model_name).exists():
-        print(f"Model {model_name} exists")
-    else:
-        print(f"\n\n < ! > Model {model_name} does not exist")
-        exit()
-
 def main():
     
     args = cli()
+    
     Config().load_config(args.config) #.update_from_args(args) # <-- override config params with cli params
     args = cl_convert_to_dict(args)
 
