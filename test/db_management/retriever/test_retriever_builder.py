@@ -1,9 +1,9 @@
 import pytest
 
-from vectoria_lib.db_management.retriever.retriever_builder import RetrieverBuilder
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.db_management.retriever.retriever_base import RetrieverBase
-from vectoria_lib.db_management.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
+from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
+from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 from langchain_core.documents import Document
 
 def test_build_faiss_retriever(config, data_dir):
@@ -19,7 +19,7 @@ def test_build_faiss_retriever(config, data_dir):
     # Valid vector store
     vector_store = VectorStoreBuilder().build(
         config.get("vector_store"),
-        index_path = data_dir / "index" / "BAAI__bge-m3_faiss_index"
+        index_path = data_dir / "index" / "BAAI__bge-m3_faiss_index_the_matrix"
     )
 
     # Valid retriever

@@ -2,8 +2,8 @@ import pytest
 from time import time
 from vectoria_lib.common.config import Config
 
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
+from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
+from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
 
 @pytest.mark.parametrize("multiproc", [False, True])
 def test_pipeline_executor(config, data_dir, multiproc):

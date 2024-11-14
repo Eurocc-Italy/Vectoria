@@ -9,9 +9,9 @@ import logging
 from pathlib import Path
 
 from vectoria_lib.common.config import Config
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
-from vectoria_lib.db_management.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
+from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 
 def build_index(
     **kwargs: dict

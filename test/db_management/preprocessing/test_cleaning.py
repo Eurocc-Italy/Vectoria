@@ -1,6 +1,6 @@
 import pytest
 from vectoria_lib.common.paths import TEST_DIR
-from vectoria_lib.db_management.preprocessing.cleaning import replace_ligatures
+from vectoria_lib.rag.preprocessing.cleaning import replace_ligatures
 
 from langchain.docstore.document import Document
 

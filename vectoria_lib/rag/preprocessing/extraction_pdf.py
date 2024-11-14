@@ -10,7 +10,7 @@ from pathlib import Path
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.docstore.document import Document
 
-from vectoria_lib.db_management.preprocessing.document_data import  DocumentData
+from vectoria_lib.rag.preprocessing.document_data import  DocumentData
 
 logger = logging.getLogger('db_management')
 

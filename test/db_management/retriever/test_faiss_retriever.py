@@ -1,7 +1,7 @@
 import pytest 
 
-from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.rag.retriever.faiss_retriever import FaissRetriever
+from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
 
 @pytest.mark.parametrize("k",[1,2,3])
 def test_faiss_retriever(k, config, data_dir):
@@ -11,7 +11,7 @@ def test_faiss_retriever(k, config, data_dir):
         device = config.get("vector_store", "device"),
         normalize_embeddings = config.get("vector_store", "normalize_embeddings")
     ).load_from_disk(
-        data_dir / "index" / "BAAI__bge-m3_faiss_index"
+        data_dir / "index" / "BAAI__bge-m3_faiss_index_the_matrix"
     )
     retriever = FaissRetriever(
         search_type = config.get("retriever", "search_type"),

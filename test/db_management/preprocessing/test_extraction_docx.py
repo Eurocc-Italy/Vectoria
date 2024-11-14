@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 from langchain.docstore.document import Document
 import docx
-from vectoria_lib.db_management.preprocessing.extraction_docx import (
+from vectoria_lib.rag.preprocessing.extraction_docx import (
     extract_text_from_docx_file,
     _extract_flat_structure,
     _recover_paragraphs_numbers_and_names,

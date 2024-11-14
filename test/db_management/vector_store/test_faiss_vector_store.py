@@ -1,5 +1,5 @@
-from vectoria_lib.db_management.preprocessing.chunking import recursive_character_text_splitter
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.rag.preprocessing.chunking import recursive_character_text_splitter
+from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores.base import VectorStoreRetriever

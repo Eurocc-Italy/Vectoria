@@ -10,14 +10,14 @@ from pathlib import Path
 
 from vectoria_lib.llm.agents.qa import QAAgent
 from vectoria_lib.common.config import Config
-from vectoria_lib.db_management.postretrieval_steps.full_paragraphs import FullParagraphs
-from vectoria_lib.db_management.vector_store.vectore_store_builder import VectorStoreBuilder
-from vectoria_lib.db_management.retriever.retriever_builder import RetrieverBuilder
+from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
+from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.llm.agents.chains import create_qa_chain
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.db_management.postretrieval_steps.huggingface_reranker import Reranker
+from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import Reranker
 logger = logging.getLogger("llm")
 
 class AgentBuilder:

@@ -7,7 +7,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 from langchain_huggingface import HuggingFacePipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-from vectoria_lib.db_management.postretrieval_steps.huggingface_reranker import HuggingFaceReranker
+from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import HuggingFaceReranker
 
 from langchain_core.language_models.llms import BaseLanguageModel
 

@@ -1,7 +1,7 @@
-from vectoria_lib.db_management.retriever.retriever_base import RetrieverBase
-from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.db_management.vector_store.vectore_store_base import VectorStoreBase
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
+from vectoria_lib.rag.retriever.faiss_retriever import FaissRetriever
+from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
 
 class RetrieverBuilder:
 

@@ -11,7 +11,7 @@ from langchain_core.messages import SystemMessage
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 from langchain.docstore.document import Document
 
-from vectoria_lib.db_management.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
+from vectoria_lib.rag.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
 
 DEFAULT_MODEL_ID = "BAAI/bge-reranker-v2-m3"
 DEFAULT_BATCH_SIZE = 4

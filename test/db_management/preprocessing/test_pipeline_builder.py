@@ -1,5 +1,5 @@
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
-from vectoria_lib.db_management.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
+from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
+from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_executor import PreprocessingPipelineExecutor
 
 import langchain_core
 
