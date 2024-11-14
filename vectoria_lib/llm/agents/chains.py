@@ -68,7 +68,7 @@ def create_qa_chain(
     *,
     retriever_config: Optional[Dict[str, Any]] = None,
     reranker_config: Optional[Dict[str, Any]] = None,
-    full_paragraphs_retrieval_config: Optional[Dict[str, Any]] = None
+    full_paragraphs_retriever_config: Optional[Dict[str, Any]] = None
 ) -> Runnable[Dict[str, Any], Any]:
     """
     Create a chain for passing a list of Documents to a model.
@@ -83,7 +83,7 @@ def create_qa_chain(
 
         reranking_docs_indexes_chain = ( 
             RunnableLambda(create_reranking_input_pairs) | 
-            reranker_config["inference_engine"].as_langchain_reranker_llm() | 
+            reranker_config["reranker"].as_langchain_post_retrieval_step() | 
             RunnableLambda(lambda x: eval(x))
         ).with_config(run_name="reranking_docs_indexes_chain")
 
@@ -93,10 +93,10 @@ def create_qa_chain(
 
         reranking_chain = reranking_chain | RunnableLambda(lambda x: x["reranked_docs"])
 
-    if full_paragraphs_retrieval_config:
-        full_paragraphs_retrieval_chain = (
-            RunnableLambda(get_correct_input_docs) | full_paragraphs_retrieval_config["retriever"].retrieve_full_paragraphs
-        ).with_config(run_name="full_paragraphs_retrieval_chain")
+    if full_paragraphs_retriever_config:
+        full_paragraphs_retriever_chain = (
+            RunnableLambda(get_correct_input_docs) | full_paragraphs_retriever_config["retriever"].as_langchain_post_retrieval_step()
+        ).with_config(run_name="full_paragraphs_retriever_chain")
 
     combine_docs_chain = (RunnableLambda(get_correct_input_docs) | RunnableLambda(format_docs)).with_config(run_name="combine_docs_chain")
 
@@ -118,8 +118,8 @@ def create_qa_chain(
     if reranker_config:
         chain = chain.assign(reranked_docs=reranking_chain)
 
-    if full_paragraphs_retrieval_config:
-        chain = chain.assign(full_paragraphs_docs=full_paragraphs_retrieval_chain)
+    if full_paragraphs_retriever_config:
+        chain = chain.assign(full_paragraphs_docs=full_paragraphs_retriever_chain)
 
     chain = chain.assign(context=combine_docs_chain)
     

@@ -7,7 +7,7 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 from langchain_huggingface import HuggingFacePipeline
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-from vectoria_lib.llm.inference_engine.custom_hf.huggingface_reranker import HuggingFaceReranker
+from vectoria_lib.db_management.postretrieval_steps.huggingface_reranker import HuggingFaceReranker
 
 from langchain_core.language_models.llms import BaseLanguageModel
 
@@ -19,18 +19,14 @@ import logging
 
 class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
-    Wrapper on Hugging Face: 
+    Wrapper on HuggingFace.
 
-    HuggingFace:
     TextGenerationPipeline init parameters: https://huggingface.co/docs/transformers/v4.45.1/en/main_classes/pipelines#transformers.TextGenerationPipeline
     TextGenerationPipeline call parameters: https://github.com/huggingface/transformers/blob/v4.45.1/src/transformers/pipelines/text_generation.py#L215
         https://huggingface.co/docs/transformers/en/generation_strategies
 
     How to
     https://python.langchain.com/docs/how_to/#chat-models
-
-    
-    TODO: HuggingFaceInferenceEngine does not inherit from InferenceEngineBase anymore because of the metaclass Singleton.
     """
     def __init__(self, args: dict):
         super().__init__(args)
@@ -84,5 +80,3 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         )
         return HuggingFacePipeline(pipeline=self.pipe)
     
-    def as_langchain_reranker_llm(self) -> BaseLanguageModel:
-        return HuggingFaceReranker(model=self.model, tokenizer=self.tokenizer)

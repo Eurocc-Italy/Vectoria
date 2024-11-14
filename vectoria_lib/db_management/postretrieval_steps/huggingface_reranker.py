@@ -1,20 +1,36 @@
 from __future__ import annotations  # type: ignore[import-not-found]
 
-
-import importlib.util
 import torch
 import logging
-from typing import Any, Dict, Iterator, List, Mapping, Optional
+from typing import Any, List, Mapping, Optional
 
 from langchain_core.callbacks import CallbackManagerForLLMRun
 from langchain_core.language_models.llms import BaseLLM
-from langchain_core.outputs import Generation, GenerationChunk, LLMResult
+from langchain_core.outputs import LLMResult
 from langchain_core.messages import SystemMessage
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
+from langchain.docstore.document import Document
+
+from vectoria_lib.db_management.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
+
 DEFAULT_MODEL_ID = "BAAI/bge-reranker-v2-m3"
 DEFAULT_BATCH_SIZE = 4
 
 logger = logging.getLogger("llm")
+
+class Reranker(PostRetrievalStepBase):
+    def __init__(self, reranker_llm):
+        super().__init__()
+        self.model = reranker_llm.model
+        self.tokenizer = reranker_llm.tokenizer
+        self.huggingface_reranker = HuggingFaceReranker(model=self.model, tokenizer=self.tokenizer)
+
+    def post_process(self, chunks: List[Document]) -> List[Document]:
+        return self.huggingface_reranker.post_process(chunks)
+
+    def as_langchain_post_retrieval_step(self):
+        return self.huggingface_reranker
+
 
 class HuggingFaceReranker(BaseLLM):
 
@@ -63,15 +79,6 @@ class HuggingFaceReranker(BaseLLM):
             batch_prompts = prompts[i : i + self.batch_size]
             
             pairs = self._convert_base_messages_to_pairs(batch_prompts)    
-
-            # pairs = [['what is panda?', 'hi'], ['what is panda?', 'The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.']]
-
-            # Process batch of prompts
-            # responses = self.pipeline(
-            #     batch_prompts,
-            #     **pipeline_kwargs,
-            # )
-
 
             with torch.no_grad():
                 inputs = self._get_inputs(pairs)

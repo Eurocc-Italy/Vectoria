@@ -79,7 +79,7 @@ def extract_text_from_docx_file(
     logger.debug("Extracted %d documents from %s", len(document_flat_structure), file_path.stem)
 
     if dump_doc_structure_on_file:
-        _log_document_structure_on_file(document_flat_structure, config.get("vectoria_logs_dir") / "docs_structure", file_path.stem) 
+        _log_document_structure_on_file(document_flat_structure, Path(config.get("vectoria_logs_dir")) / "docs_structure", file_path.stem) 
 
 
     document_flat_structure = _filter_headings(document_flat_structure)

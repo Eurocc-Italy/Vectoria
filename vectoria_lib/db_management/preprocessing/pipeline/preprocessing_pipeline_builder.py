@@ -47,6 +47,7 @@ class PreprocessingPipelineBuilder:
 
     @staticmethod
     def build_pipeline() -> PreprocessingPipelineExecutor:
+        logger = logging.getLogger('db_management')
         pp_steps_config = Config().get("pp_steps")
         PreprocessingPipelineBuilder.check_fields(pp_steps_config)
 
@@ -56,7 +57,10 @@ class PreprocessingPipelineBuilder:
 
         for step_args in pp_steps_config[1:]:
             fn = globals()[step_args.pop("name")] # get the function from the global namespace
-            chain = chain | RunnableLambda(fn).bind(**step_args).map() # with .map() the RunnableLambda is applied to each output of the previous chain
+            if "regex" in step_args and step_args["regex"] is None:
+                logger.warning("Regex found in step %s, but no regex provided", fn.__name__)
+            else:
+                chain = chain | RunnableLambda(fn).bind(**step_args).map()
 
         try:
             chain.get_graph().print_ascii() # print the graph

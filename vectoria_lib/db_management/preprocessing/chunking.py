@@ -53,7 +53,7 @@ def recursive_character_text_splitter(
 
     if dump_chunks_on_file:
         output_name = f'{doc.metadata["doc_file_name"]}_{doc.metadata["paragraph_number"]}'
-        _log_chunks_on_file(chunks, Path(config.get("vectoria_logs_dir") / "chunks" / f"{output_name}_chunks.txt")) 
+        _log_chunks_on_file(chunks, Path(config.get("vectoria_logs_dir")) / "chunks" / f"{output_name}_chunks.txt")
 
     return chunks
 

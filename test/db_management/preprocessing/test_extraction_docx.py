@@ -17,7 +17,7 @@ def test_extract_flat_structure_from_word():
     """
     Word docx file supports the tbl tag.
     """
-    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
+    document = docx.Document(TEST_DIR / "data/docx/docx_extraction_test.docx")
     flat_structure = _extract_flat_structure(document)
 
     assert flat_structure == [
@@ -41,7 +41,7 @@ def test_extract_flat_structure_from_word():
     ]
 
 def test_recover_paragraphs_numbers_and_names():
-    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
+    document = docx.Document(TEST_DIR / "data/docx/docx_extraction_test.docx")
     flat_structure = _extract_flat_structure(document)
     paragraphs_numbers_and_names = _recover_paragraphs_numbers_and_names(flat_structure)
 
@@ -50,7 +50,7 @@ def test_recover_paragraphs_numbers_and_names():
     ]
     
 def test_filter_unstructured_data():
-    document = docx.Document(TEST_DIR / "data/docx/docx_from_word.docx")
+    document = docx.Document(TEST_DIR / "data/docx/docx_extraction_test.docx")
     flat_structure = _extract_flat_structure(document)
     paragraphs_numbers = _recover_paragraphs_numbers_and_names(flat_structure)
     docs = _to_document_objects(flat_structure)
@@ -62,7 +62,7 @@ def test_filter_unstructured_data():
 
 def test_extract_text_from_docx_file(config):
     docs: list[Document] = extract_text_from_docx_file(
-        TEST_DIR / "data/docx/docx_from_word.docx",
+        TEST_DIR / "data/docx/docx_extraction_test.docx",
         filter_paragraphs=[],
         dump_doc_structure_on_file=True,
         regexes_for_metadata_extraction = [{
@@ -76,20 +76,9 @@ def test_extract_text_from_docx_file(config):
     assert isinstance(docs[0], Document)
     assert len(docs) == 7
 
-    assert Path(config.get("vectoria_logs_dir") / "docs_structure" / "docx_from_word_structure.txt").exists()
+    assert Path(config.get("vectoria_logs_dir") / "docs_structure" / "docx_extraction_test_structure.txt").exists()
 
     assert set(docs[0].metadata.keys()) == set(["layout_tag","paragraph_name", "paragraph_number", "doc_file_name", "first_symbol"])
     assert docs[0].metadata["first_symbol"] == "D"
     for d in docs:
         assert "Heading" not in d.metadata["layout_tag"]
-
-    """
-    id = re.search(r"IDENTIFICATIVO\s*:\s*(.*)", text).group(1).strip()
-
-    date = re.search(r"DATA\s*:\s*(.*)", text).group(1).strip()
-    
-    doc_type = re.search(r"TIPO DOCUMENTO\s*:\s*(.*)", text).group(1).strip()
-    
-    app = re.search(r"APPLICAZIONE\s*:\s*(.*)", text).group(1).strip()
-    summary = re.search(r"SOMMARIO\s*:\s*(.*(?:\n.*)*)", text).group(1).strip()
-    """

@@ -1,0 +1,1 @@
+(0, Document(metadata={'layout_tag': 'Paragraph', 'doc_file_name': 'test_docx.docx', 'paragraph_number': '6.4.2', 'paragraph_name': 'Label Smoothing', 'seq_id': 0}, page_content='During training, we employed label smoothing of value\xa0ϵl\u2062s=0.1\xa0[36]. This hurts perplexity, as the model learns to be more unsure, but improves accuracy and BLEU score.'))

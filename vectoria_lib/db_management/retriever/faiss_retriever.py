@@ -3,37 +3,31 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
+from vectoria_lib.db_management.retriever.retriever_base import RetrieverBase
+from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
+class FaissRetriever(RetrieverBase):
 
-from typing import List, Set
-from langchain_community.vectorstores.faiss import FAISS
-from langchain_core.prompts import format_document
-from langchain.docstore.document import Document
-import logging
-from vectoria_lib.common.config import Config
-import time
-
-logger = logging.getLogger('db_management')
-config = Config()
-
-class FaissRetriever:
-
-    def __init__(self, vector_store: FAISS, search_type: str, search_kwargs: dict):
+    def __init__(self, **kwargs):
         """
-        Constructor that stores the vector_store as it is and a retriever with custom config
-
+        Constructor that stores the search_type and search_kwargs
         Parameters:
-        - vector_store: FAISS
-        - search_type: str (e.g. "mmr")
-        - search_kwargs: disct (other configs: "k", "fetch_k", "lambda_mult")
+        - Keyword arguments: search_type: str (e.g. "mmr"), search_kwargs: dict (other configs: "k", "fetch_k", "lambda_mult")
         """
-        self.retriever = vector_store.as_retriever(
-            search_type=search_type, search_kwargs=search_kwargs)
+        super().__init__(**kwargs)
+        self.search_type = kwargs["search_type"]
+        self.search_kwargs = {
+            "k": kwargs["k"],
+            "fetch_k": kwargs["fetch_k"],
+            "lambda_mult": kwargs["lambda_mult"]
+        }
+
+    def from_vector_store(self, vector_store: FaissVectorStore):
+        self.logger.info("Creating retriever from vector store with kwargs: %s" % self.search_kwargs)
+        self.wrapped_retriever = vector_store.as_retriever(
+            search_type=self.search_type, 
+            search_kwargs=self.search_kwargs
+        )
+        return self
 
     def as_langchain_retriever(self):
-        """
-        Return the FAISS retriever in a format compatible with Langchain retrievers.
-
-        Returns:
-        - retriever: The current FAISS retriever instance.
-        """
-        return self.retriever
+        return self.wrapped_retriever

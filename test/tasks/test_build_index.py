@@ -11,12 +11,13 @@ import pytest
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
 def test_build_index(config, extraction_fn):
-
+    from pathlib import Path
+    config.set("vectoria_logs_dir", value=Path("./test_build_index_logs"))
     with TemporaryDirectory() as temp_dir:
+
         config.config["pp_steps"][0] = {
             "name": extraction_fn,
-            "filter_paragraphs": None,
-            "dump_doc_structure_on_file": False,
+            "dump_doc_structure_on_file": True,
             "regexes_for_metadata_extraction": []
         }
         
@@ -24,19 +25,16 @@ def test_build_index(config, extraction_fn):
             doc_format = "docx"
         elif "pdf" in extraction_fn:
             doc_format = "pdf"
-
+        from pathlib import Path
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
-            "output_dir" : temp_dir,
-            "output_suffix" : "test"
+            "output_dir" : Path(temp_dir) / doc_format
             }
 
         fvs_path, fvs = build_index(**args)
 
         assert fvs_path.exists()
-        assert fvs_path.is_file()
-        assert fvs_path.stat().st_size > 0
-        
+        assert len(os.listdir(fvs_path)) == 2
         assert fvs.model_name == "BAAI/bge-m3"
         assert isinstance(fvs.hf_embedder, HuggingFaceBgeEmbeddings)
         assert isinstance(fvs.index, FAISS)

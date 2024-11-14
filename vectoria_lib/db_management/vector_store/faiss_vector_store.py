@@ -4,80 +4,47 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
+import pickle, logging
 from pathlib import Path
-import time
 
 from langchain_community.vectorstores.faiss import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
-from vectoria_lib.common.utils import Singleton
+from vectoria_lib.db_management.vector_store.vectore_store_base import VectorStoreBase
 
-class FaissVectorStore(metaclass=Singleton):
+class FaissVectorStore(VectorStoreBase):
     """
     A wrapper around the FAISS library to create and manage a FAISS-based vector store.
 
     This class provides methods to create a FAISS index from documents, retrieve the index as a retriever, 
     and serialize/deserialize the index using pickle.
+    
+    Reference to FAISS integration documentation:
+    * https://python.langchain.com/v0.2/docs/integrations/vectorstores/faiss/
+    * https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
     """
-
-    # Reference to FAISS integration documentation:
-    # https://python.langchain.com/v0.2/docs/integrations/vectorstores/faiss/
-    # https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
-
-    @staticmethod
-    def load_from_pickle(pkl_path: str | Path):
-        """
-        Load a FAISS index from a serialized pickle file.
-
-        Parameters:
-        - pkl_path (str | Path): The path to the serialized FAISS index pickle file.
-        
-        Returns:
-        - FaissVectorStore: An instance of FaissVectorStore with the loaded FAISS index.
-
-        """
-        pkl_path = Path(pkl_path)
-        pkl_bytes = pkl_path.read_bytes()
-
-        # BAAI__bge-m3_faiss_index.pkl -> BAAI/bge-m3
-        model_name = pkl_path.stem.split("_faiss_index")[0].replace('__', '/')
-
-        fvs = FaissVectorStore(model_name)
-        index = FAISS.deserialize_from_bytes(
-            embeddings=fvs.hf_embedder,
-            serialized=pkl_bytes,
-            allow_dangerous_deserialization=True
-        )
-        fvs.index = index
-        
-        return fvs
-
-    def __init__(self, model_name: str = None):
+    def __init__(self, **kwargs):
         """
         Initialize a FaissVectorStore object.
-
-        Parameters:
-        - model_name (str): The name of the embedding model to use.
         """
-        config = Config()
+        super().__init__()
+        self.model_name = kwargs["model_name"] 
+        self.index = None
 
-        self.model_name = model_name
-
-        if model_name is None:
-            self.model_name = config.get("hf_embedder_model_name")
+        self.logger.info("Loading Embedder model: %s.." % self.model_name)
 
         self.hf_embedder = HuggingFaceBgeEmbeddings(
             model_name=self.model_name,
             model_kwargs={
-                "device": config.get("vector_store", "device")
+                "device": kwargs["device"]
             },
             encode_kwargs={
-                "normalize_embeddings": config.get("vector_store", "normalize_embeddings")
+                "normalize_embeddings": kwargs["normalize_embeddings"]
             }
         )
-        self.index = None
 
-    def make_index(self, docs: list[str]):
+    def make_index(self, docs: list[Document]):
         """
         Create a FAISS index from a list of documents.
 
@@ -87,7 +54,33 @@ class FaissVectorStore(metaclass=Singleton):
         Returns:
         - FaissVectorStore: The FaissVectorStore instance with the created index.
         """
+        self.logger.info("Creating FAISS index from %d documents.." % len(docs))
         self.index = FAISS.from_documents(docs, self.hf_embedder)
+        return self
+
+    def dump_to_disk(self, output_path: str | Path) -> Path:
+        """
+        Serialize the FAISS index.
+
+        Parameters:
+        - output_path (str | Path): The path to the directory where the FAISS index should be saved.
+        Returns:
+        - Path: The path to the saved FAISS index.
+        """
+        model_name = self.model_name.replace('/','__') # repo/name => repo__name
+        Path(output_path).mkdir(exist_ok=True, parents=True)
+        output_path = Path(output_path) / f"{model_name}_faiss_index"        
+        self.logger.info("Serializing FAISS index to pickle file %s" % output_path)
+        self.index.save_local(output_path)
+        return output_path
+
+    def load_from_disk(self, input_path: str | Path):
+        if self.index:
+            self.logger.info("Index already loaded. Skipping deserialization.")
+            return self
+        self.logger.info("Deserializing FAISS index from pickle file %s" % input_path)
+        input_path = Path(input_path)
+        self.index = FAISS.load_local(input_path, self.hf_embedder, allow_dangerous_deserialization=True)
         return self
 
     def as_retriever(self, **kwargs):
@@ -100,28 +93,19 @@ class FaissVectorStore(metaclass=Singleton):
         Returns:
         - Retriever: A retriever object based on the FAISS index.
         """
-
+        self.logger.info("Converting FAISS index to retriever with kwargs: %s" % kwargs)
         if self.index is None:
             raise ValueError("Index is not created. Call make_index() first.")
             
         return self.index.as_retriever(**kwargs)
 
-    def dump_to_pickle(self, output_path: str | Path = ".", output_suffix: str = "") -> Path:
+    def search(self, query: str, **kwargs) -> list[Document]:
         """
-        Serialize the FAISS index to a pickle file.
-
-        Parameters:
-        - output_path (str | Path): The directory where the pickle file should be saved. Default is the current directory.
-
-        Returns:
-        - Path: The path to the saved pickle file.
+        Parameters: https://python.langchain.com/docs/integrations/vectorstores/faiss/#query-directly
         """
-        pkl = self.index.serialize_to_bytes()
-        model_name = self.model_name.replace('/','__') # repo/name => repo__name
-        Path(output_path).mkdir(exist_ok=True, parents=True)
-        pkl_path = Path(output_path) / f"{model_name}_faiss_index{output_suffix}.pkl"
-        with open(pkl_path, "wb") as f:
-            f.write(pkl)
-        return pkl_path
-
-        
+        return self.index.similarity_search(
+            query, **kwargs
+        )
+    
+    def is_empty(self):
+        return self.index is None

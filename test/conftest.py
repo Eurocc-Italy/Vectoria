@@ -22,6 +22,18 @@ def set_configuration_file(request):
     else:
         raise ValueError("Please specify the configuration file to use with --davinci or --leonardo")
 
+@pytest.fixture(scope="session")
+def data_dir():
+    return TEST_DIR / "data"
+
+@pytest.fixture(scope="session")
+def docx_test_file(data_dir):
+    return data_dir / "docx" / "test_docx.docx"
+
+@pytest.fixture(scope="session")
+def index_test_folder(data_dir):
+    return data_dir / "index" / "BAAI__bge-m3_faiss_index"
+
 @pytest.fixture(scope="function")
 def config():
     return Config().load_config(os.environ["VECTORIA_CONFIG_FILE"])

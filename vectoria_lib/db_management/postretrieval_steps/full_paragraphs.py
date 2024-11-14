@@ -4,33 +4,21 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-import time, logging
+import time
 from typing import List
-from langchain_community.vectorstores.faiss import FAISS
 from langchain.docstore.document import Document
+from vectoria_lib.db_management.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.db_management.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
 
-class FullParagraphsRetriever:
+class FullParagraphs(PostRetrievalStepBase):
 
-    def __init__(self, vector_store: FAISS):
-        """
-        Parameters:
-        - vector_store: FAISS
-        """
-        self.vector_store = vector_store
-        self.logger = logging.getLogger("db_management")
+    def __init__(self, vector_store: VectorStoreBase):
+        super().__init__()
+        self.wrapped_vector_store = vector_store
 
-    def as_langchain_retriever(self):
-        return self.retrieve_full_paragraphs
-
-    def retrieve_full_paragraphs(self, chunks: List[Document]) -> List[Document]:
+    def post_process(self, chunks: List[Document]) -> List[Document]:
         """
         This method retrieve the full paragraph for a given set of chunks (1 or more depending on config)
-
-        Parameters:
-        - input: dict (with "chunks" key)
-
-        Returns:
-        - str (full paragraph) or List[str] (list of full paragraph)
         """       
         unique_paragraph_numbers: dict[str, List[str]] = self._get_unique_paragraph_number_per_doc_file_name(chunks)
 
@@ -82,9 +70,10 @@ class FullParagraphsRetriever:
 
         for _filter in filters: # one filter per doc_file_name
             
-            filtered_chunks = self.vector_store.index.similarity_search(
-                "aluah akbar", k=1000000, fetch_k=1000000, filter=_filter
+            filtered_chunks = self.wrapped_vector_store.index.similarity_search(
+                "*", k=1000000, fetch_k=1000000, filter=_filter
             )
+
             self.logger.debug("Retrieved %d metadata-filtered chunks: with metadata %s", len(filtered_chunks), _filter) 
 
             if len(filtered_chunks) == 0:

@@ -16,24 +16,24 @@ def remove_header(doc: Document, regex: str) -> str:
     doc.page_content = re.compile(regex, re.IGNORECASE).sub("", doc.page_content).strip()
     return doc 
     
-def remove_footer(doc: Document, regex: str):
+def remove_footer(doc: Document, regex: str) -> str:
     logging.debug("Removing footer")
     doc.page_content = re.compile(regex, re.IGNORECASE).sub("", doc.page_content).strip()
     return doc
 
-# def remove_empty_lines(doc: Document, regex: str = None) -> str: # TODO: add regex instead of building a temp list    
+# def remove_empty_lines(doc: Document, regex: str) -> str: # TODO: add regex instead of building a temp list    
 #     # TODO: optimize me!
 #     logging.debug("Removing empty lines")
 #     lines = text.splitlines()
 #     non_empty_lines = [line for line in lines if line.strip() != '']
 #     return '\n'.join(non_empty_lines)
 
-def remove_multiple_spaces(doc: Document, regex: str = None) -> str:
+def remove_multiple_spaces(doc: Document) -> str:
     logging.debug("Removing multiple spaces")
     doc.page_content = re.compile(r"[ \t]{2,}").sub(" ", doc.page_content).strip()
     return doc
     
-def replace_ligatures(doc: Document, regex: str = None) -> str:
+def replace_ligatures(doc: Document) -> str:
     logging.debug("Replacing ligatures")
     ligatures = {
         "ﬀ": "ff",
@@ -52,7 +52,7 @@ def replace_ligatures(doc: Document, regex: str = None) -> str:
         doc.page_content = doc.page_content.replace(search, replace)        
     return doc
 
-def remove_bullets(doc: Document, regex: str = None) -> str:
+def remove_bullets(doc: Document) -> str:
     logging.debug("Removing bullets")
     """
     • (\u2022)
