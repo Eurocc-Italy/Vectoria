@@ -5,6 +5,7 @@ output
 **/*/.ipynb_checkpoints
 
 **/*.pkl
+**/*.faiss
 .idea
 vectoria_logs/
 log/
@@ -13,12 +14,12 @@ led_use_case
 
 *.err
 *.out
-clean
 *_key.txt
 
 results/
 
 push_to_origin_gh.sh
 
-!test/data/index/BAAI__bge-m3_faiss_index_airxv_papers.pkl
-!test/data/index/BAAI__bge-m3_faiss_index_the_matrix.pkl
+!test/data/index/BAAI__bge-m3_faiss_index/index.faiss
+!test/data/index/BAAI__bge-m3_faiss_index/index.pkl
+
