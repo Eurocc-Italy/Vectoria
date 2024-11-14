@@ -1,16 +1,11 @@
-import os
 import pytest
 import torch
 
 from vectoria_lib.llm.agent_builder import AgentBuilder
-from vectoria_lib.common.paths import TEST_DIR
-from vectoria_lib.common.config import Config
 from langchain.docstore.document import Document
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
-
 
 @pytest.mark.slow
-def test_qa_agent_ollama(config, clear_inference_engine_cache, ollama_server_status_fn):
+def test_qa_agent_ollama(config, index_test_folder, clear_inference_engine_cache, ollama_server_status_fn):
     inference_config = {
         "name": "ollama",
         "model_name": "llama3.2:1b"
@@ -20,11 +15,11 @@ def test_qa_agent_ollama(config, clear_inference_engine_cache, ollama_server_sta
 
     config.set("inference_engine", value=inference_config)
     config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_ollama")
+    _run_engine_test("test_qa_agent_ollama", index_test_folder)
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_huggingface(config, clear_inference_engine_cache):
+def test_qa_agent_huggingface(config, index_test_folder, clear_inference_engine_cache):
     inference_config = {
         "name": "huggingface",
         "model_name": "meta-llama/Meta-Llama-3.1-8B-Instruct",
@@ -38,10 +33,10 @@ def test_qa_agent_huggingface(config, clear_inference_engine_cache):
     }
     config.set("inference_engine", value=inference_config)
     config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_huggingface")
+    _run_engine_test("test_qa_agent_huggingface", index_test_folder)
 
 @pytest.mark.slow
-def test_qa_agent_vllm(config, clear_inference_engine_cache, vllm_server_status_fn):
+def test_qa_agent_vllm(config, index_test_folder, clear_inference_engine_cache, vllm_server_status_fn):
     inference_config = {
         "name": "vllm",
         "model_name": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
@@ -53,7 +48,7 @@ def test_qa_agent_vllm(config, clear_inference_engine_cache, vllm_server_status_
 
     config.set("inference_engine", value=inference_config)
     config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_openai")
+    _run_engine_test("test_qa_agent_openai", index_test_folder)
 
 def _run_engine_test(run_name, index_test_folder):
     agent = AgentBuilder.build_qa_agent(

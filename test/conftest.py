@@ -43,8 +43,11 @@ def vllm_server_status_fn():
     return _ping_vllm_server
 
 def _ping_vllm_server(engine_config: dict):
-    response = requests.get(engine_config.get("url").replace("/v1", "/version"))
-    return response.status_code == 200
+    try:
+        response = requests.get(engine_config.get("url").replace("/v1", "/version"))
+        return response.status_code == 200
+    except Exception as e:
+        return False
 
 @pytest.fixture(scope="session", autouse=True)
 def ollama_server_status_fn():
