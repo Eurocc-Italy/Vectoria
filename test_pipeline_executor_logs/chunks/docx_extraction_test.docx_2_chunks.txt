@@ -1,1 +1,0 @@
-(0, Document(metadata={'layout_tag': 'Paragraph', 'doc_file_name': 'docx_extraction_test.docx', 'paragraph_number': '2', 'paragraph_name': 'Another title 1', 'seq_id': 0}, page_content='Here’s a table:\n\nRow1 Col1 Row1 Col2 \nRow2 Col1 Row2 Col2'))

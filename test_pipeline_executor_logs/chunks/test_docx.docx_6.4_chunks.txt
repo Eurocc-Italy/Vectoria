@@ -1,1 +1,0 @@
-(0, Document(metadata={'layout_tag': 'Paragraph', 'doc_file_name': 'test_docx.docx', 'paragraph_number': '6.4', 'paragraph_name': 'Regularization', 'seq_id': 0}, page_content='We employ three types of regularization during training:'))
