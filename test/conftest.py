@@ -11,14 +11,14 @@ def clear_inference_engine_cache():
 
 def pytest_addoption(parser):
     parser.addoption("--davinci", action="store_true", help="Use davinci configuration")
-    parser.addoption("--leonardo", action="store_true", help="Use leonardo configuration")
+    parser.addoption("--cineca", action="store_true", help="Use cineca configuration")
 
 @pytest.fixture(scope="session", autouse=True)
 def set_configuration_file(request):
     if request.config.getoption("--davinci"):
         os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "davinci_hpc.yaml")
-    elif request.config.getoption("--leonardo"):
-        os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "leonardo_hpc.yaml")
+    elif request.config.getoption("--cineca"):
+        os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "cineca_hpc.yaml")
     else:
         raise ValueError("Please specify the configuration file to use with --davinci or --leonardo")
 
