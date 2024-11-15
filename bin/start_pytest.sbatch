@@ -62,7 +62,7 @@ echo "All modules loaded..."
 source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
-PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/llm/test_agent_builder.py
+PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/llm/test_qa_agent_cineca.py
 
 echo "START"
 # pytest --disable-warnings -xsvv $PYTEST_FILE_PATH # this should not work
