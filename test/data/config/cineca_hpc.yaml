@@ -54,7 +54,8 @@ reranker:
     name: huggingface
     url: null
     api_key: null
-    model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma
+    # model_name: /leonardo_work/PhDLR_prod/bge-reranker-v2-gemma # from SSD
+    model_name: /dev/shm/bge-reranker-v2-gemma # from RAM
     device: cuda
     load_in_4bit: true
     load_in_8bit: false
