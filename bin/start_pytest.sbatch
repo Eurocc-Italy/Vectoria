@@ -22,13 +22,29 @@ export TMP="/leonardo_scratch/large/userinternal/aproia00"
 
 #-------------------------------------------------------
 
-# TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# COPY INFERENCE MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
 MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct
 #MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-70B-Instruct
-RAM_PATH=/dev/shm   
+RAM_PATH=/dev/shm
 
 # 2. Copy model to RAM
-echo "Copying model to RAM..."
+echo "Copying inference model to RAM..."
+start_time=$(date +%s)   # Record the start time
+cp -r $MODEL_PATH $RAM_PATH
+end_time=$(date +%s)     # Record the end time
+
+# 3. Calculate and display time taken to copy the model
+time_taken=$((end_time - start_time))
+echo "Model copied to RAM in $time_taken seconds."
+
+#-------------------------------------------------------
+
+# COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/bge-reranker-v2-gemma
+RAM_PATH=/dev/shm
+
+# 2. Copy model to RAM
+echo "Copying reranker model to RAM..."
 start_time=$(date +%s)   # Record the start time
 cp -r $MODEL_PATH $RAM_PATH
 end_time=$(date +%s)     # Record the end time
@@ -46,10 +62,12 @@ echo "All modules loaded..."
 source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
-PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/llm/test_qa_agent_cineca.py
+PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/tasks/test_build_index.py
+INDEX_TEST_FOLDER=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index/index.pkl
 
 echo "START"
-pytest --disable-warnings -xsvv $PYTEST_FILE_PATH
+# pytest --disable-warnings -xsvv $PYTEST_FILE_PATH # this should not work since it uses wrong python env
+python -m pytest --cineca -xsvv $PYTEST_FILE_PATH 
 echo "END"
 
 # Interactive node

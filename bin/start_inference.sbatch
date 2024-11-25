@@ -28,7 +28,23 @@ MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-70B-Instruct
 RAM_PATH=/dev/shm   
 
 # 2. Copy model to RAM
-echo "Copying model to RAM..."
+echo "Copying inference model to RAM..."
+start_time=$(date +%s)   # Record the start time
+cp -r $MODEL_PATH $RAM_PATH
+end_time=$(date +%s)     # Record the end time
+
+# 3. Calculate and display time taken to copy the model
+time_taken=$((end_time - start_time))
+echo "Model copied to RAM in $time_taken seconds."
+
+#-------------------------------------------------------
+
+# COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/bge-reranker-v2-gemma
+RAM_PATH=/dev/shm
+
+# 2. Copy model to RAM
+echo "Copying reranker model to RAM..."
 start_time=$(date +%s)   # Record the start time
 cp -r $MODEL_PATH $RAM_PATH
 end_time=$(date +%s)     # Record the end time

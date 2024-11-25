@@ -8,15 +8,14 @@ system_prompts_lang: eng
 pp_multiprocessing: true
 pp_steps: 
   - name: extract_text_from_docx_file
-    filter_paragraphs: null
     dump_doc_structure_on_file: true
     regexes_for_metadata_extraction: []
 
   - name: remove_header
-    regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
+    regex: null
   
   - name: remove_footer
-    regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
+    regex: null
 
   - name: remove_multiple_spaces
     regex: null
@@ -28,23 +27,25 @@ pp_steps:
     regex: null
 
   - name: recursive_character_text_splitter
-    chunk_size: 1024
-    chunk_overlap: 256
+    chunk_size: 512
+    chunk_overlap: 128
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]
     dump_chunks_on_file: true
   
 vector_store:
+  name: faiss
   model_name: BAAI/bge-m3
   device: cuda
   normalize_embeddings: false
 
 retriever:
   enabled: true
-  retriever_top_k: 5
-  retriever_search_type: 'mmr'
-  retriever_fetch_k: 5
-  retriever_lambda_mult: 0.5
+  name: faiss
+  search_type: 'mmr'
+  top_k: 5
+  fetch_k: 5
+  lambda_mult: 0.5
 
 reranker:
   enabled: false
@@ -62,8 +63,8 @@ reranker:
     device_map: null
     temperature: 0.1
 
-full_paragraphs_retrieval:
-  enable: false
+full_paragraphs_retriever:
+  enabled: false
 
 chat_history:
   enabled: false

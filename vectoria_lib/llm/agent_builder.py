@@ -10,42 +10,17 @@ from pathlib import Path
 
 from vectoria_lib.llm.agents.qa import QAAgent
 from vectoria_lib.common.config import Config
-from vectoria_lib.db_management.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.db_management.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.db_management.retriever.full_paragraphs_retriever import FullParagraphsRetriever
+from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
+from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.llm.agents.chains import create_qa_chain
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
-
+from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import Reranker
 logger = logging.getLogger("llm")
 
 class AgentBuilder:
-
-    @staticmethod
-    def _load_vector_store_from_faiss_index(faiss_index_path: Path) -> FaissVectorStore:
-        start_time = time.time()
-        logger.debug("Loading Faiss index: %s", faiss_index_path)
-        vector_store = FaissVectorStore.load_from_pickle(faiss_index_path)
-        logger.info("Loaded Faiss index %s in %.2f seconds", faiss_index_path, time.time() - start_time)
-        return vector_store
-
-    @staticmethod
-    def _create_retriever_from_faiss_index(vector_store: FaissVectorStore, config: Config) -> FaissRetriever:
-        retriever = FaissRetriever(
-            vector_store,
-            search_type=config.get("retriever", "retriever_search_type"),
-            search_kwargs={
-                "k": config.get("retriever", "retriever_top_k"),
-                "fetch_k": config.get("retriever", "retriever_fetch_k"), 
-                "lambda_mult": config.get("retriever", "retriever_lambda_mult")
-            }
-        )        
-        return retriever
-    
-    @staticmethod
-    def _create_full_paragraphs_retriever(config, vector_store: FaissVectorStore) -> FullParagraphsRetriever:
-        return FullParagraphsRetriever(vector_store)
     
     @staticmethod
     def _create_chain_configuration(kwargs):
@@ -54,37 +29,38 @@ class AgentBuilder:
         if 'faiss_index_path' not in kwargs:
             raise ValueError("No FAISS index path provided")
 
-        vector_store = AgentBuilder._load_vector_store_from_faiss_index(kwargs['faiss_index_path'])
-        
+        vector_store = VectorStoreBuilder().build(
+            config.get("vector_store"),
+            index_path = kwargs['faiss_index_path']
+        )        
+
         retriever_config = None
         if config.get("retriever", "enabled"):
             retriever_config = {
-                "retriever": AgentBuilder._create_retriever_from_faiss_index(vector_store, config)
+                "retriever": RetrieverBuilder().build(config.get("retriever"), vector_store)
             }
 
         reranker_config = None
         if config.get("reranker", "enabled"):
+            reranker_llm = InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"])
             reranker_config = {
-                "inference_engine": InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"]),
+                "reranker": Reranker(reranker_llm),
                 "reranked_top_k": config.get("reranker", "reranked_top_k")
             }
 
-            
-        logger.info("Creating QA agent with the RAG retriever")
-        
-        full_paragraphs_retrieval_config = None
-        if config.get("full_paragraphs_retrieval", "enable"):
-            full_paragraphs_retrieval_config = {
-                "retriever": AgentBuilder._create_full_paragraphs_retriever(config, vector_store)
+        full_paragraphs_retriever_config = None
+        if config.get("full_paragraphs_retriever", "enabled"):
+            full_paragraphs_retriever_config = {
+                "retriever": FullParagraphs(vector_store)
             }
-        return retriever_config, reranker_config, full_paragraphs_retrieval_config
+        return retriever_config, reranker_config, full_paragraphs_retriever_config
 
     @staticmethod
     def build_qa_agent(
         **kwargs: dict
     ) -> QAAgent:
         config = Config()
-        retriever_config, reranker_config, full_paragraphs_retrieval_config = AgentBuilder._create_chain_configuration(kwargs)
+        retriever_config, reranker_config, full_paragraphs_retriever_config = AgentBuilder._create_chain_configuration(kwargs)
         
         if retriever_config is not None:
             chain = create_qa_chain(
@@ -93,7 +69,7 @@ class AgentBuilder:
                 CustomResponseParser(),
                 retriever_config = retriever_config,
                 reranker_config = reranker_config,
-                full_paragraphs_retrieval_config = full_paragraphs_retrieval_config
+                full_paragraphs_retriever_config = full_paragraphs_retriever_config
             )
             return QAAgent(chain)
         else:
@@ -103,7 +79,7 @@ class AgentBuilder:
                 CustomResponseParser(),
                 retriever_config = None,
                 reranker_config = reranker_config,
-                full_paragraphs_retrieval_config = full_paragraphs_retrieval_config
+                full_paragraphs_retriever_config = full_paragraphs_retriever_config
             )
             return QAAgent(chain_no_retriever)
 
