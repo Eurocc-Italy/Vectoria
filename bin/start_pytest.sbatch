@@ -63,10 +63,11 @@ source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
 PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/llm/test_qa_agent_cineca.py
+INDEX_TEST_FOLDER=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index/index.pkl
 
 echo "START"
-# pytest --disable-warnings -xsvv $PYTEST_FILE_PATH # this should not work
-python -m pytest --cineca -xsvv $PYTEST_FILE_PATH
+# pytest --disable-warnings -xsvv $PYTEST_FILE_PATH # this should not work since it uses wrong python env
+python -m pytest --cineca -xsvv $PYTEST_FILE_PATH 
 echo "END"
 
 # Interactive node

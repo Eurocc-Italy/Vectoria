@@ -1,4 +1,14 @@
-import os
+import os, sys
+venv_path=os.environ["VIRTUAL_ENV"]
+python_version=sys.version[0:4]
+lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
+
+# strip it from sys.path
+sys.path.remove(lib_path)
+
+# restore it in the right position
+sys.path.insert(1,lib_path)
+
 import requests
 import pytest
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
