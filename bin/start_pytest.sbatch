@@ -62,7 +62,7 @@ echo "All modules loaded..."
 source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
-PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/rag/preprocessing
+PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/tasks/test_build_index.py
 INDEX_TEST_FOLDER=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index/index.pkl
 
 echo "START"

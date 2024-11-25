@@ -12,7 +12,7 @@ import pytest
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
 def test_build_index(config, extraction_fn):
     from pathlib import Path
-    config.set("vectoria_logs_dir", value=Path("./test_build_index_logs"))
+    config.set("vectoria_logs_dir", value=Path("test/test_build_index_logs"))
     with TemporaryDirectory() as temp_dir:
 
         config.config["pp_steps"][0] = {
@@ -35,6 +35,11 @@ def test_build_index(config, extraction_fn):
 
         assert fvs_path.exists()
         assert len(os.listdir(fvs_path)) == 2
-        assert fvs.model_name == "BAAI/bge-m3"
+
+        if config.get("vector_store", "model_name") == "BAAI/bge-m3":
+            assert fvs.model_name == "BAAI/bge-m3"
+        elif config.get("vector_store", "model_name") == "/leonardo_work/PhDLR_prod/bge-m3":
+            assert fvs.model_name == "/leonardo_work/PhDLR_prod/bge-m3"
+        
         assert isinstance(fvs.hf_embedder, HuggingFaceBgeEmbeddings)
         assert isinstance(fvs.index, FAISS)

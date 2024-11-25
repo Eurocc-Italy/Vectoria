@@ -18,6 +18,8 @@ led_use_case
 
 results/
 test/test_pipeline_executor_logs/
+test/test_build_index_logs/
+bin/test_build_index_logs/
 
 push_to_origin_gh.sh
 

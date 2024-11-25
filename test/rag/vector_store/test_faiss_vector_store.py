@@ -20,10 +20,15 @@ def test_faiss_vector_store(config, data_dir):
     ).make_index(docs)
     assert isinstance(vector_store.index, FAISS)
     
-    pkl_path = vector_store.dump_to_disk("/tmp/test_faiss_vector_store")    
+    pkl_path = vector_store.dump_to_disk("/tmp/test_faiss_vector_store") 
+
     assert pkl_path.exists()
-    assert pkl_path.name == "BAAI__bge-m3_faiss_index"
-    
+
+    if config.get("vector_store", "model_name") == "BAAI/bge-m3":
+        assert pkl_path.name == "BAAI__bge-m3_faiss_index"
+    elif config.get("vector_store", "model_name") == "/leonardo_work/PhDLR_prod/bge-m3":
+        assert pkl_path.name == "__leonardo_work__PhDLR_prod__bge-m3_faiss_index"
+
     vector_store = FaissVectorStore(
         model_name = config.get("vector_store", "model_name"),
         device = config.get("vector_store", "device"),
@@ -45,5 +50,5 @@ def test_faiss_vector_store(config, data_dir):
     retriever = vector_store.as_retriever(**faiss_retriever_config)
     assert isinstance(retriever, VectorStoreRetriever)
 
-    docs = retriever.get_relevant_documents("What is the Matrix?")
+    docs = retriever.invoke("What is the Matrix?")
     assert len(docs) == 2
