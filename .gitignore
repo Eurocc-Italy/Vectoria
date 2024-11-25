@@ -17,6 +17,7 @@ led_use_case
 *_key.txt
 
 results/
+test/test_pipeline_executor_logs/
 
 push_to_origin_gh.sh
 

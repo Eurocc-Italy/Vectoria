@@ -27,10 +27,12 @@ def pytest_addoption(parser):
 def set_configuration_file(request):
     if request.config.getoption("--davinci"):
         os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "davinci_hpc.yaml")
+        os.environ["TEST_LOG_DIR"] = str("/home/leobaro/workspace/labs/vectoria-project/vectoria/test_pipeline_executor_logs")
     elif request.config.getoption("--cineca"):
         os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "cineca_hpc.yaml")
+        os.environ["TEST_LOG_DIR"] = str("/leonardo_work/PhDLR_prod/vectoria/test/test_pipeline_executor_logs")
     else:
-        raise ValueError("Please specify the configuration file to use with --davinci or --leonardo")
+        raise ValueError("Please specify the configuration file to use with --davinci or --cineca")
 
 @pytest.fixture(scope="session")
 def data_dir():
