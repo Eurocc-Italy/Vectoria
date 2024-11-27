@@ -4,31 +4,56 @@ log_level: DEBUG
 langchain_tracking: null
 system_prompts_lang: eng
 
-# Preprocessing
-pp_multiprocessing: true
-pp_steps: 
-  - name: extract_text_from_docx_file
-    filter_paragraphs: null
+data_ingestion:
+  multiprocessing: true
+  
+  extraction:
+    format: docx
     dump_doc_structure_on_file: true
-    regexes_for_metadata_extraction: null
+    regexes_for_metadata_extraction:
+      - name: DOC_ID
+        pattern: '^Document Title'
 
-  - name: remove_header
-    regex: 'PROCEDURA\s+PRO\d+\s+-P-IT\s+REV\.\s+\d+\s+PRO\d\s+\d+-P-IT\s+REV\.\s+\d+\s+SELEZIONE,\s+AUTORIZZAZIONE\s+E\s+QUALIFICA\s+DEI\s+FORNITORI\s+' 
-  
-  - name: remove_footer
-    regex: 'Template:\s+QUA\d+\s+-T-CO\s+it\s+rev\d+\s+©\s+Copyright\s+Selex\s+ES\s+S\.p\.A\.\s+\d+\s+\d+\s+–\s+Tutti\s+i\s+diritti\s+riservati\s+Pag\.\s+\d+\s+di\s+\d+'
+  regexes_for_replacement:
+    - name: remove_multiple_spaces
+      pattern: '[ \t]{2,}'
+      replace_with: ' '
+    - name: remove_bullets
+      pattern: '^\s*[\u2022\u25AA\u27A2]\s*'
+      replace_with: ''
+    - name: remove_ligature_st
+      pattern: 'ﬆ'
+      replace_with: 'st'
+    - name: replace_fi
+      pattern: 'ﬁ'
+      replace_with: 'fi'
+    - name: replace_fl
+      pattern: 'ﬂ'
+      replace_with: 'fl'
+    - name: replace_ffi
+      pattern: 'ﬃ'
+      replace_with: 'ffi'
+    - name: replace_ffl
+      pattern: 'ﬄ'
+      replace_with: 'ffl'
+    - name: replace_ft
+      pattern: 'ﬅ'
+      replace_with: 'ft'
+    - name: replace_st
+      pattern: 'ﬆ'
+      replace_with: 'st'
+    - name: replace_AA
+      pattern: 'Ꜳ'
+      replace_with: 'AA'
+    - name: replace_AE
+      pattern: 'Æ'
+      replace_with: 'AE'
+    - name: replace_aa
+      pattern: 'ꜳ'
+      replace_with: 'aa'
 
-  - name: remove_multiple_spaces
-    regex: null
-
-  - name: replace_ligatures
-    regex: null
-  
-  - name: remove_bullets
-    regex: null
-
-  - name: recursive_character_text_splitter
-    chunk_size: 1024
+  chunking:
+    chunk_size: 512
     chunk_overlap: 256
     separators: ["\n\n", "\n", " ", ""]
     is_separator_regex: [false, false, false, false]

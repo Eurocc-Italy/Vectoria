@@ -10,8 +10,6 @@ import re
 import sys
 import json
 import platform
-import datetime
-from vectoria_lib.common.archive import *
 from vectoria_lib.common.paths import ETC_DIR
 
 ####--------------------------------------------------------------------------------------------------------------

@@ -16,7 +16,6 @@ logger = logging.getLogger('db_management')
 
 def extract_text_from_pdf_file(
         file_path: Path,
-        filter_paragraphs: list = [],
         dump_doc_structure_on_file: bool = False,
         regexes_for_metadata_extraction: list[dict] = []
 ) -> list[Document]:

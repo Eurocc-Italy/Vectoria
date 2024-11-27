@@ -1,8 +1,6 @@
-import re, os
-import pytest
 from pathlib import Path
-from langchain.docstore.document import Document
 import docx
+from langchain.docstore.document import Document
 from vectoria_lib.rag.preprocessing.extraction_docx import (
     extract_text_from_docx_file,
     _extract_flat_structure,
@@ -13,7 +11,7 @@ from vectoria_lib.rag.preprocessing.extraction_docx import (
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 
-def test_extract_flat_structure_from_word():
+def test_extract_flat_structure_from_word(config):
     """
     Word docx file supports the tbl tag.
     """
@@ -40,7 +38,7 @@ def test_extract_flat_structure_from_word():
         ('Paragraph', 'Here’s an image:')
     ]
 
-def test_recover_paragraphs_numbers_and_names():
+def test_recover_paragraphs_numbers_and_names(config):
     document = docx.Document(TEST_DIR / "data/docx/docx_extraction_test.docx")
     flat_structure = _extract_flat_structure(document)
     paragraphs_numbers_and_names = _recover_paragraphs_numbers_and_names(flat_structure)
@@ -49,7 +47,7 @@ def test_recover_paragraphs_numbers_and_names():
         ('', ''), ('', ''), ('1', 'Title 1'), ('1', 'Title 1'), ('1.1', 'Title 2'), ('1.1', 'Title 2'), ('1.1.1', 'Title 3'), ('1.1.1', 'Title 3'), ('1.1.1.1', 'Title 4'), ('1.1.1.1', 'Title 4'), ('1.1.1.1.1', 'Title 5'), ('1.1.1.1.1', 'Title 5'), ('2', 'Another title 1'), ('2', 'Another title 1'), ('2', 'Another title 1'), ('2.1', 'Another title 2'), ('2.1', 'Another title 2')
     ]
     
-def test_filter_unstructured_data():
+def test_filter_unstructured_data(config):
     document = docx.Document(TEST_DIR / "data/docx/docx_extraction_test.docx")
     flat_structure = _extract_flat_structure(document)
     paragraphs_numbers = _recover_paragraphs_numbers_and_names(flat_structure)
@@ -63,12 +61,10 @@ def test_filter_unstructured_data():
 def test_extract_text_from_docx_file(config):
     docs: list[Document] = extract_text_from_docx_file(
         TEST_DIR / "data/docx/docx_extraction_test.docx",
-        filter_paragraphs=[],
         dump_doc_structure_on_file=True,
         regexes_for_metadata_extraction = [{
-            "metadata_name": "first_symbol",
-            "regex_pattern": r"^[A-Za-z]",
-            "regex_function": "search"
+            "name": "first_symbol",
+            "pattern": r"^[A-Za-z]"
         }]
     )   
 
@@ -76,7 +72,7 @@ def test_extract_text_from_docx_file(config):
     assert isinstance(docs[0], Document)
     assert len(docs) == 7
 
-    assert Path(config.get("vectoria_logs_dir") / "docs_structure" / "docx_extraction_test_structure.txt").exists()
+    assert Path( Path(config.get("vectoria_logs_dir")) / "docs_structure" / "docx_extraction_test_structure.txt").exists()
 
     assert set(docs[0].metadata.keys()) == set(["layout_tag","paragraph_name", "paragraph_number", "doc_file_name", "first_symbol"])
     assert docs[0].metadata["first_symbol"] == "D"

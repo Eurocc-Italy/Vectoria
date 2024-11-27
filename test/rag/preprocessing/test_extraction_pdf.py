@@ -3,11 +3,10 @@ from langchain.docstore.document import Document
 from vectoria_lib.rag.preprocessing.extraction_pdf import extract_text_from_pdf_file
 from vectoria_lib.common.paths import TEST_DIR
 
-def test_extract_text_from_pdf_file():
+def test_extract_text_from_pdf_file(config):
 
     docs: list[Document] = extract_text_from_pdf_file(
         TEST_DIR / "data/pdf/1.pdf",
-        filter_paragraphs=[],
         dump_doc_structure_on_file=False,
         regexes_for_metadata_extraction=[]
     )

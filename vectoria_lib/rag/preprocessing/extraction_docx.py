@@ -3,36 +3,21 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-import re
 import logging
 from pathlib import Path
 import docx
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
-# Do not remove the follwing imports (they are used by globals())
-from re import search, sub, match, fullmatch
-
+from vectoria_lib.rag.preprocessing.utils import extract_metadata_from_text
 logger = logging.getLogger('db_management')
 config = Config()
 
-def _apply_regex(text: str, regex: str, regex_function: str) -> str:
-    compiled_regex = re.compile(regex)
-    result = globals()[regex_function](compiled_regex, text) # TODO: not very generic
-    if result:
-        return result.group(0).strip() # TODO: not very generic
-    raise ValueError(f"No match found for regex {regex} in text")
-
 def _extract_metadata_from_unstructured_data(unstructured_data: list[Document], regexes: list[dict]) -> dict:
-    if regexes is None: regexes = []
-    raw_text = "".join([doc.page_content for doc in unstructured_data])
-    metadata = {}
-    for regex in regexes:
-        metadata[regex["metadata_name"]] = _apply_regex(raw_text, regex["regex_pattern"], regex["regex_function"])
-    return metadata
+    raw_text = "\n".join([doc.page_content for doc in unstructured_data])
+    return extract_metadata_from_text(raw_text, regexes)
 
 def extract_text_from_docx_file(
         file_path: Path,
-        filter_paragraphs: list = [], # TODO: implement this feature
         dump_doc_structure_on_file: bool = False,
         regexes_for_metadata_extraction: list[dict] = []
 ) -> list[Document]:
@@ -167,7 +152,7 @@ def _recover_paragraphs_numbers_and_names(flat_structure: list[tuple]) -> list[s
             current_number = ".".join(map(str, heading_levels))
             result.append((current_number, element_text))
 
-    #breakpoint()
+
     return result
 
 def _to_document_objects(document_flat_structure: list[tuple]) -> list[Document]:
