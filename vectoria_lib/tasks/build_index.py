@@ -10,7 +10,7 @@ from pathlib import Path
 
 from vectoria_lib.common.config import Config
 from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.rag.preprocessing.pipeline.preprocessing_pipeline_builder import PreprocessingPipelineBuilder
+from vectoria_lib.rag.preprocessing.preprocessing_pipeline import PreprocessingPipeline
 from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 
 def build_index(
@@ -21,9 +21,7 @@ def build_index(
     logger = logging.getLogger("tasks")
 
     start_time = time.time()
-    docs = PreprocessingPipelineBuilder().build_pipeline().run(
-                Path(kwargs["input_docs_dir"])
-            )
+    docs = PreprocessingPipeline.build_pipeline().run(Path(kwargs["input_docs_dir"]))
     logger.info("Created %d documents from %s in %.2f seconds", len(docs), kwargs['input_docs_dir'], time.time() - start_time)
         
     start_time = time.perf_counter()

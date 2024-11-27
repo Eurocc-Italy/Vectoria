@@ -13,18 +13,15 @@ from vectoria_lib.common.paths import TEST_DIR
 def test_build_index(config, extraction_fn):
 
     with TemporaryDirectory() as temp_dir:
-
-        config.config["pp_steps"][0] = {
-            "name": extraction_fn,
+        
+        doc_format = "docx" if "docx" in extraction_fn else "pdf"
+        
+        config.set("data_ingestion", "extraction", {
+            "format": doc_format,
             "dump_doc_structure_on_file": True,
             "regexes_for_metadata_extraction": []
-        }
+        })
         
-        if "docx" in extraction_fn:
-            doc_format = "docx"
-        elif "pdf" in extraction_fn:
-            doc_format = "pdf"
-            
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
             "output_dir" : Path(temp_dir) / doc_format
