@@ -11,7 +11,7 @@ def test_faiss_retriever(k, config, data_dir):
         device = config.get("vector_store", "device"),
         normalize_embeddings = config.get("vector_store", "normalize_embeddings")
     ).load_from_disk(
-        data_dir / "index" / "BAAI__bge-m3_faiss_index_the_matrix"
+        data_dir / "index" / "BAAI__bge-m3_faiss_index"
     )
     retriever = FaissRetriever(
         search_type = config.get("retriever", "search_type"),

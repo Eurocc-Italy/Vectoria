@@ -10,20 +10,17 @@ def test_build_faiss_retriever(config, data_dir):
 
     # Empty vector store
     with pytest.raises(ValueError):
-        RetrieverBuilder().build(
+        RetrieverBuilder.build(
             config.get("retriever"),
             vector_store = FaissVectorStore(**config.get("vector_store"))
         )
 
-
-    # Valid vector store
-    vector_store = VectorStoreBuilder().build(
+    vector_store = VectorStoreBuilder.build(
         config.get("vector_store"),
-        index_path = data_dir / "index" / "BAAI__bge-m3_faiss_index_the_matrix"
+        index_path = data_dir / "index" / "BAAI__bge-m3_faiss_index"
     )
 
-    # Valid retriever
-    retriever = RetrieverBuilder().build(
+    retriever = RetrieverBuilder.build(
         config.get("retriever"),
         vector_store = vector_store
     )
