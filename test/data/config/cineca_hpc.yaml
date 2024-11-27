@@ -70,7 +70,6 @@ full_paragraphs_retriever:
 chat_history:
   enabled: false
 
-# QA agent
 inference_engine:
   name: huggingface
   url: null
@@ -97,20 +96,8 @@ evaluation:
     load_in_8bit: true
     max_new_tokens: 150
     trust_remote_code: false
-  #embeddings_engine:
-  #  name: vllm
-  #  model_name: BAAI/bge-multilingual-gemma2
-  #  url: http://localhost:8898/v1
-  #  api_key: abcd
-
-# Evaluation
-# evaluation_tool: ragas
-# evaluation_engine:
-#   name: huggingface
-#   url: null
-#   api_key: null
-#   model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
-#   device: cuda
-#   load_in_8bit: true
-#   max_new_tokens: 150
-#   trust_remote_code: false
+  embeddings_engine:
+    name: vllm
+    model_name: BAAI/bge-multilingual-gemma2
+    url: http://localhost:8898/v1
+    api_key: abcd
