@@ -7,7 +7,7 @@
 from dataclasses import dataclass, field
 
 import logging
-logger = logging.getLogger('db_management')
+logger = logging.getLogger('rag')
 
 @dataclass
 class DocumentData:

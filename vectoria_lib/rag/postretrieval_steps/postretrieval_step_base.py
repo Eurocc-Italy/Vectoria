@@ -5,7 +5,7 @@ from langchain.docstore.document import Document
 
 class PostRetrievalStepBase(ABC):
     def __init__(self):
-        self.logger = logging.getLogger("db_management")
+        self.logger = logging.getLogger("rag")
 
     @abstractmethod
     def post_process(self, chunks: List[Document]) -> List[Document]:

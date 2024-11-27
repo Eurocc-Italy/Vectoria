@@ -8,7 +8,7 @@ import logging
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
-logger = logging.getLogger('db_management')
+logger = logging.getLogger('rag')
 config = Config()
 
 # TODO: superflous function

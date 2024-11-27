@@ -9,7 +9,7 @@ import docx
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
 from vectoria_lib.rag.preprocessing.utils import extract_metadata_from_text
-logger = logging.getLogger('db_management')
+logger = logging.getLogger('rag')
 config = Config()
 
 def _extract_metadata_from_unstructured_data(unstructured_data: list[Document], regexes: list[dict]) -> dict:

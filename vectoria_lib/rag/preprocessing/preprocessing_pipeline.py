@@ -23,7 +23,7 @@ from langchain_core.runnables import RunnableLambda
 
 class PreprocessingPipeline:
 
-    logger = logging.getLogger('db_management')
+    logger = logging.getLogger('rag')
     @staticmethod
     def get_extraction_fn(extraction_config: dict):
         doc_format = extraction_config.pop("format")
@@ -67,7 +67,7 @@ class PreprocessingPipeline:
         return PreprocessingPipeline(chain=chain, multiprocessing=data_ingestion_config["multiprocessing"])
     
     def __init__(self, chain, multiprocessing):
-        self.logger = logging.getLogger('db_management')
+        self.logger = logging.getLogger('rag')
         self.chain = chain
         self.multiprocessing = multiprocessing
 

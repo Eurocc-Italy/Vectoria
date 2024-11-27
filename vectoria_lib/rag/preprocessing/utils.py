@@ -7,7 +7,7 @@
 import re
 import logging
 from langchain.docstore.document import Document
-logger = logging.getLogger('db_management')
+logger = logging.getLogger('rag')
 
 regex_cache = {}
 

@@ -6,7 +6,7 @@ from langchain.docstore.document import Document
 class VectorStoreBase(ABC):
 
     def __init__(self):
-        self.logger = logging.getLogger("db_management")
+        self.logger = logging.getLogger("rag")
 
     @abstractmethod
     def make_index(self, docs: list[Document]):

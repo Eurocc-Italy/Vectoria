@@ -29,7 +29,7 @@ def evaluate(
     )
 
     config = Config()
-    logger = logging.getLogger('db_management')
+    logger = logging.getLogger('rag')
 
     start_time = time.perf_counter()
     data = load_json(kwargs["test_set_path"])

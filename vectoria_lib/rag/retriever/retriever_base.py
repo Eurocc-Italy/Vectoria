@@ -5,7 +5,7 @@ from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
 class RetrieverBase(ABC):
 
     def __init__(self, **kwargs):
-        self.logger = logging.getLogger('db_management')
+        self.logger = logging.getLogger('rag')
         self.kwargs = kwargs
 
         self.wrapped_retriever = None

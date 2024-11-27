@@ -5,7 +5,7 @@ from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
 class VectorStoreBuilder:
 
     CACHE = {}
-    logger = logging.getLogger("db_management")
+    logger = logging.getLogger("rag")
 
     @staticmethod
     def build(config: dict, index_path: str | Path = None):

@@ -12,7 +12,7 @@ from langchain.docstore.document import Document
 
 from vectoria_lib.rag.preprocessing.document_data import  DocumentData
 
-logger = logging.getLogger('db_management')
+logger = logging.getLogger('rag')
 
 def extract_text_from_pdf_file(
         file_path: Path,
