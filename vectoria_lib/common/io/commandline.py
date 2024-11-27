@@ -1,15 +1,15 @@
 #
-# CHECK
+# 
 #
 # @authors : Eric Pascolo
 #
-
+import os, sys
 import logging
 import argparse
-import sys
 from vectoria_lib.common import utils
 from vectoria_lib.common.io import file_reader
 from pathlib import Path
+from vectoria_lib.common.paths import ETC_DIR
 
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -64,6 +64,32 @@ def create_cl_parser_from_json(parser, json_args: str | Path) -> argparse.Argume
 
     return parser
 
+####--------------------------------------------------------------------------------------------------------------
+
+def get_setting_file_path(filename) -> list:
+
+    """ Return a list of setting file given its name, the search path is in oreder etc and etc/default """
+
+    check_setting_path = []
+    
+    check_setting_path_standard = ETC_DIR / "custom" / "cli" / filename
+    check_setting_path_default  = ETC_DIR / "default" / "cli" / filename
+    
+    ## check if setting file is in default location
+    if os.path.exists(check_setting_path_default):
+        check_setting_path.append(check_setting_path_default)
+        check_setting_find = False
+   
+    ## check if you create a personal setting file
+    if os.path.exists(check_setting_path_standard):
+        check_setting_path.append(check_setting_path_standard)
+        check_setting_find = False
+    
+    ## setting file not found
+    if check_setting_find:
+        sys.exit("ERROR CHECK setting file not found:"+filename)
+
+    return check_setting_path
     
 ####--------------------------------------------------------------------------------------------------------------
 
@@ -78,3 +104,12 @@ def cl_convert_to_dict(args):
     return newdict
 
 ####--------------------------------------------------------------------------------------------------------------
+
+
+def get_iter_object_from_dictionary(d):
+    """ Return different iter object of dictionary, the objects depends to python version"""
+
+    if sys.version_info[:2] < (3,0):
+        return d.iteritems()
+    else:
+        return d.items()
