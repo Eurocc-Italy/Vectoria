@@ -4,14 +4,10 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
+import time
 import logging
 from pathlib import Path
 import multiprocessing as mp
-from functools import partial
-import time
-
-from langchain_core.runnables import chain, RunnableConfig
-from langchain.docstore.document import Document
 
 from vectoria_lib.common.io.folder_reader import get_files_in_folder
 from vectoria_lib.common.config import Config
