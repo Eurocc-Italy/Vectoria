@@ -13,7 +13,7 @@ from langchain_core.language_models.llms import BaseLanguageModel
 
 from langchain_huggingface import ChatHuggingFace
 
-
+import torch
 import time
 import logging 
 
@@ -43,11 +43,13 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         quantization_config = None
         if self.args["load_in_8bit"]:
             quantization_config = BitsAndBytesConfig(
-                load_in_8bit=True
+                load_in_8bit=True,
+                bnb_8bit_compute_dtype=torch.bfloat16
             )
         elif self.args["load_in_4bit"]:
             quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=torch.bfloat16
             )
         else:
             self.args["device"] = None
