@@ -7,7 +7,6 @@ class VectorStoreBase(ABC):
 
     def __init__(self):
         self.logger = logging.getLogger("db_management")
-        pass
 
     @abstractmethod
     def make_index(self, docs: list[Document]):

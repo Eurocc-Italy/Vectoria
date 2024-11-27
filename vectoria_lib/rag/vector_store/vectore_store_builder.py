@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from vectoria_lib.common.utils import Singleton
 from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.common.config import Config
+
 class VectorStoreBuilder(metaclass=Singleton):
 
     CACHE = {}
