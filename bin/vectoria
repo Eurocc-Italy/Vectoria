@@ -1,20 +1,20 @@
 #!/leonardo_work/PhDLR_prod/eucc-env/bin/python3
-"#!/usr/bin/python3 --> this explodes!"
 
 "VECTORIA: Una terra fantastica dove le informazioni sono organizzate in vettori."
 
 import os, sys, argparse
 
-if "SLURM_JOB_ID" in os.environ:
-    venv_path=os.environ["VIRTUAL_ENV"]
-    python_version=sys.version[0:4]
-    lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
-    # strip it from sys.path
-    sys.path.remove(lib_path)
-    # restore it in the right position
-    sys.path.insert(1,lib_path)
+def _chec_if_I_can_be_removed():
+    if "SLURM_JOB_ID" in os.environ:
+        venv_path=os.environ["VIRTUAL_ENV"]
+        python_version=sys.version[0:4]
+        lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
+        # strip it from sys.path
+        sys.path.remove(lib_path)
+        # restore it in the right position
+        sys.path.insert(1,lib_path)
+_chec_if_I_can_be_removed()
 
-from pathlib import Path
 
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.common.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
@@ -34,45 +34,35 @@ def cli():
 
     subparsers = parser.add_subparsers(
         required=True,
-        dest='command',
-        help='Choose a command (build_index or ask_question)'
+        dest='command'
     )
     
-    parser_create_index_task = subparsers.add_parser('build_index', formatter_class=argparse.RawTextHelpFormatter, help='Run the build_index behavior')
-    create_cl_parser_from_json(parser_create_index_task, 'build_index.json')
+    _subparser = subparsers.add_parser('build_index', formatter_class=argparse.RawTextHelpFormatter, help='Run the build_index behavior')
+    create_cl_parser_from_json(_subparser, 'build_index.json')
 
-    parser_ask_question_task = subparsers.add_parser('ask_question', formatter_class=argparse.RawTextHelpFormatter, help='Run the ask_question behavior')
-    create_cl_parser_from_json(parser_ask_question_task, 'ask_question.json')
+    _subparser = subparsers.add_parser('evaluate', formatter_class=argparse.RawTextHelpFormatter, help='Run the evaluate behavior')
+    create_cl_parser_from_json(_subparser, 'evaluate.json')
 
-    parser_ask_question_task = subparsers.add_parser('evaluate', formatter_class=argparse.RawTextHelpFormatter, help='Run the ask_question behavior')
-    create_cl_parser_from_json(parser_ask_question_task, 'evaluate.json')
-
-    parser_ask_question_task = subparsers.add_parser('inference', formatter_class=argparse.RawTextHelpFormatter, help='Run the inference behavior')
-    create_cl_parser_from_json(parser_ask_question_task, 'inference.json')
-
+    _subparser = subparsers.add_parser('inference', formatter_class=argparse.RawTextHelpFormatter, help='Run the inference behavior')
+    create_cl_parser_from_json(_subparser, 'inference.json')
+    
     return parser.parse_args()
 
 def main():
     
     args = cli()
     
-    Config().load_config(args.config) #.update_from_args(args) # <-- override config params with cli params
+    Config().load_config(args.config)
     args = cl_convert_to_dict(args)
-
-    for k, v in args.items():
-        print(k, v)
-
-    # _check_if_model_exists_in_ram(Config().config["inference_engine"]["model_name"])
 
     if args["command"] == 'build_index':
         from vectoria_lib.tasks.build_index import build_index
         build_index(**args)
-    elif args["command"] == 'ask_question':
-        from vectoria_lib.tasks.ask_question import ask_question
-        ask_question(**args)
+
     elif args["command"] == 'evaluate':
         from vectoria_lib.tasks.evaluate import evaluate
         evaluate(**args)
+        
     elif args["command"] == 'inference':
         from vectoria_lib.tasks.inference import inference
         inference(**args)

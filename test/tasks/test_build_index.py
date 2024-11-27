@@ -1,18 +1,17 @@
 import os
+from pathlib import Path
 from tempfile import TemporaryDirectory
-from vectoria_lib.tasks.build_index import build_index
-from vectoria_lib.common.paths import TEST_DIR
-from vectoria_lib.common.config import Config
+import pytest
 
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
-import pytest
+from vectoria_lib.tasks.build_index import build_index
+from vectoria_lib.common.paths import TEST_DIR
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
 def test_build_index(config, extraction_fn):
-    from pathlib import Path
-    config.set("vectoria_logs_dir", value=Path("test/test_build_index_logs"))
+
     with TemporaryDirectory() as temp_dir:
 
         config.config["pp_steps"][0] = {
@@ -25,7 +24,7 @@ def test_build_index(config, extraction_fn):
             doc_format = "docx"
         elif "pdf" in extraction_fn:
             doc_format = "pdf"
-        from pathlib import Path
+            
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
             "output_dir" : Path(temp_dir) / doc_format

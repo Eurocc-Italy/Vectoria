@@ -27,10 +27,8 @@ def pytest_addoption(parser):
 def set_configuration_file(request):
     if request.config.getoption("--davinci"):
         os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "davinci_hpc.yaml")
-        os.environ["TEST_LOG_DIR"] = str("/home/leobaro/workspace/labs/vectoria-project/vectoria/test_pipeline_executor_logs")
     elif request.config.getoption("--cineca"):
         os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "cineca_hpc.yaml")
-        os.environ["TEST_LOG_DIR"] = str("/leonardo_work/PhDLR_prod/vectoria/test/test_pipeline_executor_logs")
     else:
         raise ValueError("Please specify the configuration file to use with --davinci or --cineca")
 
@@ -47,8 +45,10 @@ def index_test_folder(data_dir):
     return data_dir / "index" / "BAAI__bge-m3_faiss_index"
 
 @pytest.fixture(scope="function")
-def config():
-    return Config().load_config(os.environ["VECTORIA_CONFIG_FILE"])
+def config(request):
+    c = Config().load_config(os.environ["VECTORIA_CONFIG_FILE"])
+    c.set("vectoria_logs_dir", value=str(TEST_DIR / "logs" / request.node.name))
+    return c
 
 @pytest.fixture(scope="session", autouse=True)
 def vllm_server_status_fn():
