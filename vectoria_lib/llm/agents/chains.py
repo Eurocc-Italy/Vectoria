@@ -19,7 +19,8 @@ from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrou
 from langchain_core.prompts import PromptTemplate
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.documents import Document
-DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template("{page_content}")
+
+DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template("{page_content}\n[Document name:'{doc_file_name}' Paragraph: '{paragraph_number}-{paragraph_name}']")
 
 logger = logging.getLogger("llm")
 
