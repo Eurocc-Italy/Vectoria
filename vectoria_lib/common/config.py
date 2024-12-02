@@ -51,8 +51,14 @@ class Config(metaclass=Singleton):
             self.logger.warning("Value is None for key: %s, subkey: %s", key, subkey)
             return
         if subkey is None:
+            if key not in self.config:
+                raise ValueError(f"Key {key} not found in config")
             self.config[key] = value
         else:
+            if key not in self.config:
+                raise ValueError(f"Key {key} not found in config")
+            if subkey not in self.config[key]:
+                raise ValueError(f"Subkey {subkey} not found in key {key} of config")
             self.config[key][subkey] = value
         if key == "langchain_tracking":
             self._langchain_tracking()
@@ -67,9 +73,7 @@ class Config(metaclass=Singleton):
             return
 
         if "LANGCHAIN_API_KEY" not in os.environ:
-            self.config_stream_logger.warning("langchain_tracking is enabled but LANGCHAIN_API_KEY environment variable is not set")
-            if "LANGCHAIN_TRACING_V2" in os.environ:
-                del os.environ['LANGCHAIN_TRACING_V2']
+            raise ValueError("langchain_tracking is enabled but LANGCHAIN_API_KEY environment variable is not set")
 
         self.config_stream_logger.info("Langchain tracking enabled")
         os.environ["LANGCHAIN_TRACING_V2"] = "true"
