@@ -20,7 +20,7 @@ def create_arg_dict_from_string(a):
     
     logger = logging.getLogger("io")
     
-    for k,v in utils.get_iter_object_from_dictionary(a):
+    for k,v in get_iter_object_from_dictionary(a):
         
         if k == "required": 
           
@@ -50,7 +50,7 @@ def create_cl_parser_from_json(parser, json_args: str | Path) -> argparse.Argume
     Parsing command line pars with argparse module, the cl argoument is dynamically loaded from configuration file,
     and after parser by a fuction that convert string in py callable object.
     """
-    check_setting_path = utils.get_setting_file_path(json_args)
+    check_setting_path = get_setting_file_path(json_args)
         
     # extract setting information from json file
     cl_setting = file_reader.json_reader(check_setting_path[0])
@@ -98,7 +98,7 @@ def cl_convert_to_dict(args):
     Convert args object in dictionary
     """
     
-    convdict = utils.get_iter_object_from_dictionary(vars(args))
+    convdict = get_iter_object_from_dictionary(vars(args))
     newdict =   dict([(vkey, vdata) for vkey, vdata in convdict if(vdata) ])
     
     return newdict
