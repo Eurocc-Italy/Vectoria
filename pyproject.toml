@@ -23,46 +23,39 @@ maintainers = [
     {name = "Eric Pascolo", email = "e.pascolo@cineca.it"},
     {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"}
 ]
+
+
 dependencies = [
-    "torch",
-    "datasets",
-    "transformers",
-    "faiss-gpu",
+    "requests==2.32.3",
+    "transformers==4.46.*"
+    "faiss-gpu>=1.7.*",
     "accelerate",
-    "bitsandbytes",
-    "pandas",
-    "langchain",
-    "langchain-huggingface",
-    "langchain-community",
-    "langchain-ollama",
-    "langchain-openai",
+    "python-docx==1.1.2",
+    "pypdf>=4.3.*",
+    "langchain>=0.3.*",
+    "langchain-community>=0.3.*",
+    "langchain-core>=0.3.*",
+    "langchain-huggingface>=0.1.*",
+    "langchain-openai>=0.2.*",
     "langsmith",
     "langgraph",
-    "pypdf",
-    "python-docx",
     "tqdm"
 ]
 
 [project.optional-dependencies]
 evaluation = [
-    "ragas==0.2.4",
-    "nltk",
-    "rouge_score",
+    "ragas==0.2.6",
     "matplotlib"
 ]
 dev = [
-    "jupyterlab",
-    "ipykernel",
     "grandalf"
 ]
 test = [
-    "pytest",
+    "pytest==8.*",
     "IPython",
 ]
 ui = [
-    "streamlit",
-    "plotly",
-    "GPUtil"
+    "streamlit"
 ]
 engines = [
     "vllm",
