@@ -27,7 +27,7 @@ maintainers = [
 
 dependencies = [
     "requests==2.32.3",
-    "transformers==4.46.*"
+    "transformers==4.46.*",
     "faiss-gpu>=1.7.*",
     "accelerate",
     "python-docx==1.1.2",
