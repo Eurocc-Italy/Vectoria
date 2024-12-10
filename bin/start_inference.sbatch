@@ -40,18 +40,18 @@ echo "Model copied to RAM in $time_taken seconds."
 #-------------------------------------------------------
 
 # COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/bge-reranker-v2-gemma
-RAM_PATH=/dev/shm
+# MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/bge-reranker-v2-gemma
+# RAM_PATH=/dev/shm
 
-# 2. Copy model to RAM
-echo "Copying reranker model to RAM..."
-start_time=$(date +%s)   # Record the start time
-cp -r $MODEL_PATH $RAM_PATH
-end_time=$(date +%s)     # Record the end time
+# # 2. Copy model to RAM
+# echo "Copying reranker model to RAM..."
+# start_time=$(date +%s)   # Record the start time
+# cp -r $MODEL_PATH $RAM_PATH
+# end_time=$(date +%s)     # Record the end time
 
-# 3. Calculate and display time taken to copy the model
-time_taken=$((end_time - start_time))
-echo "Model copied to RAM in $time_taken seconds."
+# # 3. Calculate and display time taken to copy the model
+# time_taken=$((end_time - start_time))
+# echo "Model copied to RAM in $time_taken seconds."
 
 #-------------------------------------------------------
 
@@ -62,14 +62,15 @@ echo "All modules loaded..."
 source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
-FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
-K=5
-TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/led_question_answer.json
+# does not work: we need to pass a directory
+#FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
+FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index # OK
+TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/test.json
 OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
 CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
-python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --k $K --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
 echo "END"
 
 # Interactive node

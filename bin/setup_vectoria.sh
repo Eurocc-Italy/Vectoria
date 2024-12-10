@@ -1,7 +1,7 @@
 #
 # VECTORIA
 #
-# @authors : 
+# @authors: 
 #
 
 module load profile/deeplrn
@@ -32,4 +32,4 @@ export PYTHONPATH=$VECTORIA_PATH:$PYTHONPATH
 # define cleaning alias
 alias pyccleandir="find . -name '*.pyc' -delete"
 alias vectoriacleandir='cd $VECTORIA_HOME ; pyccleandir ; cd $OLDPWD'
-alias sclean='rm 9*.out 9*.err; echo ""; echo "Old files (.out & .err) removed..."; echo ""'
+alias sclean='rm 10*.out 10*.err; echo ""; echo "Old files (.out & .err) removed..."; echo ""'

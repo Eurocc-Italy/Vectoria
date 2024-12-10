@@ -3,6 +3,7 @@ from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
 from vectoria_lib.rag.retriever.faiss_retriever import FaissRetriever
 from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
 from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.common.config import Config
 
 
 class RetrieverBuilder:
@@ -18,7 +19,7 @@ class RetrieverBuilder:
         if vector_store is None:
             raise ValueError("A vector store is required to build the retriever")
 
-        if config["name"] == "faiss":
+        if Config().get("vector_store", "name") == "faiss":
             RetrieverBuilder.logger.info("Building FAISS retriever")
             if not isinstance(vector_store, FaissVectorStore):
                 raise ValueError("Vector store must be a FAISS instance")
@@ -36,4 +37,4 @@ class RetrieverBuilder:
             )
         
         else:
-            raise ValueError(f"Invalid retriever type: {config['name']}")
+            raise ValueError(f"Invalid retriever type: {Config().get('vector_store', 'name')}")
