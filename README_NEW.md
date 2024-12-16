@@ -47,7 +47,7 @@ python vectoria \
   --output-suffix '_my_test_index'
 ```
 
-### Arguments:
+**Arguments:**
 
 - `--config`: Path to the configuration file. Example: `'etc/default/default_config.yaml'`.
 - `build_index`: Specifies the command to build the vector index.
@@ -55,23 +55,32 @@ python vectoria \
 - `--output-dir`: Directory where the generated vector index will be saved.
 - `--output-suffix`: Optional suffix appended to the output index name.
 
-### Inference Arguments:
+### Inference Workflow
 
-- `--faiss-index-path`: Path to the FAISS index file for performing queries.
-- `--questions`: List of user questions for inference, provided as separate strings or a file.
-- `--output-dir`: Directory where inference results will be saved.
+**Steps:**
 
-### Example Usage:
+1. **Query Reception**: Accepts user questions via CLI or file input.
+2. **Query Embedding**: Converts the query into a vector embedding using a pre-trained model.
+3. **Vector Search**: Finds the top-k most relevant chunks using similarity metrics from the vector database.
+4. **Prompt Construction**: Combines retrieved chunks with the query to provide context for the response.
+5. **Answer Generation**: Uses a generative AI model (e.g., `Llama-3.1`) to produce natural language answers.
 
-#### Building the Vector Database:
-
-To preprocess documents, embed them, and store the resulting vectors in a database:
+**Example Command:**
 
 ```bash
 python vectoria \
   --config 'etc/default/default_config.yaml' \
-  build_index \
-  --input-docs-dir 'test/data' \
-  --output-dir 'test/index' \
-  --output-suffix '_my_test_index'
+  inference \
+  --faiss-index-path 'test/data/index/my_new_test_faiss_index/index.pkl' \
+  --questions 'Who is the CEO?' 'Who is the VP?' \
+  --output-dir 'test/data/results'
 ```
+
+**Arguments:**
+
+- `--config`: Path to the configuration file. Example: `'etc/default/default_config.yaml'`.
+- `inference`: Specifies the command to perform inference on the vector database.
+- `--faiss-index-path`: Path to the FAISS index file containing precomputed vector embeddings.
+- `--questions`: List of user questions for inference, provided as separate strings or sourced from a file.
+- `--output-dir`: Directory where inference results, such as generated answers and logs, will be saved.
+
