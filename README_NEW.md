@@ -32,6 +32,8 @@ Vectoria’s architecture consists of tightly integrated components to deliver e
 
 ### Build Vector Database
 
+![Build Vector Database workflow](images/build_index_workflow.png "Build Vector Database workflow")
+
 **Steps:**
 1. **Data Preprocessing**: Cleans and splits documents into chunks (e.g., 512 characters).
 2. **Data Embedding**: Generates vector embeddings using pre-trained models (e.g., `bge-m3`).
@@ -56,6 +58,8 @@ python vectoria \
 - `--output-suffix`: Optional suffix appended to the output index name.
 
 ### Inference Workflow
+
+![Inference workflow](images/inference_workflow.png "Inference workflow")
 
 **Steps:**
 
