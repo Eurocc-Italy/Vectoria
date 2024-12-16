@@ -45,6 +45,7 @@ python vectoria \
   --input-docs-dir 'test/data' \
   --output-dir 'test/index' \
   --output-suffix '_my_test_index'
+```
 
 ### Arguments:
 
@@ -73,4 +74,4 @@ python vectoria \
   --input-docs-dir 'test/data' \
   --output-dir 'test/index' \
   --output-suffix '_my_test_index'
-
+```
