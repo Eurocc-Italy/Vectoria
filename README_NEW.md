@@ -45,3 +45,32 @@ python vectoria \
   --input-docs-dir 'test/data' \
   --output-dir 'test/index' \
   --output-suffix '_my_test_index'
+
+### Arguments:
+
+- `--config`: Path to the configuration file. Example: `'etc/default/default_config.yaml'`.
+- `build_index`: Specifies the command to build the vector index.
+- `--input-docs-dir`: Directory containing the input documents for indexing.
+- `--output-dir`: Directory where the generated vector index will be saved.
+- `--output-suffix`: Optional suffix appended to the output index name.
+
+### Inference Arguments:
+
+- `--faiss-index-path`: Path to the FAISS index file for performing queries.
+- `--questions`: List of user questions for inference, provided as separate strings or a file.
+- `--output-dir`: Directory where inference results will be saved.
+
+### Example Usage:
+
+#### Building the Vector Database:
+
+To preprocess documents, embed them, and store the resulting vectors in a database:
+
+```bash
+python vectoria \
+  --config 'etc/default/default_config.yaml' \
+  build_index \
+  --input-docs-dir 'test/data' \
+  --output-dir 'test/index' \
+  --output-suffix '_my_test_index'
+
