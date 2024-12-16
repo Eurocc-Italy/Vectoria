@@ -12,8 +12,18 @@
             "name": "--test-set-path",
             "param": {
                 "type": "str",
-                "required": "True",
+                "required": "False",
                 "help": "A json file containing questions"
+            }
+        },
+        {
+
+            "name": "--questions",
+            "param":{
+                "type": "str",
+                "nargs": "+",
+                "required": "False",
+                "help": "Provide questions directly via CLI, separated by spaces. Example: \"Who is the CEO?\" \"Who is the VP?\""
             }
         },
         {
