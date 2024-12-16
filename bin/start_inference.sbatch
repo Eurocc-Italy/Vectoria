@@ -23,8 +23,8 @@ export TMP="/leonardo_scratch/large/userinternal/aproia00"
 #-------------------------------------------------------
 
 # TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-#MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct
-MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-70B-Instruct
+MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct
+#MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-70B-Instruct
 RAM_PATH=/dev/shm   
 
 # 2. Copy model to RAM
@@ -70,7 +70,10 @@ OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
 CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
+# OPTION 1: QUESTIONS FROM FILE
 python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+# OPTION 2: QUESTIONS FROM CLI
+#python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --questions "Which is the training regime for the models?" "Which models are tested?" --output-dir $OUTPUT_DIR
 echo "END"
 
 # Interactive node

@@ -105,11 +105,11 @@ inference_engine:
   # model_name: /leonardo_work/PhDLR_prod/meta-llama/Meta-Llama-3.1-8B-Instruct # WORK 8B
   # model_name: /leonardo_scratch/large/userinternal/aproia00/Meta-Llama-3-70B-Instruct # SCRATCH 70B
   # model_name: /leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct # FAST 8B
-  #model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
-  model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
+  model_name: /dev/shm/Meta-Llama-3.1-8B-Instruct # RAM 8B
+  #model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
   device: cuda
   load_in_4bit: false
-  load_in_8bit: false
+  load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto

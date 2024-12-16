@@ -64,6 +64,10 @@ def main():
         evaluate(**args)
         
     elif args["command"] == 'inference':
+
+        if (not args.get("questions")) and (not args.get("test_set_path")):
+            raise ValueError("No questions provided. Use '--questions' to pass questions directly or '--test-set-path' to provide a JSON file.")
+            
         from vectoria_lib.tasks.inference import inference
         inference(**args)
 

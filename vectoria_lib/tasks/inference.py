@@ -12,4 +12,4 @@ def inference(
     qa_agent = AgentBuilder.build_qa_agent(
         faiss_index_path=kwargs["faiss_index_path"]
     )
-    qa_agent.inference(test_set_path=kwargs["test_set_path"], output_dir=kwargs["output_dir"])
+    qa_agent.inference(kwargs)
