@@ -72,9 +72,13 @@ python vectoria \
   --config 'etc/default/default_config.yaml' \
   inference \
   --faiss-index-path 'test/data/index/my_new_test_faiss_index/index.pkl' \
+  --test-set-path 'test/data/results/my_questions.json' \
   --questions 'Who is the CEO?' 'Who is the VP?' \
   --output-dir 'test/data/results'
 ```
+
+N.B.: --test-set-path and --questions are both not formally strictly required, since vectoria is able to handle a dual mode. Using --questions argument will override questions from --test-set-path and will provide answers only through CLI, avoiding any dump on file. IMPORTANT: at least one MUST be provided.
+
 
 **Arguments:**
 
