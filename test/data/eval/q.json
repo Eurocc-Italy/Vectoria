@@ -1,0 +1,18 @@
+{
+    "question": [
+        "What is the primary innovation introduced in the paper?",
+        "What are the benefits of the Transformer model over traditional RNNs and CNNs?",
+        "What tasks were used to evaluate the Transformer model?",
+        "What is the BLEU score achieved by the Transformer on the WMT 2014 English-to-German translation task?",
+        "What training configurations were used for the Transformer model?",
+        "What are the key components of the Transformer architecture?",
+        "How does the self-attention mechanism function in the Transformer?",
+        "Why is positional encoding necessary in the Transformer model?"
+    ],
+    "answer": [
+    ],
+    "contexts": [
+    ],
+    "ground_truth": [
+    ]
+}
