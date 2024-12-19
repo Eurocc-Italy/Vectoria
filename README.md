@@ -140,7 +140,7 @@ Loading checkpoint shards:  25%|██▋       | 8/30 [00:10<00:29,  1.32s/it]
 Loading checkpoint shards:  50%|█████     | 15/30 [00:20<00:20,  1.34s/it]
 Loading checkpoint shards:  75%|███████▋  | 23/30 [00:30<00:09,  1.36s/it]
 Loading checkpoint shards: 100%|██████████| 30/30 [00:39<00:00,  1.33s/it]
-DEBUG - Loading model /dev/shm/Meta-Llama-3.1-70B-Instruct took 42.07 seconds - huggingface_inference_engine.py - 68
+DEBUG - Loading model /path/to/model took 42.07 seconds - huggingface_inference_engine.py - 68
 
 INFO - Questions are loaded from test set JSON: /path/to/test.json - qa.py - 86
 DEBUG - Filter prefix match 'ANSWER:'! - parser.py - 19
