@@ -1,19 +1,16 @@
 #!/bin/bash
 
-#SBATCH --account=cin_staff
-#SBATCH --job-name=infer
+#SBATCH --account={{ account }}
+#SBATCH --job-name=inference
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
-#SBATCH --partition=boost_usr_prod
+#SBATCH --partition={{ partition }}
 #SBATCH --time 00:30:00     # format: HH:MM:SS
-#SBATCH -N 1                # 1 node
-#SBATCH --ntasks-per-node=1 # 1 task
-#SBATCH --cpus-per-task=32   # 8 cores out of 32
-#SBATCH --gres=gpu:4        # 1 gpus per node out of 4
-##SBATCH --mem=300000        # memory per node out of 494000MB (481GB)
+#SBATCH -N 1                
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task={{ cpus }}  
+#SBATCH --gres=gpu:{{ gpus }}
 #SBATCH --exclusive
-
-#SBATCH --qos=boost_qos_dbg
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 
@@ -22,17 +19,17 @@ export TMP={{ tmpdir }}
 
 #-------------------------------------------------------
 
-# TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
 MODEL_PATH={{ install_path }}/inference_engine
 RAM_PATH=/dev/shm   
 
-# 2. Copy model to RAM
+# 1. Copy model to RAM
 echo "Copying inference model to RAM..."
 start_time=$(date +%s)   # Record the start time
 cp -r $MODEL_PATH $RAM_PATH
 end_time=$(date +%s)     # Record the end time
 
-# 3. Calculate and display time taken to copy the model
+# 2. Calculate and display time taken to copy the model
 time_taken=$((end_time - start_time))
 echo "Model copied to RAM in $time_taken seconds."
 
@@ -42,13 +39,13 @@ echo "Model copied to RAM in $time_taken seconds."
 # MODEL_PATH={{ install_path }}/reranker_model
 # RAM_PATH=/dev/shm
 
-# # 2. Copy model to RAM
+# # 1. Copy model to RAM
 # echo "Copying reranker model to RAM..."
 # start_time=$(date +%s)   # Record the start time
 # cp -r $MODEL_PATH $RAM_PATH
 # end_time=$(date +%s)     # Record the end time
 
-# # 3. Calculate and display time taken to copy the model
+# # 2. Calculate and display time taken to copy the model
 # time_taken=$((end_time - start_time))
 # echo "Model copied to RAM in $time_taken seconds."
 
@@ -62,11 +59,10 @@ echo "All modules loaded..."
 source {{ install_path }}/vectoria_env/bin/activate
 echo "Environment loaded..."
 
-# does not work: we need to pass a directory
-FAISS_INDEX_PATH={{ install_path }}/vectoria/test/index/__leonardo_scratch__fast__EUCC_staff_3__bge-m3_faiss_index
+FAISS_INDEX_PATH={{ install_path }}/vectoria/test/index/{{ install_path | replace('/', '__') }}__{{ embedder_model | regex_replace('^.*/([^/]+)$', '\\1') }}_faiss_index
 TEST_SET_PATH={{ install_path }}/vectoria/test/data/results/test.json
 OUTPUT_DIR={{ install_path }}/vectoria/test/data/results
-CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/cineca_config.yaml
+CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml
 
 echo "START"
 # OPTION 1: QUESTIONS FROM FILE
