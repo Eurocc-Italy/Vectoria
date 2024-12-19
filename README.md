@@ -62,18 +62,22 @@ python vectoria \
 ```bash
 INFO - Running preprocessing pipeline - preprocessing_pipeline.py - 75
 INFO - Found 2 files - preprocessing_pipeline.py - 77
+
 DEBUG - Extracting text from /path/to/data/1.pdf - extraction_pdf.py - 28
 DEBUG - Extracting text from /path/to/data/2.pdf - extraction_pdf.py - 28
+
 DEBUG - Loaded 24815 characters - extraction_pdf.py - 38
 DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
 DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
 ...     ...                                        ...				
 DEBUG - Processing file /path/to/data/1.pdf took 1.21 seconds - preprocessing_pipeline.py - 102
+
 DEBUG - Loaded 27417 characters - extraction_pdf.py - 38
 DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
 DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
 ...     ...                                        ...
 DEBUG - Processing file /path/to/data/1.pdf took 1.28 seconds - preprocessing_pipeline.py - 102
+
 INFO - Total number of chunks: 208 - preprocessing_pipeline.py - 95
 INFO - Created 208 documents from /path/to/data/pdf in 1.52 seconds - build_index.py - 25
 INFO - Building FAISS vector store - vectore_store_builder.py - 32
