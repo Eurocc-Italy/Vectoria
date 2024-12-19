@@ -1,0 +1,5 @@
+---
+modules_to_load:
+  - python
+  - profile/deeplrn
+  - cineca-ai/4.3.0

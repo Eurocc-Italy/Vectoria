@@ -1,9 +1,0 @@
----
-- name: Clone Vectoria Git repository
-  git:
-    repo: https://gitlab.hpc.cineca.it/eurocc/vectoria.git
-    dest: vectoria
-    version: eurocc_release
-
-- name: Install Vectoria
-  shell: "module load python; python -m venv vectoria-env; source vectoria-env/bin/activate; pip install ./vectoria"
