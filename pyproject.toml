@@ -41,6 +41,7 @@ dependencies = [
     "langgraph",
     "sentence_transformers",
     "tqdm",
+    "bitsandbytes",
     "ansible",
 ]
 
