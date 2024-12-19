@@ -8,7 +8,8 @@
 # module load cineca-ai/4.3.0
 echo "All modules loaded..."
 
-source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/clean-env/bin/activate
+source ~/vectoria-env/bin/activate
+# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/clean-env/bin/activate
 # source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria-env/bin/activate
 echo "Environment loaded..."
 
