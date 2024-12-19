@@ -11,7 +11,7 @@ from vectoria_lib.common.logger import setup_logger
 class Config(metaclass=Singleton):
 
     def __init__(self, config_path: Path | str = None):
-        self.config_stream_logger = setup_logger('config_logger', 'DEBUG') # <- stream logger
+        self.config_stream_logger = setup_logger('config_logger', 'INFO') # <- stream logger
         self.logger = logging.getLogger('common')
         self.config = {}
         self.load_config(config_path)

@@ -109,7 +109,7 @@ inference_engine:
   # model_name: /dev/shm/Meta-Llama-3.1-70B-Instruct # RAM 70B
   device: cuda
   load_in_4bit: false
-  load_in_8bit: false
+  load_in_8bit: true
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto

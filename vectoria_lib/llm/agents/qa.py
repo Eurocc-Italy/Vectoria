@@ -71,10 +71,25 @@ class QAAgent:
         else:
             return "docs"
 
-    def inference(self, test_set_path: str, output_dir: str):
+    def _get_questions(self, kwargs):
+        if kwargs.get("questions"):
+            # Handle questions from CLI
+            data = {"question": kwargs.get("questions")}
+            self.logger.info("Received questions directly via CLI: %s", kwargs.get("questions"))
+        else:
+            # Handle questions from the test set JSON
+            test_set_path = kwargs.get("test_set_path")
+            if not test_set_path:
+                raise ValueError("No questions provided. Use '--questions' or '--test-set-path'.")
+            with open(test_set_path, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+            self.logger.info("Questions are loaded from test set JSON: %s", test_set_path)
+        return data
 
-        with open(test_set_path, 'r', encoding='utf-8') as file:
-            data = json.load(file)
+    def inference(self, kwargs):
+
+        data = self._get_questions(kwargs)
+        output_dir = kwargs.get("output_dir")
 
         times = []
         results = data.copy()
@@ -112,12 +127,12 @@ class QAAgent:
             std = np.std(times)
         )
         self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", results["times"]["mean"], results["times"]["std"])
-        self._write_inference_results(results, output_dir, Path(test_set_path).stem)    
+        self._write_inference_results(results, output_dir, f"inference_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")    
 
     
     def _write_inference_results(self, results, output_dir, output_name):
         Path(output_dir).mkdir(exist_ok=True, parents=True)
-        output_file = Path(output_dir) / f"{output_name}_with_answers_and_contexts.json"
+        output_file = Path(output_dir) / f"{output_name}.json"
         start_time = time.perf_counter()
         with open(output_file, 'w', encoding='utf-8') as file:
             json.dump(results, file, indent=4, ensure_ascii=False)
