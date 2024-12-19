@@ -4,7 +4,7 @@
 
 import os, sys, argparse
 
-def _chec_if_I_can_be_removed():
+def _check_if_I_can_be_removed():
     if "SLURM_JOB_ID" in os.environ:
         venv_path=os.environ["VIRTUAL_ENV"]
         python_version=sys.version[0:4]
@@ -13,7 +13,7 @@ def _chec_if_I_can_be_removed():
         sys.path.remove(lib_path)
         # restore it in the right position
         sys.path.insert(1,lib_path)
-_chec_if_I_can_be_removed()
+_check_if_I_can_be_removed()
 
 
 from vectoria_lib.common.paths import ETC_DIR
