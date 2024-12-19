@@ -120,3 +120,36 @@ N.B.: --test-set-path and --questions are both not formally strictly required, s
 - `--questions`: List of user questions for inference provided as separate strings.
 - `--output-dir`: Directory where inference results, such as generated answers, will be saved.
 
+**Output:**
+
+```bash
+INFO - Loading default configuration: /path/to/etc/default/default_config.yaml - config.py - 26
+
+INFO - Building FAISS vector store - vectore_store_builder.py - 32
+INFO - Loading Embedder model: /path/to/embedder - faiss_vector_store.py - 35
+INFO - Loading index from disk: /path/to/index/test_index - vectore_store_builder.py - 24
+INFO - Deserializing FAISS index from pickle file /path/to/index/test_index - faiss_vector_store.py - 81
+
+INFO - Building FAISS retriever - retriever_builder.py - 23
+INFO - Creating retriever from vector store with kwargs: {'k': 5, 'fetch_k': 5, 'lambda_mult': 0.5} - faiss_retriever.py - 25
+INFO - Creating QA agent with the RAG retriever - agent_builder.py - 64
+
+DEBUG - Loading tokenizer took 0.32 seconds - huggingface_inference_engine.py - 41
+Loading checkpoint shards:   0%|          | 0/30 [00:00<?, ?it/s]
+Loading checkpoint shards:  25%|██▋       | 8/30 [00:10<00:29,  1.32s/it]
+Loading checkpoint shards:  50%|█████     | 15/30 [00:20<00:20,  1.34s/it]
+Loading checkpoint shards:  75%|███████▋  | 23/30 [00:30<00:09,  1.36s/it]
+Loading checkpoint shards: 100%|██████████| 30/30 [00:39<00:00,  1.33s/it]
+DEBUG - Loading model /path/to/model took 42.07 seconds - huggingface_inference_engine.py - 68
+
+INFO - Questions are loaded from test set JSON: /path/to/test.json - qa.py - 86
+DEBUG - Filter prefix match 'ANSWER:'! - parser.py - 19
+DEBUG - Filter postfix match 'END'! - parser.py - 28
+
+DEBUG - Question: Which is the training regime for the models? - qa.py - 57
+INFO - Answer: The models were trained for a maximum of 1 day. - qa.py - 58
+
+INFO - Time taken to answer question: 8.58 seconds - qa.py - 111
+INFO - Mean time and std taken to answer questions: 8.58 seconds, 0.00 seconds - qa.py - 129
+INFO - Annotated test set saved to /path/to/results/inference_results.json and took 0.01 seconds - qa.py - 140
+```
