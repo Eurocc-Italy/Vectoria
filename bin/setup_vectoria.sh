@@ -6,14 +6,11 @@
 
 module load profile/deeplrn
 module load cineca-ai/4.3.0
-module load profile/deeplrn
-module load cineca-ai/4.3.0
 echo "All modules loaded..."
 
-# source ~/vectoria-env/bin/activate
-# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/clean-env/bin/activate
-# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria-env/bin/activate
-source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
+# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria_env/bin/activate
+source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/test-env/bin/activate
+# source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
 # extract path of bin directory and after cut it to obtain VECTORIA package path

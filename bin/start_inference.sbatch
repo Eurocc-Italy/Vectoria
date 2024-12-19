@@ -1,6 +1,7 @@
 #!/bin/bash
 
-#SBATCH --account=PhDLR_prod
+##SBATCH --account=PhDLR_prod
+#SBATCH --account=cin_staff
 #SBATCH --job-name=infer
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err

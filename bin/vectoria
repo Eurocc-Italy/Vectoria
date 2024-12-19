@@ -1,4 +1,4 @@
-#!/leonardo_work/PhDLR_prod/eucc-env/bin/python3
+#!/usr/bin/env python
 
 "VECTORIA: Una terra fantastica dove le informazioni sono organizzate in vettori."
 
@@ -17,7 +17,6 @@ def _check_if_I_can_be_removed():
         # restore it in the right position
         sys.path.insert(1,lib_path)
 _check_if_I_can_be_removed()
-
 
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.common.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
