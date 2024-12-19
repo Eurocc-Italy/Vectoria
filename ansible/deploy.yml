@@ -1,0 +1,10 @@
+---
+- name: Set up Vectoria on HPC
+  hosts: leonardo
+  gather_facts: false
+  tasks:
+    - include_role: 
+        name: vectoria
+        tasks_from: configure/hpc_account.yml
+      tags:
+        - leonardo

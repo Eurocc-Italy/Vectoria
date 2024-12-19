@@ -1,0 +1,20 @@
+---
+#this is a very specific task to setup a python environment in G100 cineca account
+- include_vars: "{{item}}"
+  loop:
+    - hpc_packages.yml
+  tags: ['leonardo'] 
+
+- name: Set python ansible_python_interpreter
+  set_fact:
+    ansible_python_interpreter: "/leonardo/prod/spack/5.2/install/0.21/linux-rhel8-icelake/gcc-8.5.0/python-3.11.6-i5k3c6ggftqkzgqyymfbkynpgm2lgjtd/bin/python3"
+  tags: ['leonardo']
+
+- name: Install python dependencies
+  pip:
+    name: "{{ hpc_python_packages }}"
+    virtualenv: vectoria-env
+    virtualenv_command: "{{ansible_python_interpreter}} -m venv vectoria-env"
+  environment:
+    LD_LIBRARY_PATH: "/leonardo/prod/spack/5.2/install/0.21/linux-rhel8-icelake/gcc-8.5.0/python-3.11.6-i5k3c6ggftqkzgqyymfbkynpgm2lgjtd/lib"
+  tags: ['leonardo']

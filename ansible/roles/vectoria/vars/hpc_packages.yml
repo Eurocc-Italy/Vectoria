@@ -1,0 +1,4 @@
+---
+#List of python pacakegs
+hpc_python_packages:
+ - vectoria@git+https://gitlab.hpc.cineca.it/eurocc/vectoria.git@eurocc-release
