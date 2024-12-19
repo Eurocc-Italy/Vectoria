@@ -13,7 +13,7 @@
     module load git-lfs
     git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
 
-- name: Download embedder model
+- name: Download inference engine
   shell: |
     module load git-lfs
     git clone git@hf.co:{{ inference_engine }} {{ install_path }}/inference_engine
