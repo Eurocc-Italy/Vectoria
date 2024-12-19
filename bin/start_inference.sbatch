@@ -23,7 +23,7 @@ export TMP="/leonardo_scratch/large/userinternal/lbabetto"
 #-------------------------------------------------------
 
 # TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH=/leonardo_scratch/fast/EUCC_staff_3/Meta-Llama-3.1-8B-Instruct
+MODEL_PATH=/leonardo_scratch/fast/EUCC_staff_3/inference_engine
 # MODEL_PATH=/leonardo_scratch/fast/EUCC_staff_3/Meta-Llama-3.1-70B-Instruct  # Da scaricare
 RAM_PATH=/dev/shm   
 
@@ -59,17 +59,16 @@ echo "Model copied to RAM in $time_taken seconds."
 # module load cineca-ai/4.3.0
 echo "All modules loaded..."
 
-source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/clean-env/bin/activate
-# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria-env/bin/activate
+source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria_env/bin/activate
 echo "Environment loaded..."
 
 # does not work: we need to pass a directory
-# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
-# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/index/__leonardo__home__userinternal__lbabetto__bge-m3_faiss_index # OK
-FAISS_INDEX_PATH=/leonardo/home/userinternal/lbabetto/vectoria-work/vectoria/test/index/__leonardo_scratch__fast__EUCC_staff_3__bge-m3_faiss_index # OK
-TEST_SET_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/data/results/test.json
-OUTPUT_DIR=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/data/results
-CONFIG_FILE_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/etc/default/cineca_config.yaml
+# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
+# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria/test/index/__leonardo__home__userinternal__lbabetto__bge-m3_faiss_index # OK
+FAISS_INDEX_PATH=/leonardo/home/userinternal/lbabetto/vectoria/test/index/__leonardo_scratch__fast__EUCC_staff_3__bge-m3_faiss_index # OK
+TEST_SET_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria/test/data/results/test.json
+OUTPUT_DIR=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria/test/data/results
+CONFIG_FILE_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
 # OPTION 1: QUESTIONS FROM FILE
