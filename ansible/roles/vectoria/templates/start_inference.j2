@@ -59,7 +59,7 @@ echo "All modules loaded..."
 source {{ install_path }}/vectoria_env/bin/activate
 echo "Environment loaded..."
 
-FAISS_INDEX_PATH={{ install_path }}/vectoria/test/index/{{ install_path | replace('/', '__') }}__{{ embedder_model | regex_replace('^.*/([^/]+)$', '\\1') }}_faiss_index
+FAISS_INDEX_PATH=$(realpath {{ install_path }}/vectoria/test/index/*)
 TEST_SET_PATH={{ install_path }}/vectoria/test/data/results/test.json
 OUTPUT_DIR={{ install_path }}/vectoria/test/data/results
 CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml

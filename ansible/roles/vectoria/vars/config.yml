@@ -14,3 +14,9 @@ inference_engine: meta-llama/Llama-3.1-8B-Instruct
 
 # Scratch directory to be used on HPC
 tmpdir: /leonardo_scratch/large/userinternal/lbabetto
+
+# HPC settings
+account: cin_staff
+partition: boost_usr_prod
+cpus: 32
+gpus: 4
