@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --account=PhDLR_prod
+#SBATCH --account=cin_staff
 #SBATCH --job-name=build_index
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
@@ -17,21 +17,22 @@
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 
-export TMPDIR="/leonardo_scratch/large/userinternal/aproia00"
-export TMP="/leonardo_scratch/large/userinternal/aproia00"
+export TMPDIR="/leonardo_scratch/large/userinternal/lbabetto"
+export TMP="/leonardo_scratch/large/userinternal/lbabetto"
 
-module load profile/deeplrn
-module load cineca-ai/4.3.0
+# module load profile/deeplrn
+# module load cineca-ai/4.3.0
 echo "All modules loaded..."
 
-source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
+source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/clean-env/bin/activate
+# source /leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria-env/bin/activate
 echo "Environment loaded..."
 
-#INPUT_DOCS_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/docx # [pdf, docx]
-INPUT_DOCS_DIR=/leonardo/home/userinternal/aproia00/leo_docs # new documents
-OUTPUT_INDEX_DIR=/leonardo_work/PhDLR_prod/vectoria/test/index
-OUTPUT_SUFFIX=_leo_docs
-CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
+#INPUT_DOCS_DIR=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/data/docx # [pdf, docx]
+INPUT_DOCS_DIR=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/docs # new documents
+OUTPUT_INDEX_DIR=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/index
+OUTPUT_SUFFIX=_cin_docs
+CONFIG_FILE_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
 python vectoria --config $CONFIG_FILE_PATH build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
