@@ -60,28 +60,24 @@ python vectoria \
 **Output:**
 
 ```bash
-2024-12-19 14:59:24,203 - rag - INFO - Running preprocessing pipeline - preprocessing_pipeline.py - 75
-2024-12-19 14:59:24,204 - rag - INFO - Found 2 files - preprocessing_pipeline.py - 77
-
-2024-12-19 14:59:24,311 - rag - DEBUG - Extracting text from /path/to/data/1.pdf - extraction_pdf.py - 28
-2024-12-19 14:59:24,311 - rag - DEBUG - Extracting text from /path/to/data/2.pdf - extraction_pdf.py - 28
-
-2024-12-19 14:59:25,456 - rag - DEBUG - Loaded 24815 characters - extraction_pdf.py - 38
-2024-12-19 14:59:25,456 - rag - DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
-2024-12-19 14:59:25,457 - rag - DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
-...				
-2024-12-19 14:59:25,465 - rag - DEBUG - Processing file /path/to/data/1.pdf took 1.21 seconds - preprocessing_pipeline.py - 102
-
-2024-12-19 14:59:25,521 - rag - DEBUG - Loaded 27417 characters - extraction_pdf.py - 38
-2024-12-19 14:59:25,522 - rag - DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
-2024-12-19 14:59:25,522 - rag - DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
-...
-2024-12-19 14:59:25,531 - rag - DEBUG - Processing file /path/to/data/1.pdf took 1.28 seconds - preprocessing_pipeline.py - 102
-
-2024-12-19 14:59:25,543 - rag - INFO - Total number of chunks: 208 - preprocessing_pipeline.py - 95
-2024-12-19 14:59:25,543 - tasks - INFO - Created 208 documents from /path/to/data/pdf in 1.52 seconds - build_index.py - 25
-2024-12-19 14:59:25,543 - rag - INFO - Building FAISS vector store - vectore_store_builder.py - 32
-2024-12-19 14:59:25,543 - rag - INFO - Loading Embedder model: /path/to/embedder - faiss_vector_store.py - 35
+INFO - Running preprocessing pipeline - preprocessing_pipeline.py - 75
+INFO - Found 2 files - preprocessing_pipeline.py - 77
+DEBUG - Extracting text from /path/to/data/1.pdf - extraction_pdf.py - 28
+DEBUG - Extracting text from /path/to/data/2.pdf - extraction_pdf.py - 28
+DEBUG - Loaded 24815 characters - extraction_pdf.py - 38
+DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
+DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
+...     ...                                        ...				
+DEBUG - Processing file /path/to/data/1.pdf took 1.21 seconds - preprocessing_pipeline.py - 102
+DEBUG - Loaded 27417 characters - extraction_pdf.py - 38
+DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
+DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
+...     ...                                        ...
+DEBUG - Processing file /path/to/data/1.pdf took 1.28 seconds - preprocessing_pipeline.py - 102
+INFO - Total number of chunks: 208 - preprocessing_pipeline.py - 95
+INFO - Created 208 documents from /path/to/data/pdf in 1.52 seconds - build_index.py - 25
+INFO - Building FAISS vector store - vectore_store_builder.py - 32
+INFO - Loading Embedder model: /path/to/embedder - faiss_vector_store.py - 35
 ```
 
 ### Inference Workflow
