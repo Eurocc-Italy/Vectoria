@@ -1,0 +1,19 @@
+---
+- name: Load configuration
+  include_vars:
+    file: config.yml
+
+- name: Download embedder model
+  shell: |
+    module load git-lfs
+    git clone git@hf.co:{{ embedder_model }} {{ install_path }}/embedder_model
+
+- name: Download reranker model
+  shell: |
+    module load git-lfs
+    git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
+
+- name: Download embedder model
+  shell: |
+    module load git-lfs
+    git clone git@hf.co:{{ inference_engine }} {{ install_path }}/inference_engine

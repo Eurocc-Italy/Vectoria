@@ -1,6 +1,6 @@
 ---
-- name: Create Python virtual environment
-  include_tasks: create_virtualenv.yml
+- name: Install Vectoria on HPC
+  include_tasks: install_vectoria.yml
 
-- name: Install LLM files
-  include_tasks: install_LLMs.yml
+- name: Download LLM files on HPC
+  include_tasks: download_LLMs.yml
