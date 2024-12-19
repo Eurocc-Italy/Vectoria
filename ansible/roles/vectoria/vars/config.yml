@@ -2,7 +2,6 @@
 install_path: /leonardo_scratch/fast/EUCC_staff_3/lbabetto
 
 hpc_modules:
-  - python
   - profile/deeplrn
   - cineca-ai/4.3.0
 
