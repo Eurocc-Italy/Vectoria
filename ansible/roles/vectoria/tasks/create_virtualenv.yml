@@ -38,5 +38,6 @@
     name: "{{ install_path }}/vectoria"
     virtualenv: "{{ install_path }}/vectoria_env"
     virtualenv_site_packages: true
+    editable: true
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
