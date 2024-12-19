@@ -1,0 +1,33 @@
+---
+- name: Load configuration
+  include_vars:
+    file: config.yml
+
+- name: Load git-lfs module and capture environment
+  shell: |
+    source /etc/profile.d/modules.sh
+    module load git-lfs
+    printenv
+  register: module_env
+  changed_when: false
+
+- name: Install embedder model (BGE-M3)
+  git:
+    repo: git@hf.co:BAAI/bge-m3
+    dest: "{{ install_path }}/bge-m3"
+  environment:
+    PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
+
+- name: Install reranker model (BGE-reranker-V2-gemma)
+  git:
+    repo: git clone git@hf.co:BAAI/bge-reranker-v2-gemma
+    dest: "{{ install_path }}/bge-reranker-v2-gemma"
+  environment:
+    PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
+
+- name: Install inference engine (LLAMA-3.1-8B)
+  git:
+    repo: git clone git@hf.co:meta-llama/Llama-3.1-8B
+    dest: "{{ install_path }}/Llama-3.1-8B"
+  environment:
+    PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"

@@ -1,7 +1,7 @@
 ---
-- name: Include module configuration
+- name: Load configuration
   include_vars:
-    file: modules.yml
+    file: config.yml
 
 - name: Load modules and capture environment
   shell: |
@@ -21,22 +21,22 @@
 - name: Clone Vectoria Git repository
   git:
     repo: https://gitlab.hpc.cineca.it/eurocc/vectoria.git
-    dest: vectoria
+    dest: "{{ install_path }}/vectoria"
     version: eurocc_release
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Create virtual environment
-  command: "{{ python_path }} -m venv --system-site-packages ~/vectoria-env"
+  command: "{{ python_path }} -m venv --system-site-packages {{ install_path }}/vectoria-env"
   args:
-    creates: "~/vectoria-env"
+    creates: "{{ install_path }}/vectoria-env"
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Install package in virtual environment
   pip:
-    name: ~/vectoria
-    virtualenv: ~/vectoria-env
+    name: "{{ install_path }}/vectoria"
+    virtualenv: "{{ install_path }}/vectoria-env"
     virtualenv_site_packages: true
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"

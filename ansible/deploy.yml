@@ -5,4 +5,3 @@
   tasks:
     - include_role: 
         name: vectoria
-        tasks_from: vectoria_install.yml

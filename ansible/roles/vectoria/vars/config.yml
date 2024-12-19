@@ -1,4 +1,6 @@
 ---
+install_path: /leonardo_scratch/fast/EUCC_staff_3/lbabetto
+
 modules_to_load:
   - python
   - profile/deeplrn

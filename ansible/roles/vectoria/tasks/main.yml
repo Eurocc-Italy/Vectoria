@@ -1,0 +1,6 @@
+---
+- name: Create Python virtual environment
+  include_tasks: create_virtualenv.yml
+
+- name: Install LLM files
+  include_tasks: install_LLMs.yml
