@@ -89,6 +89,7 @@ N.B.: --test-set-path and --questions are both not formally strictly required, s
 - `--config`: Path to the configuration file. Example: `'etc/default/default_config.yaml'`.
 - `inference`: Specifies the command to perform inference on the vector database.
 - `--faiss-index-path`: Path to the FAISS index file containing precomputed vector embeddings.
-- `--questions`: List of user questions for inference, provided as separate strings or sourced from a file.
-- `--output-dir`: Directory where inference results, such as generated answers and logs, will be saved.
+- `--test-set-path`: List of user questions for inference sourced from a file.
+- `--questions`: List of user questions for inference provided as separate strings.
+- `--output-dir`: Directory where inference results, such as generated answers, will be saved.
 
