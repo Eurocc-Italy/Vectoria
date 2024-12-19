@@ -1,7 +1,11 @@
 ---
 install_path: /leonardo_scratch/fast/EUCC_staff_3/lbabetto
 
-modules_to_load:
+hpc_modules:
   - python
   - profile/deeplrn
   - cineca-ai/4.3.0
+
+embedder_model: BAAI/bge-m3
+reranker_model: BAAI/bge-reranker-v2-gemma
+inference_engine: meta-llama/Llama-3.1-8B-Instruct

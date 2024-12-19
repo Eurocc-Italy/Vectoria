@@ -13,21 +13,21 @@
 
 - name: Install embedder model (BGE-M3)
   git:
-    repo: git@hf.co:BAAI/bge-m3
-    dest: "{{ install_path }}/bge-m3"
+    repo: "git@hf.co:{{ embedder_model }}"
+    dest: "{{ install_path }}/embedder_model"
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Install reranker model (BGE-reranker-V2-gemma)
   git:
-    repo: git clone git@hf.co:BAAI/bge-reranker-v2-gemma
-    dest: "{{ install_path }}/bge-reranker-v2-gemma"
+    repo: "git clone git@hf.co:{{ reranker_model }}"
+    dest: "{{ install_path }}/reranker_model"
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Install inference engine (LLAMA-3.1-8B)
   git:
-    repo: git clone git@hf.co:meta-llama/Llama-3.1-8B
-    dest: "{{ install_path }}/Llama-3.1-8B"
+    repo: "git@hf.co:{{ inference_engine }}"
+    dest: "{{ install_path }}/inference_engine"
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"

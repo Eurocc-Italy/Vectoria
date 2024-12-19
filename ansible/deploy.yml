@@ -1,5 +1,5 @@
 ---
-- name: Set up Vectoria on HPC
+- name: Install Vectoria on HPC
   hosts: hpc
   gather_facts: false
   tasks:

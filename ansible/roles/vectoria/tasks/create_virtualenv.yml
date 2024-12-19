@@ -6,7 +6,7 @@
 - name: Load modules and capture environment
   shell: |
     source /etc/profile.d/modules.sh
-    {% for module in modules_to_load %}
+    {% for module in hpc_modules %}
     module load {{ module }}
     {% endfor %}
     which python3
@@ -27,16 +27,16 @@
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Create virtual environment
-  command: "{{ python_path }} -m venv --system-site-packages {{ install_path }}/vectoria-env"
+  command: "{{ python_path }} -m venv --system-site-packages {{ install_path }}/vectoria_env"
   args:
-    creates: "{{ install_path }}/vectoria-env"
+    creates: "{{ install_path }}/vectoria_env"
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
 
 - name: Install package in virtual environment
   pip:
     name: "{{ install_path }}/vectoria"
-    virtualenv: "{{ install_path }}/vectoria-env"
+    virtualenv: "{{ install_path }}/vectoria_env"
     virtualenv_site_packages: true
   environment:
     PATH: "{{ module_env.stdout_lines | select('match', '^PATH=') | first | regex_replace('^PATH=','') }}"
