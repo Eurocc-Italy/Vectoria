@@ -11,6 +11,7 @@ from vectoria_lib.common.paths import TEST_DIR
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
 def test_build_index(config, extraction_fn):
+    config.set("vector_store", "device", "cuda")
 
     with TemporaryDirectory() as temp_dir:
         
@@ -24,7 +25,7 @@ def test_build_index(config, extraction_fn):
         
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
-            "output_dir" : Path(temp_dir) / doc_format
+            "output_index_dir" : Path(temp_dir) / doc_format
             }
 
         fvs_path, fvs = build_index(**args)

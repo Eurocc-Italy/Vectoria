@@ -70,9 +70,8 @@ class Config(metaclass=Singleton):
             if "LANGCHAIN_TRACING_V2" in os.environ:
                 self.config_stream_logger.warning("Disabling langchain tracking")
                 del os.environ['LANGCHAIN_TRACING_V2']
-            return
 
-        if "LANGCHAIN_API_KEY" not in os.environ:
+        if self.config.get("langchain_tracking") is not None and "LANGCHAIN_API_KEY" not in os.environ:
             raise ValueError("langchain_tracking is enabled but LANGCHAIN_API_KEY environment variable is not set")
 
         self.config_stream_logger.info("Langchain tracking enabled")

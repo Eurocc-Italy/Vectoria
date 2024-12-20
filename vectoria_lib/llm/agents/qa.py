@@ -99,6 +99,7 @@ class QAAgent:
         results[retrieved_contexts_key] = []
 
         for q in data["question"]:
+            self.logger.info("Answering question: %s", q)
 
             start_time = time.perf_counter()
             try:
