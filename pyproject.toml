@@ -42,7 +42,6 @@ dependencies = [
     "sentence_transformers",
     "tqdm",
     "bitsandbytes",
-    "ansible",
 ]
 
 [project.optional-dependencies]
