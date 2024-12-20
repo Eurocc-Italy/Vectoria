@@ -63,17 +63,17 @@ source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
 # does not work: we need to pass a directory
-#FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
-FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index # OK
+#INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
+INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index # OK
 TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/test.json
 OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
 CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
 
 echo "START"
 # OPTION 1: QUESTIONS FROM FILE
-python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+python vectoria --config $CONFIG_FILE_PATH inference --index-path $INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
 # OPTION 2: QUESTIONS FROM CLI
-#python vectoria --config $CONFIG_FILE_PATH inference --faiss-index-path $FAISS_INDEX_PATH --questions "Which is the training regime for the models?" "Which models are tested?" --output-dir $OUTPUT_DIR
+#python vectoria --config $CONFIG_FILE_PATH inference --index-path $INDEX_PATH --questions "Which is the training regime for the models?" "Which models are tested?" --output-dir $OUTPUT_DIR
 echo "END"
 
 # Interactive node

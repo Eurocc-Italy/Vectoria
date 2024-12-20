@@ -10,6 +10,6 @@ def inference(
     **kwargs: dict
 ):
     qa_agent = AgentBuilder.build_qa_agent(
-        faiss_index_path=kwargs["faiss_index_path"]
+        index_path=kwargs["index_path"]
     )
     qa_agent.inference(kwargs)

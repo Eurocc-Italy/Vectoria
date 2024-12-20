@@ -24,12 +24,12 @@ class AgentBuilder:
     def _create_chain_configuration(kwargs):
         config = Config()
 
-        if 'faiss_index_path' not in kwargs:
-            raise ValueError("No FAISS index path provided")
+        if 'index_path' not in kwargs:
+            raise ValueError("No index path provided")
 
         vector_store = VectorStoreBuilder().build(
             config.get("vector_store"),
-            index_path = kwargs['faiss_index_path']
+            index_path = kwargs['index_path']
         )        
 
         retriever_config = None

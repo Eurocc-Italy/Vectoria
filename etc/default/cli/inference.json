@@ -1,11 +1,11 @@
 {
     "flag": [
         {
-            "name": "--faiss-index-path",
+            "name": "--index-path",
             "param": {
                 "type": "str",
                 "required": "True",
-                "help": "The path to the faiss index (in pickle format)"
+                "help": "The path to the index (in pickle format)"
             }
         },
         {
