@@ -69,15 +69,8 @@ source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
 echo "Environment loaded..."
 
 # does not work: we need to pass a directory
-<<<<<<< HEAD
 #INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
 INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index # OK
-=======
-# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/index/__leonardo_work__PhDLR_prod__bge-m3_faiss_index_leo_docs.pkl
-# FAISS_INDEX_PATH=/leonardo_scratch/fast/EUCC_staff_3/lbabetto/vectoria-work/vectoria/test/index/__leonardo__home__userinternal__lbabetto__bge-m3_faiss_index # OK
-# FAISS_INDEX_PATH=/leonardo/home/userinternal/lbabetto/vectoria-work/vectoria/test/index/__leonardo_scratch__fast__EUCC_staff_3__bge-m3_faiss_index # OK
-FAISS_INDEX_PATH=/leonardo_work/PhDLR_prod/vectoria/test/index/papers_index
->>>>>>> 6d281a741cebdffc1688463ee44f7fd820f34be9
 TEST_SET_PATH=/leonardo_work/PhDLR_prod/vectoria/test/data/results/test.json
 OUTPUT_DIR=/leonardo_work/PhDLR_prod/vectoria/test/data/results
 CONFIG_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/etc/default/cineca_config.yaml
