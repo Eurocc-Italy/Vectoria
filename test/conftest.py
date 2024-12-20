@@ -20,17 +20,7 @@ def clear_inference_engine_cache():
     InferenceEngineBuilder.clear_cache()
 
 def pytest_addoption(parser):
-    parser.addoption("--davinci", action="store_true", help="Use davinci configuration")
-    parser.addoption("--cineca", action="store_true", help="Use cineca configuration")
-
-@pytest.fixture(scope="session", autouse=True)
-def set_configuration_file(request):
-    if request.config.getoption("--davinci"):
-        os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "davinci_hpc.yaml")
-    elif request.config.getoption("--cineca"):
-        os.environ["VECTORIA_CONFIG_FILE"] = str(TEST_DIR / "data" / "config" / "cineca_hpc.yaml")
-    else:
-        raise ValueError("Please specify the configuration file to use with --davinci or --cineca")
+    pass
 
 @pytest.fixture(scope="session")
 def data_dir():
@@ -46,7 +36,7 @@ def index_test_folder(data_dir):
 
 @pytest.fixture(scope="function")
 def config(request):
-    c = Config().load_config(os.environ["VECTORIA_CONFIG_FILE"])
+    c = Config().load_config(TEST_DIR / "data" / "config" / "test.yaml")
     c.set("vectoria_logs_dir", value=str(TEST_DIR / "logs" / request.node.name))
     return c
 
