@@ -2,13 +2,13 @@
 vectoria_logs_dir: ~/vectoria_logs
 log_level: DEBUG
 langchain_tracking: null
-system_prompts_lang: eng
+system_prompts_lang: {{ language }}
 
 data_ingestion:
   multiprocessing: true
   
   extraction:
-    format: pdf
+    format: {{ format }}
     dump_doc_structure_on_file: true
     regexes_for_metadata_extraction:
       - name: DOC_ID
@@ -81,8 +81,8 @@ reranker:
     api_key: null
     model_name: /dev/shm/reranker_model
     device: cuda
-    load_in_4bit: true
-    load_in_8bit: false
+    load_in_4bit: {{ reranker_4bit }}
+    load_in_8bit: {{ reranker_8bit }}
     max_new_tokens: 150
     trust_remote_code: false
     device_map: null
@@ -101,8 +101,8 @@ inference_engine:
   api_key: null
   model_name: /dev/shm/inference_engine 
   device: cuda
-  load_in_4bit: false
-  load_in_8bit: true
+  load_in_4bit: {{ inference_4bit }}
+  load_in_8bit: {{ inference_8bit }}
   max_new_tokens: 150
   trust_remote_code: true
   device_map: auto
@@ -115,6 +115,6 @@ evaluation_engine:
   api_key: null
   model_name: /dev/shm/inference_engine 
   device: cuda
-  load_in_8bit: true
+  load_in_8bit: {{ inference_8bit }}
   max_new_tokens: 150
   trust_remote_code: false

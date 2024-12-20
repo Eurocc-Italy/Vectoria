@@ -24,3 +24,11 @@ account: cin_staff
 partition: boost_usr_prod
 cpus: 32
 gpus: 4
+
+# LLM settings
+language: ita  # ita | eng
+format: pdf  # pdf | docx
+reranker_4bit: false
+reranker_8bit: false
+inference_4bit: false
+inference_8bit: true
