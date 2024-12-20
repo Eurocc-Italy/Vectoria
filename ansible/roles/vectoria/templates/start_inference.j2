@@ -36,18 +36,18 @@ echo "Model copied to RAM in $time_taken seconds."
 #-------------------------------------------------------
 
 # COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-# MODEL_PATH={{ install_path }}/reranker_model
-# RAM_PATH=/dev/shm
+MODEL_PATH={{ install_path }}/reranker_model
+RAM_PATH=/dev/shm
 
-# # 1. Copy model to RAM
-# echo "Copying reranker model to RAM..."
-# start_time=$(date +%s)   # Record the start time
-# cp -r $MODEL_PATH $RAM_PATH
-# end_time=$(date +%s)     # Record the end time
+# 1. Copy model to RAM
+echo "Copying reranker model to RAM..."
+start_time=$(date +%s)   # Record the start time
+cp -r $MODEL_PATH $RAM_PATH
+end_time=$(date +%s)     # Record the end time
 
-# # 2. Calculate and display time taken to copy the model
-# time_taken=$((end_time - start_time))
-# echo "Model copied to RAM in $time_taken seconds."
+# 2. Calculate and display time taken to copy the model
+time_taken=$((end_time - start_time))
+echo "Model copied to RAM in $time_taken seconds."
 
 #-------------------------------------------------------
 
