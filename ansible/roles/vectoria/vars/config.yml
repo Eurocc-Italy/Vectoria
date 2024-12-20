@@ -26,7 +26,7 @@ cpus: 32
 gpus: 4
 
 # LLM settings
-language: ita  # ita | eng
+language: it  # it | eng
 format: pdf  # pdf | docx
 reranker_4bit: false
 reranker_8bit: false
