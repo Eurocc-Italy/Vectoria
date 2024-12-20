@@ -1,0 +1,7 @@
+---
+- name: Install Vectoria on HPC
+  hosts: hpc
+  gather_facts: false
+  tasks:
+    - include_role: 
+        name: vectoria

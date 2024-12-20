@@ -16,7 +16,7 @@ led_use_case
 *.out
 *_key.txt
 
-results/
+results/*
 test/test_pipeline_executor_logs/
 test/test_build_index_logs/
 bin/test_build_index_logs/

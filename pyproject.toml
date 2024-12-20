@@ -39,7 +39,9 @@ dependencies = [
     "langchain-openai>=0.2",
     "langsmith",
     "langgraph",
-    "tqdm"
+    "sentence_transformers>=3.0.0",
+    "tqdm",
+    "bitsandbytes",
 ]
 
 [project.optional-dependencies]

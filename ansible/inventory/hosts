@@ -1,0 +1,2 @@
+[hpc]
+hpc_login_node ansible_host=login07-ext.leonardo.cineca.it ansible_user=lbabetto

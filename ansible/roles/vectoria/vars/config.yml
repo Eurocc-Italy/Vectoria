@@ -1,0 +1,34 @@
+---
+# Path where Vectoria and related files will be stored
+install_path: /leonardo_scratch/fast/EUCC_staff_3/lbabetto
+
+# Modules to load for git-lfs on HPC
+git_lfs_modules:
+  - git-lfs
+
+# Modules to load for Vectoria on HPC
+hpc_modules:
+  - profile/deeplrn
+  - cineca-ai/4.3.0
+
+# LLM models to be used
+embedder_model: BAAI/bge-m3
+reranker_model: BAAI/bge-reranker-v2-gemma
+inference_engine: meta-llama/Llama-3.1-8B-Instruct
+
+# Scratch directory to be used on HPC
+tmpdir: /leonardo_scratch/large/userinternal/lbabetto
+
+# HPC settings
+account: cin_staff
+partition: boost_usr_prod
+cpus: 32
+gpus: 4
+
+# LLM settings
+language: it  # it | eng
+format: pdf  # pdf | docx
+reranker_4bit: false
+reranker_8bit: false
+inference_4bit: false
+inference_8bit: true

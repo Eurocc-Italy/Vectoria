@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#SBATCH --account={{ account }}
+#SBATCH --job-name=build_index
+#SBATCH --output=%j.out
+#SBATCH --error=%j.err
+#SBATCH --partition={{ partition }}
+#SBATCH --time 00:30:00     # format: HH:MM:SS
+#SBATCH -N 1                # 1 node
+#SBATCH --ntasks-per-node=1 # 1 task
+#SBATCH --cpus-per-task={{ cpus }}  
+#SBATCH --gres=gpu:{{ gpus }}
+#SBATCH --exclusive
+
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
+
+export TMPDIR={{ tmpdir }}
+export TMP={{ tmpdir }}
+
+{% for module in hpc_modules %}
+module load {{ module }}
+{% endfor %}
+echo "All modules loaded..."
+
+source {{ install_path }}/vectoria_env/bin/activate
+echo "Environment loaded..."
+
+INPUT_DOCS_DIR={{ install_path }}/docs # [pdf, docx]
+OUTPUT_INDEX_DIR={{ install_path }}/vectoria/test/index
+OUTPUT_SUFFIX=_docs
+CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml
+
+echo "START"
+python vectoria --config $CONFIG_FILE_PATH build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
+echo "END"

@@ -1,20 +1,22 @@
-#!/leonardo_work/PhDLR_prod/eucc-env/bin/python3
+#!/usr/bin/env python
 
 "VECTORIA: Una terra fantastica dove le informazioni sono organizzate in vettori."
 
 import os, sys, argparse
 
-def _chec_if_I_can_be_removed():
+def _check_if_I_can_be_removed():
     if "SLURM_JOB_ID" in os.environ:
         venv_path=os.environ["VIRTUAL_ENV"]
-        python_version=sys.version[0:4]
+        python_version=sys.version.split()[0]
+        major_version=python_version.split(".")[0]
+        minor_version=python_version.split(".")[1]
+        python_version=f"{major_version}.{minor_version}"
         lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
         # strip it from sys.path
         sys.path.remove(lib_path)
         # restore it in the right position
         sys.path.insert(1,lib_path)
-_chec_if_I_can_be_removed()
-
+_check_if_I_can_be_removed()
 
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.common.io.commandline import create_cl_parser_from_json, cl_convert_to_dict
