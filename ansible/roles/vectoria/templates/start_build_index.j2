@@ -28,7 +28,7 @@ echo "Environment loaded..."
 INPUT_DOCS_DIR={{ install_path }}/docs # [pdf, docx]
 OUTPUT_INDEX_DIR={{ install_path }}/vectoria/test/index
 OUTPUT_SUFFIX=_docs
-CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/cineca_config.yaml
+CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml
 
 echo "START"
 python vectoria --config $CONFIG_FILE_PATH build_index --input-docs-dir $INPUT_DOCS_DIR --output-dir $OUTPUT_INDEX_DIR --output-suffix $OUTPUT_SUFFIX
