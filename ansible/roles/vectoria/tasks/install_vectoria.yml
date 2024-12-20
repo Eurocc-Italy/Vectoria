@@ -42,3 +42,8 @@
   file:
     path: "{{ install_path }}/vectoria/test/results"
     state: directory
+
+- name: Create documents directory
+  file:
+    path: "{{ install_path }}/docs"
+    state: directory
