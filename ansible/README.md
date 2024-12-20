@@ -16,7 +16,7 @@ On HPC, `git-lfs` is used to download LLM files. Make sure this is available on 
 
 ## Configuration
 
-Modify the `ansible/inventory/hosts` file with the login node and user account to be used for the installation.
+Modify the `ansible/inventory/hosts` file with the login node (`ansible_host`) and user account (`ansible_user`) to be used for the installation.
 
 It is then possible to configure some options for the deploy, such as the paths at which the installation will occur and which LLM models to use or which modulefiles to load. All configurable options are found in the `ansible/roles/vectoria/vars/config.yml` file, with some comments to explain what those options are needed for.
 
