@@ -9,7 +9,6 @@ import logging
 from pathlib import Path
 import multiprocessing as mp
 
-from vectoria_lib.common.io.folder_reader import get_files_in_folder
 from vectoria_lib.common.config import Config
 # ----------------------------------------------------------------------------------------------------------------------
 # DO NOT REMOVE THESE IMPORTS, they are get from global namespace
@@ -38,7 +37,7 @@ class PreprocessingPipeline:
     def build_pipeline():
         data_ingestion_config = Config().get("data_ingestion")
         data_ingestion_steps_config = data_ingestion_config.keys()
-
+        print("data_ingestion_steps_config", data_ingestion_steps_config)
         # Move these checks to the config validation
         if "extraction" not in data_ingestion_steps_config:
             raise ValueError("extraction key is mandatory in data ingestion pipeline")
@@ -71,21 +70,19 @@ class PreprocessingPipeline:
         self.chain = chain
         self.multiprocessing = multiprocessing
 
-    def run(self, input_docs: Path):
+    def run(self, input_docs: list[Path]):
         self.logger.info("Running preprocessing pipeline")
-        files = get_files_in_folder(input_docs)
-        self.logger.info("Found %d files", len(files))
 
-        if len(files) == 0:
-            raise ValueError(f"No files found in the input folder {input_docs}")
+        if len(input_docs) == 0:
+            raise ValueError(f"No files found")
 
         if self.multiprocessing:
             self.logger.info("Running preprocessing pipeline with multiprocessing")
             with mp.Pool(processes=mp.cpu_count()) as pool:
-                preprocessed_docs = pool.map(self.run_on_file, files)
+                preprocessed_docs = pool.map(self.run_on_file, input_docs)
         else:        
             self.logger.info("Running preprocessing pipeline without multiprocessing")
-            preprocessed_docs = [self.run_on_file(file) for file in files]
+            preprocessed_docs = [self.run_on_file(file) for file in input_docs]
 
         # Flatten the list of lists of Document objects:
         # - several docs per input files

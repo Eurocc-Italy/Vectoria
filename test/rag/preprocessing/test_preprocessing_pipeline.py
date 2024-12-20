@@ -1,4 +1,5 @@
-
+import os
+from pathlib import Path
 import pytest
 import langchain_core
 from vectoria_lib.rag.preprocessing.preprocessing_pipeline import PreprocessingPipeline
@@ -14,6 +15,7 @@ def test_build_preprocessing_pipeline(config):
 def test_run_preprocessing_pipeline(config, data_dir, multiproc):
     config.set("data_ingestion", "multiprocessing", multiproc)
     pipeline = PreprocessingPipeline.build_pipeline()    
-    processed_docs = pipeline.run(data_dir / "docx")
+    docs = [Path(data_dir / "docx" / doc_name) for doc_name in os.listdir(data_dir / "docx")]
+    processed_docs = pipeline.run(docs)
     assert len(processed_docs) == 98
     
