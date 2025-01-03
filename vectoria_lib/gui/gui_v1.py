@@ -82,9 +82,9 @@ def ask_question():
         if submit_button:
             with st.spinner('Generating answer...'):
                 s = time.time()
-                docs = st.session_state.qa_agent.ask(query)
+                answer = st.session_state.qa_agent.ask(query)
                 e = time.time()
-                st.write(f"Answer: {docs}")
+                st.write(f"{answer['answer']}")
                 st.write(f"Time taken: {e-s:.2f} seconds")
 
 def main(): 
