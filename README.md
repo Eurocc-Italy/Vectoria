@@ -76,7 +76,7 @@ DEBUG - Loaded 27417 characters - extraction_pdf.py - 38
 DEBUG - Seeking and replacing remove_multiple_spaces ... - utils.py - 16
 DEBUG - Seeking and replacing remove_bullets ... - utils.py - 16
 ...     ...                                        ...
-DEBUG - Processing file /path/to/data/1.pdf took 1.28 seconds - preprocessing_pipeline.py - 102
+DEBUG - Processing file /path/to/data/2.pdf took 1.28 seconds - preprocessing_pipeline.py - 102
 
 INFO - Total number of chunks: 208 - preprocessing_pipeline.py - 95
 INFO - Created 208 documents from /path/to/data/pdf in 1.52 seconds - build_index.py - 25
