@@ -7,7 +7,8 @@
   git:
     repo: https://gitlab.hpc.cineca.it/eurocc/vectoria.git
     dest: "{{ install_path }}/vectoria"
-    version: eurocc_release  # 
+    version: eurocc_release  #
+  ignore_errors: true
 
 - name: Install Vectoria on HPC
   shell: |
