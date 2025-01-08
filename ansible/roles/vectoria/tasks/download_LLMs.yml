@@ -8,6 +8,7 @@
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    git-lfs install
     git clone git@hf.co:{{ embedder_model }} {{ install_path }}/embedder_model
 
 - name: Download reranker model
@@ -15,6 +16,7 @@
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    git-lfs install
     git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
 
 - name: Download inference engine
@@ -22,4 +24,5 @@
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    git-lfs install
     git clone git@hf.co:{{ inference_engine }} {{ install_path }}/inference_engine
