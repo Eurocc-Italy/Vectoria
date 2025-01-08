@@ -73,7 +73,7 @@ retriever:
   lambda_mult: 0.5
 
 reranker:
-  enabled: true
+  enabled: {{ reranker_enabled }}
   reranked_top_k: 3
   inference_engine:
     name: huggingface
