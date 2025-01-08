@@ -3,6 +3,11 @@
   include_vars:
     file: config.yml
 
+- name: Create remote directory
+  file:
+    path: "{{ install_path }}"
+    state: directory
+
 - name: Clone Vectoria Git repository
   git:
     repo: https://gitlab.hpc.cineca.it/eurocc/vectoria.git
