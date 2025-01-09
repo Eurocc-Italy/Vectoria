@@ -18,6 +18,7 @@
     {% endfor %}
     git-lfs install
     git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
+  when: reranker_enabled
 
 - name: Download inference engine
   shell: |
