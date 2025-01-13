@@ -1,31 +1,28 @@
 #!/bin/bash
 
-#SBATCH --account=PhDLR_prod
-#SBATCH --job-name=pytest
+#SBATCH --account=<HPC_ACCOUNT>
+#SBATCH --job-name=build_index
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
-#SBATCH --partition=boost_usr_prod
-#SBATCH --time 00:30:00     # format: HH:MM:SS
+#SBATCH --partition=<HPC_PARTITION>
+#SBATCH --time 00:15:00     # format: HH:MM:SS
 #SBATCH -N 1                # 1 node
 #SBATCH --ntasks-per-node=1 # 1 task
-#SBATCH --cpus-per-task=32   # 8 cores out of 32
-#SBATCH --gres=gpu:4        # 1 gpus per node out of 4
-##SBATCH --mem=300000        # memory per node out of 494000MB (481GB)
-#SBATCH --exclusive
-
-#SBATCH --qos=boost_qos_dbg
+#SBATCH --cpus-per-task=8   # 8 cores out of 32
+#SBATCH --gres=gpu:1        # 1 gpus per node out of 4
+##SBATCH --exclusive        # reserve full node for job
+                            # NOTE: gpu/cpu requirements will be ignored
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 
-export TMPDIR="/leonardo_scratch/large/userinternal/aproia00"
-export TMP="/leonardo_scratch/large/userinternal/aproia00"
+export TMPDIR="/path/to/scratch/dir"
+export TMP="/path/to/scratch/dir"
 
 #-------------------------------------------------------
 
-# COPY INFERENCE MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-8B-Instruct
-#MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/Meta-Llama-3.1-70B-Instruct
-RAM_PATH=/dev/shm
+# TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+MODEL_PATH=/path/to/installdir/inference_engine
+RAM_PATH=/dev/shm   
 
 # 2. Copy model to RAM
 echo "Copying inference model to RAM..."
@@ -40,7 +37,8 @@ echo "Model copied to RAM in $time_taken seconds."
 #-------------------------------------------------------
 
 # COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH=/leonardo_scratch/fast/PhDLR_prod/bge-reranker-v2-gemma
+# NOTE: comment the following block if reranker is not used
+MODEL_PATH=/path/to/installdir/reranker_model
 RAM_PATH=/dev/shm
 
 # 2. Copy model to RAM
@@ -55,31 +53,19 @@ echo "Model copied to RAM in $time_taken seconds."
 
 #-------------------------------------------------------
 
-module load profile/deeplrn
-module load cineca-ai/4.3.0
+# Load necessary modules
+module load <...>
 echo "All modules loaded..."
 
-source /leonardo_work/PhDLR_prod/eucc-env/bin/activate
+source /path/to/installdir/vectoria_env/bin/activate
 echo "Environment loaded..."
 
-PYTEST_FILE_PATH=/leonardo_work/PhDLR_prod/vectoria/test/tasks/test_build_index.py
-INDEX_TEST_FOLDER=/leonardo_work/PhDLR_prod/vectoria/test/data/index/BAAI__bge-m3_faiss_index/index.pkl
+# does not work: we need to pass a directory
+INDEX_PATH=/path/to/installdir/vectoria/test/data/index/<INDEX_NAME>
+TEST_SET_PATH=/path/to/installdir/vectoria/test/data/results/test.json
+OUTPUT_DIR=/path/to/installdir/vectoria/test/data/results
+CONFIG_FILE_PATH=/path/to/installdir/vectoria/etc/default/default_config.yaml
 
 echo "START"
-# pytest --disable-warnings -xsvv $PYTEST_FILE_PATH # this should not work since it uses wrong python env
-python -m pytest --cineca -xsvv $PYTEST_FILE_PATH 
+python -m pytest -xsvv $PYTEST_FILE_PATH 
 echo "END"
-
-# Interactive node
-#salloc --account=PhDLR_prod \
-#       --job-name=infer \
-#       --partition=boost_usr_prod \
-#       --time=00:15:00 \
-#       -N 1 \
-#       --ntasks-per-node=1 \
-#       --cpus-per-task=8 \
-#       --gres=gpu:1 \
-#       --mem=300000 \
-#       --exclusive
-
-# srun ...
