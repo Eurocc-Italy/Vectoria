@@ -9,7 +9,7 @@ data_ingestion:
   multiprocessing: true
   
   extraction:
-    format: docx
+    format: pdf
     dump_doc_structure_on_file: true
     regexes_for_metadata_extraction:
       - name: DOC_ID
@@ -62,7 +62,7 @@ data_ingestion:
 
 vector_store:
   name: faiss
-  model_name: BAAI/bge-m3
+  model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL>
   device: cuda
   normalize_embeddings: false
 
@@ -80,9 +80,9 @@ reranker:
     name: huggingface
     url: null
     api_key: null
-    model_name: BAAI/bge-reranker-v2-gemma
+    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL>
     device: cuda
-    load_in_4bit: true
+    load_in_4bit: false
     load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
@@ -99,7 +99,7 @@ inference_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE>
   device: cuda
   load_in_8bit: true
   max_new_tokens: 150
@@ -111,11 +111,11 @@ evaluation:
   tool: ragas
   inference_engine:
     name: vllm
-    model_name: hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4
+    model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE>
     url: http://localhost:8899/v1
     api_key: abcd
   embeddings_engine:
     name: vllm
-    model_name: BAAI/bge-multilingual-gemma2
+    model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL>
     url: http://localhost:8898/v1
     api_key: abcd
