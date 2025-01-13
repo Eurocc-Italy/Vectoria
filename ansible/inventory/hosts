@@ -1,2 +1,2 @@
 [hpc]
-hpc_login_node ansible_host=login07-ext.leonardo.cineca.it ansible_user=lbabetto
+hpc_login_node ansible_host=XXX.XXX.XXX.XXX ansible_user=hpc_user

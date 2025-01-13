@@ -1,6 +1,6 @@
 ---
 # Path where Vectoria and related files will be stored
-install_path: /leonardo_scratch/fast/cin_staff/lbabetto/vectoria_test
+install_path: /path/to/install/dir
 
 # Modules to load for git-lfs on HPC
 git_lfs_modules:
@@ -8,8 +8,8 @@ git_lfs_modules:
 
 # Modules to load for Vectoria on HPC
 hpc_modules:
-  - profile/deeplrn
-  - cineca-ai/4.3.0
+  - profile/ai-module
+  - ai/2.2.0
 
 # LLM models to be used
 embedder_model: BAAI/bge-m3
@@ -17,19 +17,19 @@ reranker_model: BAAI/bge-reranker-v2-gemma
 inference_engine: meta-llama/Llama-3.1-8B-Instruct
 
 # Scratch directory to be used on HPC
-tmpdir: /leonardo_scratch/large/userinternal/lbabetto
+tmpdir: /path/to/scratch/dir
 
 # HPC settings
-account: cin_staff
-partition: boost_usr_prod
+account: hpc_account  # user with HPC budget
+partition: slurm_partition  # SLURM partition for jobs
 cpus: 32
 gpus: 4
 
 # LLM settings
 language: it  # it | eng
 format: pdf  # pdf | docx
-reranker_enabled: true
-reranker_4bit: false
-reranker_8bit: false
-inference_4bit: false
-inference_8bit: true
+reranker_enabled: true  # disable for small installations
+reranker_4bit: false  # 4 bit and 8 bit are mutually exclusive
+reranker_8bit: false  # 4 bit and 8 bit are mutually exclusive
+inference_4bit: false  # 4 bit and 8 bit are mutually exclusive
+inference_8bit: true  # 4 bit and 8 bit are mutually exclusive
