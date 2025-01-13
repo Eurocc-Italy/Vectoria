@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vectoria_lib"
-version = "0.0.1"
+version = "0.0.2"
 description = ""
 readme = "README.md"
 requires-python = ">=3.8"
@@ -15,13 +15,15 @@ authors = [
     {name = "Andrea Proia", email = "a.proia@cineca.it"},
     {name = "Chiara Malizia", email = "c.malizia@cineca.it"},
     {name = "Eric Pascolo", email = "e.pascolo@cineca.it"},
-    {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"}
+    {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"},
+    {name = "Luca Babetto", email = "l.babetto@cineca.it"}
 ]
 maintainers = [
     {name = "Andrea Proia", email = "a.proia@cineca.it"},
     {name = "Chiara Malizia", email = "c.malizia@cineca.it"},
     {name = "Eric Pascolo", email = "e.pascolo@cineca.it"},
-    {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"}
+    {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"},
+    {name = "Luca Babetto", email = "l.babetto@cineca.it"}
 ]
 
 
@@ -65,8 +67,8 @@ engines = [
 ]
 
 [project.urls]
-"Repository" = "https://gitlab.hpc.cineca.it/aproia00/vectoria"
-"Issues" = "https://gitlab.hpc.cineca.it/aproia00/issues"
+"Repository" = "https://github.com/Eurocc-Italy/Vectoria"
+"Issues" = "https://github.com/Eurocc-Italy/Vectoria/issues"
 
 [tool.pytest.ini_options]
 addopts = "-v --pdbcls=IPython.terminal.debugger:TerminalPdb"
