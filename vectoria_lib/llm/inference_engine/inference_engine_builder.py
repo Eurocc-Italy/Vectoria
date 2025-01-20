@@ -6,7 +6,6 @@
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from vectoria_lib.llm.inference_engine.huggingface_inference_engine import HuggingFaceInferenceEngine
-from vectoria_lib.llm.inference_engine.ollama_inference_engine import OllamaInferenceEngine
 from vectoria_lib.llm.inference_engine.openai_inference_engine import OpenAIInferenceEngine
 from vectoria_lib.llm.inference_engine.vllm_inference_engine import VLLMInferenceEngine
 
@@ -20,7 +19,9 @@ class InferenceEngineBuilder(Singleton):
     logger = logging.getLogger("llm")
 
     @staticmethod
-    def build_inference_engine(args: dict) -> InferenceEngineBase:
+    def build_inference_engine(
+        args: dict  
+    ) -> InferenceEngineBase:
         name = args["name"]
         model_name = args["model_name"]
 
@@ -30,8 +31,6 @@ class InferenceEngineBuilder(Singleton):
         
         if name == "huggingface":
             inference_engine = HuggingFaceInferenceEngine(args)
-        elif name == "ollama":
-            inference_engine = OllamaInferenceEngine(args)
         elif name == "openai":
             inference_engine = OpenAIInferenceEngine(args)
         elif name == "vllm":

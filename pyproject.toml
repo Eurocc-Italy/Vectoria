@@ -25,8 +25,6 @@ maintainers = [
     {name = "Leonardo Baroncelli", email = "leonardo.baroncelli26@gmail.com"},
     {name = "Luca Babetto", email = "l.babetto@cineca.it"}
 ]
-
-
 dependencies = [
     "requests==2.32.3",
     "transformers==4.46.*",
@@ -39,7 +37,6 @@ dependencies = [
     "langchain-core>=0.3",
     "langchain-huggingface>=0.1",
     "langchain-openai>=0.2",
-    "langsmith",
     "langgraph",
     "sentence_transformers>=3.0.0",
     "tqdm",
@@ -48,7 +45,7 @@ dependencies = [
 
 [project.optional-dependencies]
 evaluation = [
-    "ragas==0.2.6",
+    "ragas==0.2.11",
     "matplotlib"
 ]
 dev = [
@@ -62,8 +59,7 @@ ui = [
     "streamlit==1.41.*"
 ]
 engines = [
-    "vllm",
-    "ollama"
+    "vllm"
 ]
 
 [project.urls]
@@ -74,4 +70,5 @@ engines = [
 addopts = "-v --pdbcls=IPython.terminal.debugger:TerminalPdb"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-] 
+]
+pythonpath = "vectoria_lib"
