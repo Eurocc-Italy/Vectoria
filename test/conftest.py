@@ -14,6 +14,7 @@ import pytest
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
+from vectoria_lib.common.io.file_io import get_file_io
 
 @pytest.fixture(scope="function")
 def clear_inference_engine_cache():
@@ -32,7 +33,11 @@ def docx_test_file(data_dir):
 
 @pytest.fixture(scope="session")
 def index_test_folder(data_dir):
-    return data_dir / "index" / "BAAI__bge-m3_faiss_index"
+    return data_dir / "index" / "attention_is_all_you_need_index"
+
+@pytest.fixture
+def eval_data_qa():
+    return get_file_io("json").read(TEST_DIR / "data" / "eval" / "qa.json")
 
 @pytest.fixture(scope="function")
 def config(request):
@@ -48,15 +53,5 @@ def _ping_vllm_server(engine_config: dict):
     try:
         response = requests.get(engine_config.get("url").replace("/v1", "/version"))
         return response.status_code == 200
-    except Exception as e:
+    except Exception:
         return False
-
-@pytest.fixture(scope="session", autouse=True)
-def ollama_server_status_fn():
-    return _ping_ollama_server
-
-def _ping_ollama_server(engine_config: dict):
-    # TODO: Add ollama server status check
-    #response = requests.get(engine_config.get("url").replace("/v1", "/version"))
-    #return response.status_code == 200
-    return False

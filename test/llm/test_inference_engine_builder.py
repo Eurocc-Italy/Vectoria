@@ -4,6 +4,8 @@ from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 
 def test_inference_engine_builder(config):
+    InferenceEngineBuilder.clear_cache()
+    
     config.set("inference_engine", "name", "huggingface")
 
     config.set("inference_engine", "model_name", "meta-llama/Meta-Llama-3.1-8B-Instruct")
