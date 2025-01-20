@@ -4,10 +4,11 @@
 # @authors : Andrea Proia, Leonardo Baroncelli
 #
 
-from langchain_openai import OpenAI, ChatOpenAI
+from langchain_openai import OpenAI, ChatOpenAI, OpenAIEmbeddings
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
+from langchain_core.embeddings import Embeddings
 
 class VLLMInferenceEngine(InferenceEngineBase):
     """
@@ -30,3 +31,11 @@ class VLLMInferenceEngine(InferenceEngineBase):
             base_url = self.args["url"],
             api_key = self.args["api_key"]
         )
+
+    def as_langchain_embeddings(self) -> Embeddings:
+        return OpenAIEmbeddings(
+            model = self.args["model_name"],
+            base_url = self.args["url"],
+            api_key = self.args["api_key"]
+        )
+    
