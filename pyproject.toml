@@ -37,7 +37,6 @@ dependencies = [
     "langchain-core>=0.3",
     "langchain-huggingface>=0.1",
     "langchain-openai>=0.2",
-    "langsmith",
     "langgraph",
     "sentence_transformers>=3.0.0",
     "tqdm",
@@ -60,8 +59,7 @@ ui = [
     "streamlit==1.41.*"
 ]
 engines = [
-    "vllm",
-    "ollama"
+    "vllm"
 ]
 
 [project.urls]

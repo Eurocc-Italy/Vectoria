@@ -4,18 +4,6 @@ import torch
 from vectoria_lib.llm.agent_builder import AgentBuilder
 from langchain.docstore.document import Document
 
-@pytest.mark.slow
-def test_qa_agent_ollama(config, index_test_folder, clear_inference_engine_cache, ollama_server_status_fn):
-    inference_config = {
-        "name": "ollama",
-        "model_name": "llama3.2:1b"
-    }
-    if not ollama_server_status_fn(inference_config):
-        pytest.skip("Ollama server is not running")
-
-    config.set("inference_engine", value=inference_config)
-    config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_ollama", index_test_folder)
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
