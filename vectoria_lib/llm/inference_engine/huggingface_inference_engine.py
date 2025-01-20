@@ -4,18 +4,16 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
-from langchain_huggingface import HuggingFacePipeline
-from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
-from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import HuggingFaceReranker
-
-from langchain_core.language_models.llms import BaseLanguageModel
-
-from langchain_huggingface import ChatHuggingFace
+import time, logging
 
 import torch
-import time
-import logging 
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
+
+from langchain_huggingface import HuggingFacePipeline
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.language_models.llms import BaseLanguageModel
+from langchain_core.embeddings import Embeddings
+from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
 class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
@@ -82,3 +80,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         )
         return HuggingFacePipeline(pipeline=self.pipe)
     
+    def as_langchain_embeddings(self) -> Embeddings:
+        return HuggingFaceEmbeddings(
+            model_name = self.args["model_name"]
+        )
