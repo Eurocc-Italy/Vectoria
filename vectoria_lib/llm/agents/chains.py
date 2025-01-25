@@ -101,7 +101,7 @@ def create_qa_chain(
 
     combine_docs_chain = (RunnableLambda(get_correct_input_docs) | RunnableLambda(format_docs)).with_config(run_name="combine_docs_chain")
 
-    generation_chain = (prompt | llm.as_langchain_llm() | output_parser).with_config(run_name="generation_chain")
+    generation_chain = (prompt | llm.as_langchain_completion_model() | output_parser).with_config(run_name="generation_chain")
 
     # How it works:
     # Eventually we'll call the invoke() method passing the "input" key.
