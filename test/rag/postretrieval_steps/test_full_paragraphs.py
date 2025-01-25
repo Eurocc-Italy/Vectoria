@@ -12,7 +12,7 @@ def test_full_paragraphs(config, data_dir):
         device = config.get("vector_store", "device"),
         normalize_embeddings = config.get("vector_store", "normalize_embeddings")
     ).load_from_disk(
-        data_dir / "index" / "BAAI__bge-m3_faiss_index"
+        data_dir / "index" / "attention_is_all_you_need_index"
     )
     retriever = FullParagraphs(vector_store)
     

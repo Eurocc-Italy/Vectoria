@@ -42,8 +42,12 @@ class Config(metaclass=Singleton):
 
     def get(self, key, subkey=None):
         if subkey is None:
+            if isinstance(self.config[key], dict):
+                return self.config[key].copy()
             return self.config[key]
         else:
+            if isinstance(self.config[key][subkey], dict):
+                return self.config[key][subkey].copy()
             return self.config[key][subkey]
 
     def set(self, key, subkey=None, value=None):

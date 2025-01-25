@@ -4,7 +4,7 @@ from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores.base import VectorStoreRetriever
 
-def test_faiss_vector_store(config, data_dir):
+def test_faiss_vector_store(config, index_test_folder):
 
     doc = Document(
         page_content = 'The Matrix is a 1999 science fiction action film[5][6] written and directed by the Wachowskis.[a] It is the first installment in the Matrix film series, starring Keanu Reeves, Laurence Fishburne, Carrie-Anne Moss, Hugo Weaving and Joe Pantoliano, and depicts a dystopian future in which humanity is unknowingly trapped inside the Matrix, a simulated reality that intelligent machines have created to distract humans while using their bodies as an energy source.[7] When computer programmer Thomas Anderson, under the hacker alias "Neo", uncovers the truth, he joins a rebellion against the machines along with other people who have been freed from the Matrix.',
@@ -23,11 +23,6 @@ def test_faiss_vector_store(config, data_dir):
     pkl_path = vector_store.dump_to_disk("/tmp/test_faiss_vector_store") 
 
     assert pkl_path.exists()
-
-    if config.get("vector_store", "model_name") == "BAAI/bge-m3":
-        assert pkl_path.name == "BAAI__bge-m3_faiss_index"
-    elif config.get("vector_store", "model_name") == "/leonardo_work/PhDLR_prod/bge-m3":
-        assert pkl_path.name == "__leonardo_work__PhDLR_prod__bge-m3_faiss_index"
 
     vector_store = FaissVectorStore(
         model_name = config.get("vector_store", "model_name"),

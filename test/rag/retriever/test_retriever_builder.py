@@ -6,7 +6,7 @@ from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
 from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 from langchain_core.documents import Document
 
-def test_build_faiss_retriever(config, data_dir):
+def test_build_faiss_retriever(config, index_test_folder):
 
     # Empty vector store
     with pytest.raises(ValueError):
@@ -17,7 +17,7 @@ def test_build_faiss_retriever(config, data_dir):
 
     vector_store = VectorStoreBuilder.build(
         config.get("vector_store"),
-        index_path = data_dir / "index" / "BAAI__bge-m3_faiss_index"
+        index_path = index_test_folder
     )
 
     retriever = RetrieverBuilder.build(
