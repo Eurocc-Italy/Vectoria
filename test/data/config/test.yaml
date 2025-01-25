@@ -1,7 +1,7 @@
 # Logging
 vectoria_logs_dir: /tmp/vectoria_logs
 log_level: DEBUG
-langchain_tracking: null
+langchain_tracking: false
 system_prompts_lang: eng
 
 data_ingestion:
@@ -87,7 +87,7 @@ reranker:
     load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
-    device_map: null
+    device_map: auto
     temperature: 0.1
 
 full_paragraphs_retriever:
@@ -101,11 +101,11 @@ inference_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: meta-llama/Meta-Llama-3.1-8B-Instruct
+  model_name: HuggingFaceTB/SmolLM-135M
   device: cuda
-  load_in_4bit: true
+  load_in_4bit: false
   load_in_8bit: false
-  max_new_tokens: 150
+  max_new_tokens: 10
   trust_remote_code: false
   device_map: auto
   temperature: 0.1
@@ -113,13 +113,15 @@ inference_engine:
 # Evaluation
 evaluation:
   tool: ragas
+  
   inference_engine:
     name: vllm
     model_name: hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4
-    url: http://localhost:8899/v1
-    api_key: abcd
+    url: http://localhost:8000/v1
+    api_key: EMPTY
+
   embeddings_engine:
     name: vllm
-    model_name: BAAI/bge-multilingual-gemma2
-    url: http://localhost:8898/v1
-    api_key: abcd
+    model_name: BAAI/bge-m3
+    url: http://localhost:8001/v1
+    api_key: EMPTY

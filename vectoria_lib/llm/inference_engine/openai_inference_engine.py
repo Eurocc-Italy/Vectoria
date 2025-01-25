@@ -4,10 +4,11 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-from langchain_openai import OpenAI
+from langchain_openai import OpenAI, OpenAIEmbeddings
 
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 from langchain_core.language_models.llms import BaseLanguageModel
+from langchain_core.embeddings import Embeddings
 
 class OpenAIInferenceEngine(InferenceEngineBase):
     """
@@ -24,4 +25,11 @@ class OpenAIInferenceEngine(InferenceEngineBase):
             base_url = self.args["url"],
             api_key = self.args["api_key"],
             temperature=self.args["temperature"]
+        )
+    
+    def as_langchain_embeddings(self) -> Embeddings:
+        return OpenAIEmbeddings(
+            model = self.args["model_name"],
+            base_url = self.args["url"],
+            api_key = self.args["api_key"]
         )
