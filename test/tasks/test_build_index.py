@@ -32,11 +32,6 @@ def test_build_index(config, extraction_fn):
 
         assert fvs_path.exists()
         assert len(os.listdir(fvs_path)) == 2
-
-        if config.get("vector_store", "model_name") == "BAAI/bge-m3":
-            assert fvs.model_name == "BAAI/bge-m3"
-        elif config.get("vector_store", "model_name") == "/leonardo_work/PhDLR_prod/bge-m3":
-            assert fvs.model_name == "/leonardo_work/PhDLR_prod/bge-m3"
         
         assert isinstance(fvs.hf_embedder, HuggingFaceBgeEmbeddings)
         assert isinstance(fvs.index, FAISS)

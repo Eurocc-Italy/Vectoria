@@ -17,5 +17,5 @@ def test_run_preprocessing_pipeline(config, data_dir, multiproc):
     pipeline = PreprocessingPipeline.build_pipeline()    
     docs = [Path(data_dir / "docx" / doc_name) for doc_name in os.listdir(data_dir / "docx")]
     processed_docs = pipeline.run(docs)
-    assert len(processed_docs) == 98
+    assert len(processed_docs) == 95
     

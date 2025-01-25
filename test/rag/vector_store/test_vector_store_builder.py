@@ -1,7 +1,7 @@
 from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
 
-def test_build_faiss_vector_store(config, data_dir):
+def test_build_faiss_vector_store(config, index_test_folder):
     
     vector_store = VectorStoreBuilder.build(
         config.get("vector_store"), 
@@ -11,7 +11,7 @@ def test_build_faiss_vector_store(config, data_dir):
 
     vector_store = VectorStoreBuilder.build(
         config.get("vector_store"), 
-        index_path=data_dir / "index" / "BAAI__bge-m3_faiss_index"
+        index_path = index_test_folder
     )
     assert isinstance(vector_store, FaissVectorStore)
     assert vector_store.index is not None

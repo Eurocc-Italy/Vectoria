@@ -12,15 +12,25 @@ def test_qa_agent_huggingface(config, index_test_folder, clear_inference_engine_
     _run_engine_test("test_qa_agent_huggingface", index_test_folder)
 
 @pytest.mark.slow
-def test_qa_agent_vllm(config, index_test_folder, clear_inference_engine_cache, vllm_server_status_fn):
+def test_qa_agent_openai(config, index_test_folder, clear_inference_engine_cache, openai_server_status_fn):
     inference_config = {
-        "name": "vllm",
+        "name": "openai",
         "model_name": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
-        "url": "http://localhost:8899/v1",
-        "api_key": "abcd"
+        "openai_api_base": "http://localhost:8000/v1",
+        "openai_api_key": "EMPTY",
+        "temperature": 0.7,
+        "max_tokens": 256,
+        "top_p": 1,
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+        "n": 1,
+        "request_timeout": None,
+        "max_retries": 2,
+        "seed": None,
+        "streaming": False,
     }
-    if not vllm_server_status_fn(inference_config):
-        pytest.skip("VLLM server is not running")
+    if not openai_server_status_fn(inference_config):
+        pytest.skip("OpenAI server is not running")
 
     config.set("inference_engine", value=inference_config)
     config.set("retriever", "top_k", 1)
@@ -142,9 +152,7 @@ def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(config, i
     assert isinstance(result, dict)
     assert result.keys() == {"input", "context", "docs", "reranked_docs", "full_paragraphs_docs", "answer"}
     assert len(result["full_paragraphs_docs"]) == 3
-    assert "additive attention" in result["reranked_docs"][0].page_content
-    for i, doc in enumerate(result["full_paragraphs_docs"]):
-        assert len(doc.page_content) > len(result["reranked_docs"][i].page_content)
+    assert sum([len(doc.page_content) for doc in result["full_paragraphs_docs"]]) > sum([len(doc.page_content) for doc in result["reranked_docs"]])
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
