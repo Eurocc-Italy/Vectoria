@@ -9,7 +9,7 @@ import time, logging
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, BitsAndBytesConfig
 
-from langchain_huggingface import HuggingFacePipeline
+from langchain_huggingface import HuggingFacePipeline, ChatHuggingFace
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
@@ -29,8 +29,6 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     def __init__(self, args: dict):
         super().__init__(args)
         
-        self.logger = logging.getLogger('llm')
-
         start_time = time.perf_counter()
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.args["model_name"],
@@ -67,20 +65,32 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
         self.model.eval()
 
 
-    def as_langchain_llm(self) -> BaseLanguageModel:
-        # https://python.langchain.com/api_reference/huggingface/chat_models/langchain_huggingface.chat_models.huggingface.ChatHuggingFace.html#langchain_huggingface.chat_models.huggingface.ChatHuggingFace
-        # return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
+    def as_langchain_completion_model(self) -> BaseLanguageModel:
         self.pipe = pipeline(
             "text-generation", 
             model = self.model,
             tokenizer = self.tokenizer,
-            max_new_tokens = self.args["max_new_tokens"], # https://stackoverflow.com/questions/76772509/llama-2-7b-hf-repeats-context-of-question-directly-from-input-prompt-cuts-off-w
+            max_new_tokens = self.args["max_new_tokens"], 
             return_full_text = False,
-            temperature = self.args["temperature"]
+            temperature = self.args["temperature"],
+            do_sample = self.args["do_sample"]
         )
         return HuggingFacePipeline(pipeline=self.pipe)
     
-    def as_langchain_embeddings(self) -> Embeddings:
+    def as_langchain_chat_model(self) -> BaseLanguageModel:
+        self.pipe = pipeline(
+            "text-generation", 
+            model = self.model,
+            tokenizer = self.tokenizer,
+            max_new_tokens = self.args["max_new_tokens"],
+            return_full_text = False,
+            temperature = self.args["temperature"],
+            do_sample = self.args["do_sample"]
+        )
+        return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
+    
+    
+    def as_langchain_embeddings_model(self) -> Embeddings:
         return HuggingFaceEmbeddings(
             model_name = self.args["model_name"]
         )
