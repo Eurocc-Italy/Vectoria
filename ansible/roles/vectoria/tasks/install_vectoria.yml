@@ -10,9 +10,8 @@
 
 - name: Clone Vectoria Git repository
   git:
-    repo: https://gitlab.hpc.cineca.it/eurocc/vectoria.git
+    repo: https://github.com/Eurocc-Italy/Vectoria.git
     dest: "{{ install_path }}/vectoria"
-    version: eurocc_release  #
   ignore_errors: true
 
 - name: Install Vectoria on HPC
