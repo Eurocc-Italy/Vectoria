@@ -23,7 +23,7 @@ def build_index(
         logger.debug("Found file: %s", file)
     if len(files) == 0:
         raise ValueError(f"No files found in the input folder {kwargs['input_docs_dir']}")
-    return build_index_from_files(files, Path(kwargs["output_index_dir"]))
+    return build_index_from_files(files, Path(kwargs["output_dir"]))
 
 def build_index_from_files(
     files: list[Path],
