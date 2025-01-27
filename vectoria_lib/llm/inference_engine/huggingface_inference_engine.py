@@ -15,6 +15,7 @@ from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
 
+
 class HuggingFaceInferenceEngine(InferenceEngineBase):
     """
     Wrapper on HuggingFace.
@@ -26,71 +27,63 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
     How to
     https://python.langchain.com/docs/how_to/#chat-models
     """
+
     def __init__(self, args: dict):
         super().__init__(args)
-        
+
         start_time = time.perf_counter()
         self.tokenizer = AutoTokenizer.from_pretrained(
-            self.args["model_name"],
-            trust_remote_code = self.args["trust_remote_code"]
+            self.args["model_name"], trust_remote_code=self.args["trust_remote_code"]
         )
         self.logger.debug("Loading tokenizer took %.2f seconds", time.perf_counter() - start_time)
 
         quantization_config = None
         if self.args["load_in_8bit"]:
-            quantization_config = BitsAndBytesConfig(
-                load_in_8bit=True,
-                bnb_8bit_compute_dtype=torch.bfloat16
-            )
+            quantization_config = BitsAndBytesConfig(load_in_8bit=True, bnb_8bit_compute_dtype=torch.bfloat16)
         elif self.args["load_in_4bit"]:
-            quantization_config = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_compute_dtype=torch.bfloat16
-            )
+            quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16)
         else:
             self.args["device"] = None
 
         start_time = time.perf_counter()
-        
+
         # TODO: device_map="auto" will not deallocate memory between tests
         self.model = AutoModelForCausalLM.from_pretrained(
             self.args["model_name"],
-            quantization_config = quantization_config,
-            device_map = self.args["device_map"],
-            trust_remote_code = self.args["trust_remote_code"]
-            #device = self.args["device"]
+            quantization_config=quantization_config,
+            device_map=self.args["device_map"],
+            trust_remote_code=self.args["trust_remote_code"],
+            # device = self.args["device"]
         )
         self.pipe = None
-        self.logger.debug("Loading model %s took %.2f seconds", self.args["model_name"], time.perf_counter() - start_time)
+        self.logger.debug(
+            "Loading model %s took %.2f seconds", self.args["model_name"], time.perf_counter() - start_time
+        )
         self.model.eval()
-
 
     def as_langchain_completion_model(self) -> BaseLanguageModel:
         self.pipe = pipeline(
-            "text-generation", 
-            model = self.model,
-            tokenizer = self.tokenizer,
-            max_new_tokens = self.args["max_new_tokens"], 
-            return_full_text = False,
-            temperature = self.args["temperature"],
-            #do_sample = self.args["do_sample"]
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            max_new_tokens=self.args["max_new_tokens"],
+            return_full_text=False,
+            temperature=self.args["temperature"],
+            do_sample=self.args["do_sample"],
         )
         return HuggingFacePipeline(pipeline=self.pipe)
-    
+
     def as_langchain_chat_model(self) -> BaseLanguageModel:
         self.pipe = pipeline(
-            "text-generation", 
-            model = self.model,
-            tokenizer = self.tokenizer,
-            max_new_tokens = self.args["max_new_tokens"],
-            return_full_text = False,
-            temperature = self.args["temperature"],
-            do_sample = self.args["do_sample"]
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            max_new_tokens=self.args["max_new_tokens"],
+            return_full_text=False,
+            temperature=self.args["temperature"],
+            do_sample=self.args["do_sample"],
         )
         return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
-    
-    
+
     def as_langchain_embeddings_model(self) -> Embeddings:
-        return HuggingFaceEmbeddings(
-            model_name = self.args["model_name"]
-        )
+        return HuggingFaceEmbeddings(model_name=self.args["model_name"])
