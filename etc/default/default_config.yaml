@@ -2,14 +2,14 @@
  # Logging
 vectoria_logs_dir: ~/vectoria_logs
 log_level: DEBUG
-langchain_tracking: null
+langchain_tracking: false
 system_prompts_lang: eng
 
 data_ingestion:
   multiprocessing: true
   
   extraction:
-    format: pdf
+    format: docx
     dump_doc_structure_on_file: true
     regexes_for_metadata_extraction:
       - name: DOC_ID
@@ -62,7 +62,7 @@ data_ingestion:
 
 vector_store:
   name: faiss
-  model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL>
+  model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL> (e.g. BAAI/bge-m3)
   device: cuda
   normalize_embeddings: false
 
@@ -80,13 +80,13 @@ reranker:
     name: huggingface
     url: null
     api_key: null
-    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL>
+    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL> (e.g. BAAI/bge-reranker-v2-gemma)
     device: cuda
     load_in_4bit: false
     load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
-    device_map: null
+    device_map: auto
     temperature: 0.1
 
 full_paragraphs_retriever:
@@ -99,11 +99,11 @@ inference_engine:
   name: huggingface
   url: null
   api_key: null
-  model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE>
+  model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE> (e.g. meta-llama/Meta-Llama-3.1-8B-Instruct)
   device: cuda
-  load_in_8bit: true
+  load_in_8bit: false
   max_new_tokens: 150
-  trust_remote_code: true
+  trust_remote_code: false
   device_map: auto
   temperature: 0.1
 
@@ -111,11 +111,11 @@ evaluation:
   tool: ragas
   inference_engine:
     name: vllm
-    model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE>
-    url: http://localhost:8899/v1
-    api_key: abcd
+    model_name: </PATH/TO/INSTALLDIR/INFERENCE_ENGINE> (e.g. hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4)
+    url: null
+    api_key: null
   embeddings_engine:
     name: vllm
-    model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL>
-    url: http://localhost:8898/v1
-    api_key: abcd
+    model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL> (e.g. BAAI/bge-multilingual-gemma2)
+    url: null
+    api_key: null

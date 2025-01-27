@@ -85,7 +85,7 @@ reranker:
     load_in_8bit: {{ reranker_8bit }}
     max_new_tokens: 150
     trust_remote_code: false
-    device_map: null
+    device_map: auto
     temperature: 0.1
 
 full_paragraphs_retriever:
@@ -104,7 +104,7 @@ inference_engine:
   load_in_4bit: {{ inference_4bit }}
   load_in_8bit: {{ inference_8bit }}
   max_new_tokens: 150
-  trust_remote_code: true
+  trust_remote_code: false
   device_map: auto
   temperature: 0.1
 
