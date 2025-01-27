@@ -69,7 +69,7 @@ class HuggingFaceInferenceEngine(InferenceEngineBase):
             max_new_tokens=self.args["max_new_tokens"],
             return_full_text=False,
             temperature=self.args["temperature"],
-            do_sample=self.args["do_sample"],
+            # do_sample=self.args["do_sample"],
         )
         return HuggingFacePipeline(pipeline=self.pipe)
 
