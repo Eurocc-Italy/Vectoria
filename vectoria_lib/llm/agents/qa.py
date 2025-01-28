@@ -93,7 +93,6 @@ class QAAgent:
 
         times = []
         results = data.copy()
-        results["contexts"] = []
         results["answer"] = []
         retrieved_contexts_key = self._get_correct_context_key()
         results[retrieved_contexts_key] = []
