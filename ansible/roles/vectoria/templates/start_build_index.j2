@@ -17,9 +17,12 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 export TMPDIR={{ tmpdir }}
 export TMP={{ tmpdir }}
 
+{% if hpc_modules %}
 {% for module in hpc_modules %}
 module load {{ module }}
 {% endfor %}
+echo "All modules loaded..."
+{% endif %}
 echo "All modules loaded..."
 
 source {{ install_path }}/vectoria_env/bin/activate

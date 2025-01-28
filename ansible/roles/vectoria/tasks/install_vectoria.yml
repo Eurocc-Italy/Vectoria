@@ -16,9 +16,11 @@
 
 - name: Install Vectoria on HPC
   shell: |
+    {% if hpc_modules %}
     {% for module in hpc_modules %}
     module load {{ module }}
     {% endfor %}
+    {% endif %}
     python -m venv {{ install_path }}/vectoria_env --system-site-packages
     source {{ install_path }}/vectoria_env/bin/activate
     pip install -e {{ install_path }}/vectoria
