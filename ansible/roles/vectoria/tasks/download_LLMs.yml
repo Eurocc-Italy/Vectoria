@@ -5,25 +5,31 @@
 
 - name: Download embedder model
   shell: |
+    {% if git_lfs_modules %}
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    {% endif %}
     git-lfs install
     git clone git@hf.co:{{ embedder_model }} {{ install_path }}/embedder_model
 
 - name: Download reranker model
   shell: |
+    {% if git_lfs_modules %}
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    {% endif %}
     git-lfs install
     git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
   when: reranker_enabled
 
 - name: Download inference engine
   shell: |
+    {% if git_lfs_modules %}
     {% for module in git_lfs_modules %}
     module load {{ module }}
     {% endfor %}
+    {% endif %}
     git-lfs install
     git clone git@hf.co:{{ inference_engine }} {{ install_path }}/inference_engine
