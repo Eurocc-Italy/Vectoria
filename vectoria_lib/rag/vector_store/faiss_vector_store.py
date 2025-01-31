@@ -109,3 +109,16 @@ class FaissVectorStore(VectorStoreBase):
     
     def is_empty(self):
         return self.index is None
+
+    def add_documents(self, docs: list[Document]):
+        """
+        Add new documents to the FAISS index.
+
+        Parameters:
+        - docs (list[Document]): A list of new documents to be indexed.
+        """
+        if self.index is None:
+            raise ValueError("Index is not initialized. Call make_index() first.")
+
+        self.logger.info("Adding %d new documents to FAISS index.." % len(docs))
+        self.index.add_documents(docs)
