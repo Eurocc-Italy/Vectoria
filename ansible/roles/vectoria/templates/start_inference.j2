@@ -26,7 +26,7 @@ RAM_PATH=/dev/shm
 # 1. Copy model to RAM
 echo "Copying inference model to RAM..."
 start_time=$(date +%s)   # Record the start time
-cp -r $MODEL_PATH $RAM_PATH
+cp -Lr $MODEL_PATH $RAM_PATH
 end_time=$(date +%s)     # Record the end time
 
 # 2. Calculate and display time taken to copy the model
@@ -42,7 +42,7 @@ RAM_PATH=/dev/shm
 # 1. Copy model to RAM
 echo "Copying reranker model to RAM..."
 start_time=$(date +%s)   # Record the start time
-cp -r $MODEL_PATH $RAM_PATH
+cp -Lr $MODEL_PATH $RAM_PATH
 end_time=$(date +%s)     # Record the end time
 
 # 2. Calculate and display time taken to copy the model
