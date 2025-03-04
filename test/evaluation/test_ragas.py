@@ -1,6 +1,6 @@
 import os
 import pytest
-from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
+from vectoria_lib.evaluation.tools.ragas_eval import ragas_evaluation
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.io.file_io import get_file_io
@@ -64,10 +64,9 @@ def eval_data_qa():
 
 def test_ragas_vllm_llm(metrics_with_llm, eval_data_qa):
 
-    ragas_eval = RagasEval(metrics_with_llm)
-
-    scores = ragas_eval.evaluate(
+    scores = ragas_evaluation(
         eval_data_qa,
+        metrics=metrics_with_llm,
         run_config = RunConfig(
             timeout = 20
         )
@@ -80,10 +79,9 @@ def test_ragas_vllm_llm(metrics_with_llm, eval_data_qa):
 @pytest.mark.skip(reason="Embeddings are not supported yet by vllm: 'VLLMInferenceEngine' object has no attribute 'aembed_documents'")
 def test_ragas_vllm_embeddings(metrics_with_embeddings, eval_data_qa):
 
-    ragas_eval = RagasEval(metrics_with_embeddings)
-
-    scores = ragas_eval.evaluate(
+    scores = ragas_evaluation(
         eval_data_qa,
+        metrics=metrics_with_embeddings,
         run_config = RunConfig(
             timeout = 20
         )
