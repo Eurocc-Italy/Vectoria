@@ -11,7 +11,7 @@ sys.path.insert(1,lib_path)
 
 import requests
 import pytest
-from vectoria_lib.llm.llm_builder import LLMFactory
+from vectoria_lib.llm.llm_factory import LLMFactory
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.io.file_io import get_file_io

@@ -1,7 +1,7 @@
 import os
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
-from vectoria_lib.llm.llm_builder import LLMFactory
+from vectoria_lib.llm.llm_factory import LLMFactory
 
 def test_inference_engine_builder(config):
     LLMFactory.clear_cache()

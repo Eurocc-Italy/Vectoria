@@ -4,7 +4,7 @@ from vectoria_lib.evaluation.tools.ragas_eval import ragas_evaluation
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.io.file_io import get_file_io
-from vectoria_lib.llm.llm_builder import LLMFactory
+from vectoria_lib.llm.llm_factory import LLMFactory
 from ragas.run_config import RunConfig
 from ragas.metrics import (
     LLMContextRecall, 
