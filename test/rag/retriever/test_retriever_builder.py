@@ -1,9 +1,9 @@
 import pytest
 
-from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
-from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.components.retriever.retriever_builder import RetrieverBuilder
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.retriever.retriever_base import RetrieverBase
+from vectoria_lib.components.vector_store.vectore_store_builder import VectorStoreBuilder
 from langchain_core.documents import Document
 
 def test_build_faiss_retriever(config, index_test_folder):

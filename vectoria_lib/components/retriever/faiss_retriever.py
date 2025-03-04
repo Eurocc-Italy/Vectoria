@@ -3,8 +3,8 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
-from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.retriever.retriever_base import RetrieverBase
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
 class FaissRetriever(RetrieverBase):
 
     def __init__(self, **kwargs):

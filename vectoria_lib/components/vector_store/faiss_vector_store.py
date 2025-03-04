@@ -11,7 +11,7 @@ from langchain_community.vectorstores.faiss import FAISS
 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
-from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
 
 class FaissVectorStore(VectorStoreBase):
     """

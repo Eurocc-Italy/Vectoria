@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
 
 class RetrieverBase(ABC):
 

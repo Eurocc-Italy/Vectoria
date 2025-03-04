@@ -1,5 +1,5 @@
-from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
 
 def test_build_faiss_vector_store(config, index_test_folder):
     

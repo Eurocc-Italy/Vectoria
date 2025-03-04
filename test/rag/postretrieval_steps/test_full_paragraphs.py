@@ -2,8 +2,8 @@ import pytest
 
 from langchain_core.documents import Document
 
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
-from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.postretrieval_steps.full_paragraphs import FullParagraphs
 
 def test_full_paragraphs(config, data_dir):
     

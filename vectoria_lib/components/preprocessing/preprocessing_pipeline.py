@@ -12,10 +12,10 @@ import multiprocessing as mp
 from vectoria_lib.common.config import Config
 # ----------------------------------------------------------------------------------------------------------------------
 # DO NOT REMOVE THESE IMPORTS, they are get from global namespace
-from vectoria_lib.rag.preprocessing.extraction_pdf import extract_text_from_pdf_file
-from vectoria_lib.rag.preprocessing.extraction_docx import extract_text_from_docx_file
-from vectoria_lib.rag.preprocessing.utils import seek_and_replace
-from vectoria_lib.rag.preprocessing.chunking import recursive_character_text_splitter
+from vectoria_lib.components.preprocessing.extraction_pdf import extract_text_from_pdf_file
+from vectoria_lib.components.preprocessing.extraction_docx import extract_text_from_docx_file
+from vectoria_lib.components.preprocessing.utils import seek_and_replace
+from vectoria_lib.components.preprocessing.chunking import recursive_character_text_splitter
 # ----------------------------------------------------------------------------------------------------------------------from functools import partial
 from langchain_core.runnables import RunnableLambda
 
