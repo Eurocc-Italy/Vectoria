@@ -7,7 +7,7 @@
 from pathlib import Path
 import time
 import logging
-from vectoria.vectoria_lib.llm.eval.agent_evaluator import AgentEvaluator
+from vectoria.vectoria_lib.llm.evaluation.qa_application_evaluator import QAApplicationEvaluator
 from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
 from vectoria_lib.common.config import Config
 
@@ -22,7 +22,7 @@ def evaluate(
     **kwargs: dict
 ):
 
-    evaluator = AgentEvaluator(
+    evaluator = QAApplicationEvaluator(
         output_root_path = Path(kwargs["test_set_path"]).parent,
         test_set_name    = Path(kwargs["test_set_path"]).stem,
         evaluation_tool  = kwargs["evaluation_tool"]
