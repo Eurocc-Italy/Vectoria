@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from vectoria_lib.llm.application_builder import ApplicationBuilder
+from vectoria_lib.applications.application_builder import ApplicationBuilder
 from langchain.docstore.document import Document
 
 

@@ -4,7 +4,7 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-from vectoria_lib.llm.application_builder import ApplicationBuilder
+from vectoria_lib.applications.application_builder import ApplicationBuilder
 
 def inference(
     **kwargs: dict

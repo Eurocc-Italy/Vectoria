@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 
 from vectoria_lib.tasks.build_index import build_index_from_files
-from vectoria_lib.llm.application_builder import ApplicationBuilder
+from vectoria_lib.applications.application_builder import ApplicationBuilder
 import tempfile
 import time
 

@@ -1,4 +1,4 @@
-from vectoria_lib.llm.application_builder import ApplicationBuilder
+from vectoria_lib.applications.application_builder import ApplicationBuilder
 
 def test_application_builder(config, index_test_folder):
     app = ApplicationBuilder.build_qa(
