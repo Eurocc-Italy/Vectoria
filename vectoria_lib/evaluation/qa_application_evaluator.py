@@ -8,16 +8,16 @@ import yaml, logging
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
+
 from vectoria_lib.applications.qa import QAApplication
 from vectoria.vectoria_lib.common.io.file_io import get_file_io
-from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
+from .tools.ragas_eval import ragas_evaluation
 from vectoria_lib.common.io.file_io import get_file_io
 from vectoria_lib.common.plots import make_bar_plot
-from vectoria_lib.evaluation.tools.base_eval import BaseEval
 
 class QAApplicationEvaluator:
 
-    def __init__(self, output_root_path: str | Path, test_set_name: str, evaluation_tool: BaseEval):
+    def __init__(self, output_root_path: str | Path, test_set_name: str):
         self.answers = []
         self.retrived_context = []
         self.questions = None
@@ -25,7 +25,6 @@ class QAApplicationEvaluator:
         self.output_root_path = output_root_path
         self.test_set_name = test_set_name
         self.logger = logging.getLogger('evaluation')
-        self.eval_tool = evaluation_tool
 
     def generate_answers(
             self,
@@ -60,14 +59,13 @@ class QAApplicationEvaluator:
             add_time_stamp=True
         )
     
-    
     def evaluate(
             self,
             eval_data: dict,
             *args
         ) -> dict:
 
-        scores: list[dict] = self.eval_tool.evaluate(
+        scores: list[dict] = ragas_evaluation(
             eval_data,
             *args
         )
@@ -96,3 +94,4 @@ class QAApplicationEvaluator:
             metrics_means[metric] = np.mean(values)
             metrics_stds[metric] = np.std(values)
         return metrics_means, metrics_stds
+    
