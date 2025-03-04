@@ -8,7 +8,7 @@ from pathlib import Path
 import time
 import logging
 from vectoria.vectoria_lib.llm.evaluation.qa_application_evaluator import QAApplicationEvaluator
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.llm.llm_builder import LLMFactory
 from vectoria_lib.common.config import Config
 
 def load_json(path: str):
@@ -39,10 +39,10 @@ def evaluate(
 
     evaluator.eval(
         data,
-        InferenceEngineBuilder.build_inference_engine(
+        LLMFactory.build_llm(
             config.get("inference_engine")
         ).as_langchain_llm()
-        # InferenceEngineBuilder.build_inference_engine(
+        # LLMFactory.build_llm(
         #     dict(
         #         name='huggingface',
         #         model_name='BAAI/bge-m3',

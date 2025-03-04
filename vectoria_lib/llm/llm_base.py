@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 
-class InferenceEngineBase(ABC):
+class LLMBase(ABC):
     def __init__(self, args: dict):
         self.args = args
         self.name = args.pop("name")
@@ -35,4 +35,4 @@ class InferenceEngineBase(ABC):
         pass
     
     def __repr__(self):
-        return f"InferenceEngineBase for {self.name}"
+        return f"LLMBase for {self.name}"
