@@ -8,7 +8,7 @@ import yaml, logging
 from pathlib import Path
 from tqdm import tqdm
 import numpy as np
-from .vectoria_lib.llm.applications.qa import QAApplication
+from vectoria_lib.applications.qa import QAApplication
 from vectoria.vectoria_lib.common.io.file_io import get_file_io
 from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
 from vectoria_lib.common.io.file_io import get_file_io
