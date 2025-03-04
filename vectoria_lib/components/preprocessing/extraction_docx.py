@@ -8,7 +8,7 @@ from pathlib import Path
 import docx
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
-from vectoria_lib.rag.preprocessing.utils import extract_metadata_from_text
+from vectoria_lib.components.preprocessing.utils import extract_metadata_from_text
 logger = logging.getLogger('rag')
 config = Config()
 

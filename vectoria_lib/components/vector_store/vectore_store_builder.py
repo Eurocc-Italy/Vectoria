@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
 
 class VectorStoreBuilder:
 

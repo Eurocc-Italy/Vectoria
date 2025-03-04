@@ -1,8 +1,8 @@
 import logging
-from vectoria_lib.rag.retriever.retriever_base import RetrieverBase
-from vectoria_lib.rag.retriever.faiss_retriever import FaissRetriever
-from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
-from vectoria_lib.rag.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.retriever.retriever_base import RetrieverBase
+from vectoria_lib.components.retriever.faiss_retriever import FaissRetriever
+from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
 from vectoria_lib.common.config import Config
 
 

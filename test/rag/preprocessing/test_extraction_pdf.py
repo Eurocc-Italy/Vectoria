@@ -1,6 +1,6 @@
 from langchain.docstore.document import Document
 
-from vectoria_lib.rag.preprocessing.extraction_pdf import extract_text_from_pdf_file
+from vectoria_lib.components.preprocessing.extraction_pdf import extract_text_from_pdf_file
 from vectoria_lib.common.paths import TEST_DIR
 
 def test_extract_text_from_pdf_file(config):
