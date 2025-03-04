@@ -25,7 +25,7 @@ def test_build_index(config, extraction_fn):
         
         args = {
             "input_docs_dir" : TEST_DIR / "data" / doc_format,
-            "output_index_dir" : Path(temp_dir) / doc_format
+            "output_dir" : Path(temp_dir) / doc_format
             }
 
         fvs_path, fvs = build_index(**args)
