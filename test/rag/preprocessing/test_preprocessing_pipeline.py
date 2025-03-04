@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import pytest
 import langchain_core
-from vectoria_lib.components.preprocessing.preprocessing_pipeline import PreprocessingPipeline
+from vectoria_lib.preprocessing.preprocessing_pipeline import PreprocessingPipeline
 
 def test_build_preprocessing_pipeline(config):
     pipeline: PreprocessingPipeline = PreprocessingPipeline.build_pipeline()

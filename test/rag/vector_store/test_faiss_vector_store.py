@@ -1,4 +1,4 @@
-from vectoria_lib.components.preprocessing.chunking import recursive_character_text_splitter
+from vectoria_lib.preprocessing.chunking import recursive_character_text_splitter
 from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS

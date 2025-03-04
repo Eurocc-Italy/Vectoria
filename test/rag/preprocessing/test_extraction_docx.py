@@ -1,7 +1,7 @@
 from pathlib import Path
 import docx
 from langchain.docstore.document import Document
-from vectoria_lib.components.preprocessing.extraction_docx import (
+from vectoria_lib.preprocessing.extraction_docx import (
     extract_text_from_docx_file,
     _extract_flat_structure,
     _recover_paragraphs_numbers_and_names,
