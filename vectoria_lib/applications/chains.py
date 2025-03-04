@@ -17,7 +17,7 @@ import logging
 from typing import Any, Dict
 from langchain_core.runnables import Runnable, RunnableLambda, RunnablePassthrough
 from langchain_core.prompts import PromptTemplate
-from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from vectoria_lib.llm.llm_base import LLMBase
 from langchain_core.documents import Document
 
 DEFAULT_DOCUMENT_PROMPT = PromptTemplate.from_template("{page_content}\n[Document name:'{doc_file_name}' Paragraph: '{paragraph_number}-{paragraph_name}']")
@@ -64,7 +64,7 @@ def create_reranking_input_pairs(inputs: dict) -> list[SystemMessage]:
 
 def create_qa_chain(
     prompt: BasePromptTemplate,
-    llm: InferenceEngineBase,
+    llm: LLMBase,
     output_parser: BaseOutputParser,
     *,
     retriever_config: Optional[Dict[str, Any]] = None,

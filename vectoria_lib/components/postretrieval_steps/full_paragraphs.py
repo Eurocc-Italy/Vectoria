@@ -7,8 +7,8 @@
 import time
 from typing import List
 from langchain.docstore.document import Document
-from vectoria_lib.rag.vector_store.vectore_store_base import VectorStoreBase
-from vectoria_lib.rag.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
+from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.components.postretrieval_steps.postretrieval_step_base import PostRetrievalStepBase
 
 class FullParagraphs(PostRetrievalStepBase):
 

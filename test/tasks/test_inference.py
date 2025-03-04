@@ -17,4 +17,3 @@ def test_inference(config, index_test_folder, clear_inference_engine_cache):
     )
 
     inference(**inference_config)
-       

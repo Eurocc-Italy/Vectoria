@@ -11,10 +11,10 @@ from langsmith import traceable
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
 
-class QAAgent:
+class QAApplication:
     """
-    A Question Answering (QA) Agent that leverages a Retrieval-Augmented Generation (RAG) retriever and a language model 
-    to answer questions based on a provided context. The agent can generate answers using a language model and 
+    A Question Answering (QA) application that leverages a Retrieval-Augmented Generation (RAG) retriever and a language model 
+    to answer questions based on a provided context. The app can generate answers using a language model and 
     return a response based on the retrieved documents.
     """
 
@@ -23,7 +23,7 @@ class QAAgent:
         chain
     ):
         """
-        Initialize the QAAgent object with the corresponding chains
+        Initialize the QAApplication object with the corresponding chains
 
         Parameters:
 
@@ -37,11 +37,11 @@ class QAAgent:
     @traceable
     def ask(self, question: str, context: list[Document] = None) -> dict:
         """
-        Ask the QAAgent a input and get an answer based on the retrieved documents 
+        Ask the QAApplication a input and get an answer based on the retrieved documents 
         and chat history.
 
         Parameters:
-        - question (str): The input to ask the agent.
+        - question (str): The input to ask the app.
         - session_id (str): The ID of the session to use for chat history.
 
         Returns:
@@ -93,6 +93,7 @@ class QAAgent:
 
         times = []
         results = data.copy()
+        results["contexts"] = []
         results["answer"] = []
         retrieved_contexts_key = self._get_correct_context_key()
         results[retrieved_contexts_key] = []

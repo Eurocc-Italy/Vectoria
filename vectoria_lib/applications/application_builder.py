@@ -5,21 +5,21 @@
 #
 import logging
 
-from vectoria_lib.llm.agents.qa import QAAgent
+from vectoria_lib.applications.qa import QAApplication
 from vectoria_lib.common.config import Config
-from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
-from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
-from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
-from vectoria_lib.llm.agents.chains import create_qa_chain
-from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
+from vectoria_lib.components.postretrieval_steps.full_paragraphs import FullParagraphs
+from vectoria_lib.components.vector_store.vectore_store_builder import VectorStoreBuilder
+from vectoria_lib.components.retriever.retriever_builder import RetrieverBuilder
+from vectoria_lib.llm.llm_factory import LLMFactory
+from vectoria_lib.applications.chains import create_qa_chain
+from vectoria_lib.applications.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
-from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import Reranker
+from vectoria_lib.components.postretrieval_steps.huggingface_reranker import Reranker
 
-class AgentBuilder:
+class ApplicationBuilder:
     
     logger = logging.getLogger("llm")
-    
+        
     @staticmethod
     def _create_chain_configuration(kwargs):
         config = Config()
@@ -40,7 +40,7 @@ class AgentBuilder:
 
         reranker_config = None
         if config.get("reranker", "enabled"):
-            reranker_llm = InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"])
+            reranker_llm = LLMFactory.build_llm(config.get("reranker")["inference_engine"])
             reranker_config = {
                 "reranker": Reranker(reranker_llm),
                 "reranked_top_k": config.get("reranker", "reranked_top_k")
@@ -54,31 +54,31 @@ class AgentBuilder:
         return retriever_config, reranker_config, full_paragraphs_retriever_config
 
     @staticmethod
-    def build_qa_agent(
+    def build_qa(
         **kwargs: dict
-    ) -> QAAgent:
+    ) -> QAApplication:
         config = Config()
-        retriever_config, reranker_config, full_paragraphs_retriever_config = AgentBuilder._create_chain_configuration(kwargs)
+        retriever_config, reranker_config, full_paragraphs_retriever_config = ApplicationBuilder._create_chain_configuration(kwargs)
         
         if retriever_config is not None:
-            AgentBuilder.logger.info("Creating QA agent with the RAG retriever")
+            ApplicationBuilder.logger.info("Creating QA application with RAG retriever")
             chain = create_qa_chain(
                 PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
-                InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+                LLMFactory.build_llm(config.get("inference_engine")),
                 CustomResponseParser(),
                 retriever_config = retriever_config,
                 reranker_config = reranker_config,
                 full_paragraphs_retriever_config = full_paragraphs_retriever_config
             )
-            return QAAgent(chain)
+            return QAApplication(chain)
         else:
-            AgentBuilder.logger.info("Creating QA agent without the RAG retriever")
+            ApplicationBuilder.logger.info("Creating QA application without the RAG retriever")
             chain_no_retriever = create_qa_chain(
                 PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
-                InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+                LLMFactory.build_llm(config.get("inference_engine")),
                 CustomResponseParser(),
                 retriever_config = None,
                 reranker_config = reranker_config,
                 full_paragraphs_retriever_config = full_paragraphs_retriever_config
             )
-            return QAAgent(chain_no_retriever)
+            return QAApplication(chain_no_retriever)

@@ -1,10 +1,10 @@
 import os
 import pytest
-from vectoria_lib.evaluation.tools.ragas_eval import RagasEval
+from vectoria_lib.evaluation.tools.ragas_eval import ragas_evaluation
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.io.file_io import get_file_io
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.llm.llm_factory import LLMFactory
 from ragas.run_config import RunConfig
 from ragas.metrics import (
     LLMContextRecall, 
@@ -29,7 +29,7 @@ def metrics_with_llm(config: Config, vllm_server_status_fn):
     if not vllm_server_status_fn(config.get("evaluation", "inference_engine")):
         pytest.skip("VLLM server is not running")
     
-    generation_llm = LangchainLLMWrapper(InferenceEngineBuilder.build_inference_engine(
+    generation_llm = LangchainLLMWrapper(LLMFactory.build_llm(
             config.get("evaluation", "inference_engine")
         ).as_langchain_chat_model())
     
@@ -48,7 +48,7 @@ def metrics_with_embeddings(config: Config, vllm_server_status_fn):
     if not vllm_server_status_fn(config.get("evaluation", "embeddings_engine")):
         pytest.skip("VLLM server (embeddings_engine) is not running")
     
-    embeddings_llm = LangchainEmbeddingsWrapper(InferenceEngineBuilder.build_inference_engine(
+    embeddings_llm = LangchainEmbeddingsWrapper(LLMFactory.build_llm(
             config.get("evaluation", "embeddings_engine")
         ))
     
@@ -64,10 +64,9 @@ def eval_data_qa():
 
 def test_ragas_vllm_llm(metrics_with_llm, eval_data_qa):
 
-    ragas_eval = RagasEval(metrics_with_llm)
-
-    scores = ragas_eval.evaluate(
+    scores = ragas_evaluation(
         eval_data_qa,
+        metrics=metrics_with_llm,
         run_config = RunConfig(
             timeout = 20
         )
@@ -80,10 +79,9 @@ def test_ragas_vllm_llm(metrics_with_llm, eval_data_qa):
 @pytest.mark.skip(reason="Embeddings are not supported yet by vllm: 'VLLMInferenceEngine' object has no attribute 'aembed_documents'")
 def test_ragas_vllm_embeddings(metrics_with_embeddings, eval_data_qa):
 
-    ragas_eval = RagasEval(metrics_with_embeddings)
-
-    scores = ragas_eval.evaluate(
+    scores = ragas_evaluation(
         eval_data_qa,
+        metrics=metrics_with_embeddings,
         run_config = RunConfig(
             timeout = 20
         )
