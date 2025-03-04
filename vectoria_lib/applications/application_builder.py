@@ -12,7 +12,7 @@ from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuild
 from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
 from vectoria_lib.llm.llm_factory import LLMFactory
 from vectoria_lib.applications.chains import create_qa_chain
-from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
+from vectoria_lib.applications.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
 from vectoria_lib.rag.postretrieval_steps.huggingface_reranker import Reranker
 
