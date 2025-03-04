@@ -1,5 +1,5 @@
 import pytest
-from vectoria_lib.preprocessing.utils import seek_and_replace
+from vectoria_lib.ingestion.utils import seek_and_replace
 
 from langchain.docstore.document import Document
 
