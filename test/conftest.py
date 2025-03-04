@@ -159,7 +159,6 @@ full_paragraphs_retriever:
 chat_history:
   enabled: false
 
-# QA agent
 inference_engine:
   name: huggingface
   url: null

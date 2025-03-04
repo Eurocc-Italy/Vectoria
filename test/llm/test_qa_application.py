@@ -1,18 +1,18 @@
 import pytest
 import torch
 
-from vectoria_lib.llm.agent_builder import AgentBuilder
+from vectoria_lib.llm.application_builder import ApplicationBuilder
 from langchain.docstore.document import Document
 
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_huggingface(config, index_test_folder, clear_inference_engine_cache):
+def test_huggingface(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_huggingface", index_test_folder)
+    _run_engine_test("test_huggingface", index_test_folder)
 
 @pytest.mark.slow
-def test_qa_agent_openai(config, index_test_folder, clear_inference_engine_cache, openai_server_status_fn):
+def test_openai(config, index_test_folder, clear_inference_engine_cache, openai_server_status_fn):
     inference_config = {
         "name": "openai",
         "model_name": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
@@ -34,13 +34,13 @@ def test_qa_agent_openai(config, index_test_folder, clear_inference_engine_cache
 
     config.set("inference_engine", value=inference_config)
     config.set("retriever", "top_k", 1)
-    _run_engine_test("test_qa_agent_openai", index_test_folder)
+    _run_engine_test("test_openai", index_test_folder)
 
 def _run_engine_test(run_name, index_test_folder):
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder,
     )
-    answer = agent.ask("What is the name of the Vaswani paper?")
+    answer = app.ask("What is the name of the Vaswani paper?")
     assert "answer" in answer
     assert "context" in answer
     assert "input" in answer
@@ -49,10 +49,10 @@ def _run_engine_test(run_name, index_test_folder):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_retriever(config, index_test_folder, clear_inference_engine_cache):
+def test_without_retriever(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
 
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder
     )
     context = [
@@ -78,7 +78,7 @@ def test_qa_agent_without_retriever(config, index_test_folder, clear_inference_e
         )
     ]
     
-    result = agent.ask(
+    result = app.ask(
         "Which are the energy and policy considerations for deep learning in NLP?",
         context=context
     )
@@ -88,12 +88,12 @@ def test_qa_agent_without_retriever(config, index_test_folder, clear_inference_e
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_retriever_with_reranker(config, index_test_folder, clear_inference_engine_cache):
+def test_without_retriever_with_reranker(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
     config.set("reranker", "enabled", True)
     config.set("reranker", "reranked_top_k", 3)
 
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder
     )
     context = [
@@ -111,7 +111,7 @@ def test_qa_agent_without_retriever_with_reranker(config, index_test_folder, cle
         )
     ]
     
-    result = agent.ask(
+    result = app.ask(
         "Which are the most commonly used attention functions?",
         context=context
     )
@@ -121,13 +121,13 @@ def test_qa_agent_without_retriever_with_reranker(config, index_test_folder, cle
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+def test_without_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", False)
     config.set("reranker", "enabled", True)
     config.set("reranker", "reranked_top_k", 3)
     config.set("full_paragraphs_retriever", "enabled", True)
 
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder
     )
     context = [
@@ -145,7 +145,7 @@ def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(config, i
         )
     ]
     
-    result = agent.ask(
+    result = app.ask(
         "Which are the most commonly used attention functions?",
         context=context
     )
@@ -156,15 +156,15 @@ def test_qa_agent_without_retriever_with_reranker_with_full_paragraphs(config, i
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_with_retriever_without_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+def test_with_retriever_without_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "top_k", 2)
     config.set("full_paragraphs_retriever", "enabled", True)
 
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder
     )
     
-    result = agent.ask(
+    result = app.ask(
         "Which are the most commonly used attention functions?"
     )
     assert isinstance(result, dict)
@@ -173,17 +173,17 @@ def test_qa_agent_with_retriever_without_reranker_with_full_paragraphs(config, i
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_qa_agent_with_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+def test_with_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
     config.set("reranker", "enabled", True)
     config.set("retriever", "top_k", 5)
     config.set("reranker", "reranked_top_k", 3)
     config.set("full_paragraphs_retriever", "enabled", True)
 
-    agent = AgentBuilder.build_qa_agent(
+    app = ApplicationBuilder.build_qa(
         index_path=index_test_folder
     )
     
-    result = agent.ask(
+    result = app.ask(
         "Which are the most commonly used attention functions?"
     )
     assert isinstance(result, dict)

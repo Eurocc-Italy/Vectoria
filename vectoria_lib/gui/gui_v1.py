@@ -3,7 +3,7 @@ from pathlib import Path
 import streamlit as st
 
 from vectoria_lib.tasks.build_index import build_index_from_files
-from vectoria_lib.llm.agent_builder import AgentBuilder
+from vectoria_lib.llm.application_builder import ApplicationBuilder
 import tempfile
 import time
 
@@ -11,8 +11,8 @@ indexes_dir = Path(__file__).parent  / "indexes"
 indexes_dir.mkdir(parents=True, exist_ok=True)
 
 def init_globals():
-    if "qa_agent" not in st.session_state:
-        st.session_state.qa_agent = None
+    if "qa_app" not in st.session_state:
+        st.session_state.qa_app = None
     if "index_path" not in st.session_state:
         st.session_state.index_path = None
     if "vector_store" not in st.session_state:
@@ -21,7 +21,7 @@ def init_globals():
 def show_info_messages():
     # if st.session_state.vector_store_pickle_path is None:
     #     st.warning("FAISS index is not created yet.")
-    if st.session_state.qa_agent is None:
+    if st.session_state.qa_app is None:
         st.warning("ChatBot is not loaded yet.")
 
 def dump_files(files, output_dir):
@@ -65,10 +65,10 @@ def sidebar():
                 submit_button = st.form_submit_button(label='Load ChatBot')
                 if submit_button:
                     with st.spinner('Loading ChatBot...'):
-                        st.session_state.qa_agent = AgentBuilder.build_qa_agent(
+                        st.session_state.qa_app = ApplicationBuilder.build_qa(
                             index_path = index_path
                         )
-                        if st.session_state.qa_agent:
+                        if st.session_state.qa_app:
                             st.success("ChatBot loaded successfully.")
                         else:
                             st.error("Failed to load ChatBot.")
@@ -82,7 +82,7 @@ def ask_question():
         if submit_button:
             with st.spinner('Generating answer...'):
                 s = time.time()
-                answer = st.session_state.qa_agent.ask(query)
+                answer = st.session_state.qa_app.ask(query)
                 e = time.time()
                 st.write(f"{answer['answer']}")
                 st.write(f"Time taken: {e-s:.2f} seconds")
@@ -98,7 +98,7 @@ def main():
     show_info_messages()    
     sidebar()
     
-    if st.session_state.qa_agent is not None:
+    if st.session_state.qa_app is not None:
         ask_question()
 
 if __name__ == "__main__":
