@@ -10,7 +10,7 @@ from vectoria_lib.common.config import Config
 from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
 from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
-from vectoria_lib.llm.llm_builder import LLMFactory
+from vectoria_lib.llm.llm_factory import LLMFactory
 from vectoria_lib.applications.chains import create_qa_chain
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
