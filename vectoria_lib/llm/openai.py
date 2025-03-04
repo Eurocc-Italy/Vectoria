@@ -6,11 +6,11 @@
 
 from langchain_openai import OpenAI, ChatOpenAI, OpenAIEmbeddings
 
-from vectoria_lib.llm.inference_engine.inference_engine_base import InferenceEngineBase
+from vectoria_lib.llm.llm_base import LLMBase
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 
-class OpenAIInferenceEngine(InferenceEngineBase):
+class OpenAILLM(LLMBase):
 
     def __init__(self, args: dict):
         super().__init__(args)

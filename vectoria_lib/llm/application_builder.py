@@ -10,7 +10,7 @@ from vectoria_lib.common.config import Config
 from vectoria_lib.rag.postretrieval_steps.full_paragraphs import FullParagraphs
 from vectoria_lib.rag.vector_store.vectore_store_builder import VectorStoreBuilder
 from vectoria_lib.rag.retriever.retriever_builder import RetrieverBuilder
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.llm.llm_builder import LLMFactory
 from vectoria_lib.applications.chains import create_qa_chain
 from vectoria_lib.llm.prompts.prompt_builder import PromptBuilder
 from vectoria_lib.llm.parser import CustomResponseParser
@@ -40,7 +40,7 @@ class ApplicationBuilder:
 
         reranker_config = None
         if config.get("reranker", "enabled"):
-            reranker_llm = InferenceEngineBuilder.build_inference_engine(config.get("reranker")["inference_engine"])
+            reranker_llm = LLMFactory.build_llm(config.get("reranker")["inference_engine"])
             reranker_config = {
                 "reranker": Reranker(reranker_llm),
                 "reranked_top_k": config.get("reranker", "reranked_top_k")
@@ -64,7 +64,7 @@ class ApplicationBuilder:
             ApplicationBuilder.logger.info("Creating QA application with RAG retriever")
             chain = create_qa_chain(
                 PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
-                InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+                LLMFactory.build_llm(config.get("inference_engine")),
                 CustomResponseParser(),
                 retriever_config = retriever_config,
                 reranker_config = reranker_config,
@@ -75,7 +75,7 @@ class ApplicationBuilder:
             ApplicationBuilder.logger.info("Creating QA application without the RAG retriever")
             chain_no_retriever = create_qa_chain(
                 PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt(),
-                InferenceEngineBuilder.build_inference_engine(config.get("inference_engine")),
+                LLMFactory.build_llm(config.get("inference_engine")),
                 CustomResponseParser(),
                 retriever_config = None,
                 reranker_config = reranker_config,
