@@ -1,14 +1,13 @@
 import pytest
 import torch
 
-from vectoria_lib.applications.application_builder import ApplicationBuilder
+from vectoria_lib.applications.qa import QAApplication
 from langchain.docstore.document import Document
-
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_huggingface(config, index_test_folder, clear_inference_engine_cache):
-    config.set("retriever", "top_k", 1)
+    config.set("retriever", "k", 1)
     _run_engine_test("test_huggingface", index_test_folder)
 
 @pytest.mark.slow
@@ -33,11 +32,11 @@ def test_openai(config, index_test_folder, clear_inference_engine_cache, openai_
         pytest.skip("OpenAI server is not running")
 
     config.set("inference_engine", value=inference_config)
-    config.set("retriever", "top_k", 1)
+    config.set("retriever", "k", 1)
     _run_engine_test("test_openai", index_test_folder)
 
 def _run_engine_test(run_name, index_test_folder):
-    app = ApplicationBuilder.build_qa(
+    app = QAApplication(
         index_path=index_test_folder,
     )
     answer = app.ask("What is the name of the Vaswani paper?")
@@ -49,10 +48,9 @@ def _run_engine_test(run_name, index_test_folder):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_without_retriever(config, index_test_folder, clear_inference_engine_cache):
-    config.set("retriever", "enabled", False)
+def test_generation_only(config, index_test_folder, clear_inference_engine_cache):
 
-    app = ApplicationBuilder.build_qa(
+    app = QAApplication(
         index_path=index_test_folder
     )
     context = [
@@ -86,14 +84,95 @@ def test_without_retriever(config, index_test_folder, clear_inference_engine_cac
     assert result.keys() == {"input", "context", "docs", "answer"}
     assert len(result["docs"]) == 5
 
+
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_without_retriever_with_reranker(config, index_test_folder, clear_inference_engine_cache):
-    config.set("retriever", "enabled", False)
-    config.set("reranker", "enabled", True)
-    config.set("reranker", "reranked_top_k", 3)
+def test_retriever(config, index_test_folder, clear_inference_engine_cache):
+    config.set("retriever", "enabled", True)
+    config.set("retriever", "k", 2)
 
-    app = ApplicationBuilder.build_qa(
+    app = QAApplication(
+        index_path=index_test_folder
+    )
+    
+    result = app.ask(
+        "Which are the most commonly used attention functions?"
+    )
+    assert isinstance(result, dict)
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) == 2
+
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_retriever_and_reranker(config, index_test_folder, clear_inference_engine_cache):
+    config.set("retriever", "enabled", True)
+    config.set("retriever", "k", 2)
+    config.set("reranker", "enabled", True)
+    config.set("reranker", "rerank_k", 1)
+
+    app = QAApplication(
+        index_path=index_test_folder
+    )
+    
+    result = app.ask(
+        "Which are the most commonly used attention functions?"
+    )
+    assert isinstance(result, dict)
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) == 1
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_retriever_and_reranker_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+    config.set("retriever", "enabled", True)
+    config.set("retriever", "k", 5)
+    config.set("reranker", "enabled", True)
+    config.set("reranker", "rerank_k", 3)
+    config.set("full_paragraphs_retriever", "enabled", True)
+
+    app = QAApplication(
+        index_path=index_test_folder
+    )
+    
+    result = app.ask(
+        "Which are the most commonly used attention functions?"
+    )
+    assert isinstance(result, dict)
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) <= 3
+
+
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_retriever_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+    config.set("retriever", "enabled", True)
+    config.set("retriever", "k", 2)
+    config.set("full_paragraphs_retriever", "enabled", True)
+
+    app = QAApplication(
+        index_path=index_test_folder
+    )
+    
+    result = app.ask(
+        "Which are the most commonly used attention functions?"
+    )
+    assert isinstance(result, dict)
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) <= 2
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
+def test_reranker_and_generation(config, index_test_folder, clear_inference_engine_cache):
+    config.set("reranker", "enabled", True)
+    config.set("reranker", "rerank_k", 3)
+
+    app = QAApplication(
         index_path=index_test_folder
     )
     context = [
@@ -116,18 +195,17 @@ def test_without_retriever_with_reranker(config, index_test_folder, clear_infere
         context=context
     )
     assert isinstance(result, dict)
-    assert result.keys() == {"input", "context", "docs", "reranked_docs", "answer"}
-    assert len(result["reranked_docs"]) == 3
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) == 3
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_without_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
-    config.set("retriever", "enabled", False)
+def test_reranker_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
     config.set("reranker", "enabled", True)
-    config.set("reranker", "reranked_top_k", 3)
+    config.set("reranker", "rerank_k", 3)
     config.set("full_paragraphs_retriever", "enabled", True)
 
-    app = ApplicationBuilder.build_qa(
+    app = QAApplication(
         index_path=index_test_folder
     )
     context = [
@@ -150,44 +228,6 @@ def test_without_retriever_with_reranker_with_full_paragraphs(config, index_test
         context=context
     )
     assert isinstance(result, dict)
-    assert result.keys() == {"input", "context", "docs", "reranked_docs", "full_paragraphs_docs", "answer"}
-    assert len(result["full_paragraphs_docs"]) == 3
-    assert sum([len(doc.page_content) for doc in result["full_paragraphs_docs"]]) > sum([len(doc.page_content) for doc in result["reranked_docs"]])
+    assert result.keys() == {"input", "context", "docs", "answer"}
+    assert len(result["docs"]) <= 3
 
-@pytest.mark.slow
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_with_retriever_without_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
-    config.set("retriever", "top_k", 2)
-    config.set("full_paragraphs_retriever", "enabled", True)
-
-    app = ApplicationBuilder.build_qa(
-        index_path=index_test_folder
-    )
-    
-    result = app.ask(
-        "Which are the most commonly used attention functions?"
-    )
-    assert isinstance(result, dict)
-    assert result.keys() == {"input", "context", "docs", "full_paragraphs_docs", "answer"}
-    assert len(result["full_paragraphs_docs"]) == 2
-
-@pytest.mark.slow
-@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_with_retriever_with_reranker_with_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
-    config.set("reranker", "enabled", True)
-    config.set("retriever", "top_k", 5)
-    config.set("reranker", "reranked_top_k", 3)
-    config.set("full_paragraphs_retriever", "enabled", True)
-
-    app = ApplicationBuilder.build_qa(
-        index_path=index_test_folder
-    )
-    
-    result = app.ask(
-        "Which are the most commonly used attention functions?"
-    )
-    assert isinstance(result, dict)
-    assert result.keys() == {"input", "context", "docs", "reranked_docs", "full_paragraphs_docs", "answer"}
-    assert len(result["docs"]) == 5
-    assert len(result["reranked_docs"]) == 3
-    assert len(result["full_paragraphs_docs"]) == 3

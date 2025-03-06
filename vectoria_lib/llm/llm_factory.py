@@ -25,6 +25,8 @@ class LLMFactory(Singleton):
 
     @classmethod
     def build_llm(cls, args: dict) -> LLMBase:
+
+        cls.logger.info("Building LLM %s %s", args["name"], args["model_name"])
         name = args["name"]
         model_name = args["model_name"]
         cache_key = f"{name}-{model_name}"

@@ -13,6 +13,7 @@ from langchain_huggingface import HuggingFacePipeline, ChatHuggingFace
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
+
 from vectoria_lib.llm.llm_base import LLMBase
 from typing import Optional
 
@@ -49,8 +50,6 @@ class HuggingFaceLLM(LLMBase):
         self._load_tokenizer()
         
         quantization_config = self._get_quantization_config()
-        if quantization_config is None:
-            self.args["device"] = None
         
         start_time = time.perf_counter()
         
@@ -58,8 +57,8 @@ class HuggingFaceLLM(LLMBase):
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.args["model_name"],
                 quantization_config=quantization_config,
-                device_map=self.args.get("device_map", "auto"),
-                trust_remote_code=self.args.get("trust_remote_code", False),
+                device_map=self.args.get("device_map"),
+                trust_remote_code=self.args.get("trust_remote_code"),
             )
             self.model.eval()
             self.logger.debug(
@@ -93,7 +92,7 @@ class HuggingFaceLLM(LLMBase):
         """
         if self.args.get("load_in_8bit"):
             return BitsAndBytesConfig(
-                load_in_8bit=True, 
+                load_in_8bit=True,
                 bnb_8bit_compute_dtype=torch.bfloat16
             )
         elif self.args.get("load_in_4bit"):
@@ -101,6 +100,7 @@ class HuggingFaceLLM(LLMBase):
                 load_in_4bit=True,
                 bnb_4bit_compute_dtype=torch.bfloat16
             )
+        self.logger.warning("No quantization config found.")
         return None
 
 

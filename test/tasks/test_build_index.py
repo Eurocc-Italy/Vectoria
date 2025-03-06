@@ -4,14 +4,13 @@ from tempfile import TemporaryDirectory
 import pytest
 
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from vectoria_lib.tasks.build_index import build_index
 from vectoria_lib.common.paths import TEST_DIR
 
 @pytest.mark.parametrize("extraction_fn", ["extract_text_from_docx_file", "extract_text_from_pdf_file"])
 def test_build_index(config, extraction_fn):
-    config.set("vector_store", "device", "cuda")
 
     with TemporaryDirectory() as temp_dir:
         
@@ -33,5 +32,5 @@ def test_build_index(config, extraction_fn):
         assert fvs_path.exists()
         assert len(os.listdir(fvs_path)) == 2
         
-        assert isinstance(fvs.hf_embedder, HuggingFaceBgeEmbeddings)
+        assert isinstance(fvs.hf_embedder, HuggingFaceEmbeddings)
         assert isinstance(fvs.index, FAISS)

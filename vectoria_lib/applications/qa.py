@@ -7,35 +7,70 @@
 import numpy as np
 from pathlib import Path
 import json, logging, datetime, time
-from langsmith import traceable
-from langchain.docstore.document import Document
-from vectoria_lib.common.config import Config
+from typing import List
 
-class QAApplication:
+from langchain.docstore.document import Document
+from langchain_core.runnables import RunnablePassthrough
+
+from vectoria_lib.common.config import Config
+from vectoria_lib.applications.chain_runner import ChainRunner
+from vectoria_lib.chains.retrieval import get_retrieval_chain
+from vectoria_lib.chains.reranking import get_reranking_chain
+from vectoria_lib.chains.create_context import get_create_context_chain
+from vectoria_lib.chains.context_enhancement import get_context_enhancement_chain
+from vectoria_lib.chains.generation import get_generation_chain
+from vectoria_lib.components.vector_store.vector_store_factory import VectorStoreFactory
+
+class QAApplication(ChainRunner):
     """
     A Question Answering (QA) application that leverages a Retrieval-Augmented Generation (RAG) retriever and a language model 
-    to answer questions based on a provided context. The app can generate answers using a language model and 
-    return a response based on the retrieved documents.
+    to answer questions based on a provided context. The app can generate answers using a language model and return a response 
+    based on the retrieved documents.
+
+    Class responsibilities:
+        * Define the chain
+        * Expose an API to answer questions
+        * Run the chain
+        * Handle the output of the chain
     """
 
     def __init__(
         self,
-        chain
+        index_path: Path      
     ):
         """
         Initialize the QAApplication object with the corresponding chains
-
-        Parameters:
-
         """
         self.logger = logging.getLogger('llm')
-        self.chain = chain
+
+        config = Config()
+
+        # Load the index from the disk
+        _ = VectorStoreFactory.create_vector_store(**config.get("vector_store")).load_from_disk(index_path)
+
+        chain = RunnablePassthrough() # The RunnablePassthrough makes the input key pass through all the next runnables to the final output dictionary
+
+        if config.get("retriever", "enabled"):
+            chain = chain.assign(docs=get_retrieval_chain())
+
+        if config.get("reranker", "enabled"):
+            chain = chain.assign(docs=get_reranking_chain())
+
+        if config.get("full_paragraphs_retriever", "enabled"):
+            chain = chain.assign(docs=get_context_enhancement_chain())
+
+        chain = chain.assign(context=get_create_context_chain())
+
+        chain = chain.assign(answer=get_generation_chain())
+
+        super().__init__(chain, config.get("langfuse"))
 
 
-
-    # --------------------------------------------------------------------------------
-    @traceable
-    def ask(self, question: str, context: list[Document] = None) -> dict:
+    def ask(
+            self, 
+            question: str, 
+            context: list[Document] = None
+    ) -> dict:
         """
         Ask the QAApplication a input and get an answer based on the retrieved documents 
         and chat history.
@@ -52,53 +87,45 @@ class QAApplication:
         if context is not None:
             inputs["docs"] = context
 
-        results = self.chain.invoke(inputs)
-        
+        results = self.invoke(inputs)
+
         self.logger.debug("\n------%s------- > Question: %s", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), question)
         self.logger.info( "\n------%s------- > Answer: %s",   datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), results["answer"])
 
         return results
 
-    def _get_correct_context_key(self):
-        config = Config()
-        
-        if config.get("full_paragraphs_retriever", "enabled"):
-            return "full_paragraphs_docs"
-        
-        elif config.get("reranker", "enabled"):
-            return "reranked_docs"
-        
-        else:
-            return "docs"
+    def _get_questions(self, kwargs) -> List[str]:
 
-    def _get_questions(self, kwargs):
+        if not kwargs.get("test_set_path") and not kwargs.get("questions"):
+            raise ValueError("No questions provided. Use '--questions' or '--test-set-path'.")
+
         if kwargs.get("questions"):
             # Handle questions from CLI
-            data = {"question": kwargs.get("questions")}
             self.logger.info("Received questions directly via CLI: %s", kwargs.get("questions"))
-        else:
-            # Handle questions from the test set JSON
-            test_set_path = kwargs.get("test_set_path")
-            if not test_set_path:
-                raise ValueError("No questions provided. Use '--questions' or '--test-set-path'.")
-            with open(test_set_path, 'r', encoding='utf-8') as file:
+            return kwargs.get("questions")
+
+        # Handle questions from the test set JSON
+        if kwargs.get("test_set_path"):
+            with open(kwargs.get("test_set_path"), 'r', encoding='utf-8') as file:
                 data = json.load(file)
-            self.logger.info("Questions are loaded from test set JSON: %s", test_set_path)
-        return data
+            self.logger.info("Questions are loaded from test set JSON: %s", kwargs.get("test_set_path"))
+            return data["question"]
 
     def inference(self, kwargs):
 
-        data = self._get_questions(kwargs)
+        questions = self._get_questions(kwargs)
         output_dir = kwargs.get("output_dir")
 
         times = []
-        results = data.copy()
-        results["contexts"] = []
-        results["answer"] = []
-        retrieved_contexts_key = self._get_correct_context_key()
-        results[retrieved_contexts_key] = []
+        collected_results = {
+            "question": questions,
+            "contexts": [],
+            "answer": [],
+            "docs": []
+        }
 
-        for q in data["question"]:
+        for q in questions:
+
             self.logger.info("Answering question: %s", q)
 
             start_time = time.perf_counter()
@@ -112,23 +139,24 @@ class QAApplication:
             self.logger.info("Time taken to answer question: %.2f seconds", took)
             times.append(took)
 
-            contexts = result[retrieved_contexts_key]
-            answer = result["answer"]
 
-            results[retrieved_contexts_key].append(
-                [{
-                    "page_content": c.page_content,
-                    "metadata": c.metadata
-                } for c in contexts ]
-            )
-            results["answer"].append(answer)
+            # update the results
+            collected_results["answer"].append(result["answer"])
+            if "docs" in result:
+                for c in result["docs"]:
+                    collected_results["docs"].append({
+                        "page_content": c.page_content,
+                        "metadata": c.metadata
+                    })
+            collected_results["contexts"].append(result["context"])
+
         
-        results["times"] = dict(
+        collected_results["times"] = dict(
             mean = np.mean(times),
             std = np.std(times)
         )
-        self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", results["times"]["mean"], results["times"]["std"])
-        self._write_inference_results(results, output_dir, f"inference_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")    
+        self.logger.info("Mean time and std taken to answer questions: %.2f seconds, %.2f seconds", collected_results["times"]["mean"], collected_results["times"]["std"])
+        self._write_inference_results(collected_results, output_dir, f"inference_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")    
 
     
     def _write_inference_results(self, results, output_dir, output_name):

@@ -4,12 +4,12 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-from vectoria_lib.applications.application_builder import ApplicationBuilder
+from vectoria_lib.applications.qa import QAApplication
 
 def inference(
     **kwargs: dict
 ):
-    qa_app = ApplicationBuilder.build_qa(
+    qa_app = QAApplication(
         index_path=kwargs["index_path"]
     )
     qa_app.inference(kwargs)

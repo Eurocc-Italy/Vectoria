@@ -9,14 +9,14 @@ import logging
 from pathlib import Path
 
 from vectoria_lib.common.config import Config
-from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
+from vectoria_lib.components.vector_store.vector_store_factory import VectorStoreFactory 
+from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
 from vectoria_lib.ingestion.preprocessing_pipeline import PreprocessingPipeline
-from vectoria_lib.components.vector_store.vectore_store_builder import VectorStoreBuilder
 from vectoria_lib.common.io.folder_reader import get_files_in_folder
 
 def build_index(
     **kwargs: dict
-) -> tuple[Path, FaissVectorStore]:
+) -> tuple[Path, VectorStoreBase]:
     logger = logging.getLogger("tasks")
     files = get_files_in_folder(Path(kwargs["input_docs_dir"]))
     for file in files:
@@ -28,7 +28,8 @@ def build_index(
 def build_index_from_files(
     files: list[Path],
     output_index_dir: Path
-) -> tuple[Path, FaissVectorStore]:
+) -> tuple[Path, VectorStoreBase]:
+
     config = Config()
     logger = logging.getLogger("tasks")
 
@@ -38,12 +39,10 @@ def build_index_from_files(
         
 
     start_time = time.perf_counter()
-    vector_store = VectorStoreBuilder().build(
-        config.get("vector_store"),
-        index_path = None
-    )         
+    vector_store = VectorStoreFactory.create_vector_store(**config.get("vector_store"))
+    
     vector_store.make_index(docs)
-    logger.debug("Creation of FAISS index (.from_documents) took %.2f seconds", time.perf_counter() - start_time)
+    logger.debug("Index creation took %.2f seconds", time.perf_counter() - start_time)
 
 
     start_time = time.perf_counter()
@@ -52,6 +51,3 @@ def build_index_from_files(
 
 
     return pkl_path, vector_store
-
-# TODO: AL MOMENTO ABBIAMO SOLO LA FUNZIONE CHE GENERA UN INDEX A PARTIRE DAI DOCS
-# DOBBIAMO IMPLEMENTARE LA FUNZIONE CHE FA LA DELETION E UPDATE
