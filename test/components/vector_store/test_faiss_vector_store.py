@@ -36,13 +36,12 @@ def test_faiss_vector_store(config, index_test_folder):
 
     faiss_retriever_config = {
         "search_type": config.get("retriever", "search_type"),
-        "search_kwargs": {
-            "k": 2,
-            "fetch_k": 2,
-            "lambda_mult": config.get("retriever", "lambda_mult")
-        }
+        "k": 2,
+        "fetch_k": 2,
+        "lambda_mult": config.get("retriever", "lambda_mult")
     }
-    retriever = vector_store.as_retriever(**faiss_retriever_config)
+    retriever = vector_store.as_retriever(faiss_retriever_config)
+
     assert isinstance(retriever, VectorStoreRetriever)
 
     docs = retriever.invoke("What is the Matrix?")

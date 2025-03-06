@@ -2,9 +2,9 @@ import logging
 from abc import ABC, abstractmethod
 from pathlib import Path
 from langchain.docstore.document import Document
+from vectoria_lib.common.utils import SingletonABC
 
-class VectorStoreBase(ABC):
-
+class VectorStoreBase(ABC, metaclass=SingletonABC):
     def __init__(self):
         self.logger = logging.getLogger("rag")
 
@@ -21,7 +21,7 @@ class VectorStoreBase(ABC):
         pass
 
     @abstractmethod
-    def as_retriever(self, **kwargs):
+    def as_retriever(self, search_config: dict):
         pass
 
     @abstractmethod

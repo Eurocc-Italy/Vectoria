@@ -3,11 +3,13 @@
 #
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
+from langchain_core.prompts import PromptTemplate
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, BasePromptTemplate   
 
-from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from vectoria_lib.common.paths import ETC_DIR
 from vectoria_lib.common.constants import ALLOWED_LANGS
 class PromptBuilder:
+
 
     def __init__(self, lang: str):
         self.lang = lang
@@ -44,3 +46,11 @@ class PromptBuilder:
         else:
             return (ETC_DIR / "default" / "prompts" / lang / file_name).read_text()    
         
+
+    @staticmethod
+    def validate_prompt(prompt: BasePromptTemplate, document_variable_name: str) -> None:
+        if document_variable_name not in prompt.input_variables:
+            raise ValueError(
+                f"Prompt must accept {document_variable_name} as an input variable. "
+                f"Received prompt with input variables: {prompt.input_variables}"
+            )           

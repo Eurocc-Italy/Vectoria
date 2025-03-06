@@ -8,7 +8,7 @@ import pickle, logging
 from pathlib import Path
 
 from langchain_community.vectorstores.faiss import FAISS
-from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
 from vectoria_lib.common.config import Config
 from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
@@ -20,29 +20,38 @@ class FaissVectorStore(VectorStoreBase):
     This class provides methods to create a FAISS index from documents, retrieve the index as a retriever, 
     and serialize/deserialize the index using pickle.
     
-    Reference to FAISS integration documentation:
-    * https://python.langchain.com/v0.2/docs/integrations/vectorstores/faiss/
-    * https://api.python.langchain.com/en/latest/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
+    Reference to FAISS integration documentation: https://python.langchain.com/docs/integrations/vectorstores/faiss
+    API Reference: https://python.langchain.com/api_reference/community/vectorstores/langchain_community.vectorstores.faiss.FAISS.html
+
     """
-    def __init__(self, **kwargs):
-        """
-        Initialize a FaissVectorStore object.
-        """
+    def __init__(
+            self,
+            model_name,
+            device,
+            normalize_embeddings,
+            index_path = None
+        ):
         super().__init__()
-        self.model_name = kwargs["model_name"] 
-        self.index = None
+
+        self.model_name = model_name
 
         self.logger.info("Loading Embedder model: %s.." % self.model_name)
 
-        self.hf_embedder = HuggingFaceBgeEmbeddings(
+        self.hf_embedder = HuggingFaceEmbeddings(
             model_name=self.model_name,
             model_kwargs={
-                "device": kwargs["device"]
+                "device": device
             },
             encode_kwargs={
-                "normalize_embeddings": kwargs["normalize_embeddings"]
+                "normalize_embeddings": normalize_embeddings
             }
         )
+
+        if index_path:
+            self.index = FAISS.load_local(index_path, self.hf_embedder, allow_dangerous_deserialization=True)
+        else:
+            self.index = None
+
 
     def make_index(self, docs: list[Document]):
         """
@@ -83,7 +92,7 @@ class FaissVectorStore(VectorStoreBase):
         self.index = FAISS.load_local(input_path, self.hf_embedder, allow_dangerous_deserialization=True)
         return self
 
-    def as_retriever(self, **kwargs):
+    def as_retriever(self, search_config: dict):
         """
         Convert the FAISS index into a retriever object.
 
@@ -93,11 +102,18 @@ class FaissVectorStore(VectorStoreBase):
         Returns:
         - Retriever: A retriever object based on the FAISS index.
         """
-        self.logger.info("Converting FAISS index to retriever with kwargs: %s" % kwargs)
+        self.logger.info("Converting FAISS index to retriever with kwargs: %s" % search_config)
         if self.index is None:
-            raise ValueError("Index is not created. Call make_index() first.")
+            raise ValueError("Index is not created. Call 'make_index' or 'load_from_disk' first.")
             
-        return self.index.as_retriever(**kwargs)
+        return self.index.as_retriever(
+            search_type = search_config["search_type"],
+            search_kwargs = {
+                "k": search_config["k"],
+                "fetch_k": search_config["fetch_k"],
+                "lambda_mult": search_config["lambda_mult"]
+            }
+        )
 
     def search(self, query: str, **kwargs) -> list[Document]:
         """
