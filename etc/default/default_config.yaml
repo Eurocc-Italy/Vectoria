@@ -6,10 +6,10 @@ langchain_tracking: false
 system_prompts_lang: eng
 
 langfuse:
-  enabled: true
-  host: http://localhost:3000
-  public_key: pk-lf-972ecefa-e6f7-4800-817f-014b42b86414
-  secret_key: sk-lf-7c87e30d-3a39-4bcc-800e-6c876764ef66
+  enabled: false
+  host: null
+  public_key: null
+  secret_key: null
 
 data_ingestion:
   multiprocessing: true
