@@ -2,7 +2,7 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableLambda
 
-from vectoria_lib.llm.llm_factory import LLMFactory
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 from vectoria_lib.components.postretrieval_steps.huggingface_reranker import Reranker
 from vectoria_lib.common.config import Config
 

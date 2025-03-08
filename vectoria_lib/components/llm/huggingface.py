@@ -14,7 +14,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 
-from vectoria_lib.llm.llm_base import LLMBase
+from vectoria_lib.components.llm.llm_base import LLMBase
 from typing import Optional
 
 class HuggingFaceLLM(LLMBase):
