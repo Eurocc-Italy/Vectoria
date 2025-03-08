@@ -5,9 +5,9 @@
 #
 
 import logging
-from vectoria_lib.llm.llm_base import LLMBase
-from vectoria_lib.llm.huggingface import HuggingFaceLLM
-from vectoria_lib.llm.openai import OpenAILLM
+from vectoria_lib.components.llm.llm_base import LLMBase
+from vectoria_lib.components.llm.huggingface import HuggingFaceLLM
+from vectoria_lib.components.llm.openai import OpenAILLM
 from vectoria_lib.common.utils import Singleton
 from typing import Dict, Type
 

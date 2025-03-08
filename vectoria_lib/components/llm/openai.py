@@ -6,7 +6,7 @@
 
 from langchain_openai import OpenAI, ChatOpenAI, OpenAIEmbeddings
 
-from vectoria_lib.llm.llm_base import LLMBase
+from vectoria_lib.components.llm.llm_base import LLMBase
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 

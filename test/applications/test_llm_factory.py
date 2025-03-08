@@ -1,7 +1,7 @@
 import os
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.paths import TEST_DIR
-from vectoria_lib.llm.llm_factory import LLMFactory
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 
 def test_llm_factory(config):
     LLMFactory.clear_cache()

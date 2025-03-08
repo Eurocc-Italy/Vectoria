@@ -1,7 +1,7 @@
 from vectoria_lib.common.config import Config
-from vectoria_lib.llm.llm_factory import LLMFactory
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 from vectoria_lib.applications.prompt_builder import PromptBuilder
-from vectoria_lib.llm.parser import CustomResponseParser
+from vectoria_lib.components.llm.parser import CustomResponseParser
 
 def get_generation_chain():
     """

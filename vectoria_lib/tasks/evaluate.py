@@ -7,8 +7,8 @@
 from pathlib import Path
 import time
 import logging
-from vectoria.vectoria_lib.llm.evaluation.qa_application_evaluator import QAApplicationEvaluator
-from vectoria_lib.llm.llm_factory import LLMFactory
+from vectoria.vectoria_lib.components.llm.evaluation.qa_application_evaluator import QAApplicationEvaluator
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 from vectoria_lib.common.config import Config
 
 def load_json(path: str):
