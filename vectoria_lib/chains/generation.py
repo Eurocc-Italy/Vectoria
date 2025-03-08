@@ -1,7 +1,7 @@
 from vectoria_lib.common.config import Config
 from vectoria_lib.components.llm.llm_factory import LLMFactory
 from vectoria_lib.applications.prompt_builder import PromptBuilder
-from vectoria_lib.components.llm.parser import CustomResponseParser
+from vectoria_lib.components.output_parser.qa_response_parser import QAResponseParser
 
 def get_generation_chain():
     """
@@ -14,7 +14,7 @@ def get_generation_chain():
     config = Config()
     prompt = PromptBuilder(config.get("system_prompts_lang")).get_qa_prompt()
     llm = LLMFactory.build_llm(config.get("inference_engine")).as_langchain_completion_model()
-    output_parser = CustomResponseParser()
+    output_parser = QAResponseParser()
 
     return (
 

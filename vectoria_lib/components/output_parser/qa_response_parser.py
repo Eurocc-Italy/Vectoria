@@ -10,7 +10,7 @@ from langchain.schema import BaseOutputParser
 
 logger = logging.getLogger("llm")
 
-class CustomResponseParser(BaseOutputParser):
+class QAResponseParser(BaseOutputParser):
     
     def filter_prefix(self, text: str):
         start_keywords = ["RISPOSTA:", "ANSWER:"]
@@ -34,6 +34,6 @@ class CustomResponseParser(BaseOutputParser):
         return text
 
     def parse(self, text: str) -> str:
-        #logger.debug("CustomResponseParser: parsing:%s", text)
+        #logger.debug("QAResponseParser: parsing:%s", text)
         return self.filter_postfix(self.filter_prefix(text))
 
