@@ -1,24 +1,25 @@
 import os, sys
-venv_path=os.environ["VIRTUAL_ENV"]
-python_version=sys.version[0:4]
-lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
-
-# strip it from sys.path
-sys.path.remove(lib_path)
-
-# restore it in the right position
-sys.path.insert(1,lib_path)
+try:
+  venv_path=os.environ["VIRTUAL_ENV"]
+  python_version=sys.version[0:4]
+  lib_path=venv_path + "/lib/python" + python_version + "/site-packages"
+  # strip it from sys.path
+  sys.path.remove(lib_path)
+  # restore it in the right position
+  sys.path.insert(1,lib_path)
+except Exception:
+  pass
 
 import requests
 import pytest
-from vectoria_lib.llm.inference_engine.inference_engine_builder import InferenceEngineBuilder
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 from vectoria_lib.common.paths import TEST_DIR
 from vectoria_lib.common.config import Config
 from vectoria_lib.common.io.file_io import get_file_io
 
 @pytest.fixture(scope="function")
 def clear_inference_engine_cache():
-    InferenceEngineBuilder.clear_cache()
+    LLMFactory.clear_cache()
 
 def pytest_addoption(parser):
     pass
@@ -67,6 +68,12 @@ log_level: DEBUG
 langchain_tracking: false
 system_prompts_lang: eng
 
+langfuse:
+  enabled: true
+  host: http://localhost:3000
+  public_key: pk-lf-c3ba5270-9449-4ba0-b3c7-fcd0a2393785
+  secret_key: sk-lf-80663bf5-c73c-4921-81b0-fe3c8b5648a3
+                
 data_ingestion:
   multiprocessing: true
   
@@ -87,33 +94,6 @@ data_ingestion:
     - name: remove_ligature_st
       pattern: 'ﬆ'
       replace_with: 'st'
-    - name: replace_fi
-      pattern: 'ﬁ'
-      replace_with: 'fi'
-    - name: replace_fl
-      pattern: 'ﬂ'
-      replace_with: 'fl'
-    - name: replace_ffi
-      pattern: 'ﬃ'
-      replace_with: 'ffi'
-    - name: replace_ffl
-      pattern: 'ﬄ'
-      replace_with: 'ffl'
-    - name: replace_ft
-      pattern: 'ﬅ'
-      replace_with: 'ft'
-    - name: replace_st
-      pattern: 'ﬆ'
-      replace_with: 'st'
-    - name: replace_AA
-      pattern: 'Ꜳ'
-      replace_with: 'AA'
-    - name: replace_AE
-      pattern: 'Æ'
-      replace_with: 'AE'
-    - name: replace_aa
-      pattern: 'ꜳ'
-      replace_with: 'aa'
 
 
   chunking:
@@ -130,36 +110,32 @@ vector_store:
   normalize_embeddings: false
 
 retriever:
-  enabled: true
+  enabled: false
   name: faiss
   search_type: 'mmr'
-  top_k: 5
+  k: 5
   fetch_k: 5
   lambda_mult: 0.5
 
 reranker:
   enabled: false
-  reranked_top_k: 3
+  rerank_k: 3
   inference_engine:
     name: huggingface
     url: null
     api_key: null
     model_name: BAAI/bge-reranker-base
     device: cuda
-    load_in_4bit: true
+    load_in_4bit: false
     load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
-    device_map: auto
+    device_map: null
     temperature: 0.1
 
 full_paragraphs_retriever:
   enabled: false
 
-chat_history:
-  enabled: false
-
-# QA agent
 inference_engine:
   name: huggingface
   url: null
@@ -170,47 +146,9 @@ inference_engine:
   load_in_8bit: false
   max_new_tokens: 10
   trust_remote_code: false
-  device_map: auto
+  device_map: null
   do_sample: false
   temperature: 0
 
-
-# Evaluation
-evaluation:
-  tool: ragas
-  
-  inference_engine:
-    name: openai
-    model_name: meta-llama/Llama-3.2-1B-Instruct
-    temperature: 0.7
-    max_tokens: 256
-    top_p: 1
-    frequency_penalty: 0
-    presence_penalty: 0
-    n: 1
-    openai_api_key: EMPTY
-    openai_api_base: http://localhost:8000/v1
-    request_timeout: null
-    max_retries: 2
-    seed: null
-    streaming: false
-
-
-  embeddings_engine:
-    name: openai
-    model_name: BAAI/bge-m3
-    temperature: 0.7
-    max_tokens: 256
-    top_p: 1
-    frequency_penalty: 0
-    presence_penalty: 0
-    n: 1
-    openai_api_key: EMPTY
-    openai_api_base: http://localhost:8000/v1
-    batch_size: 20
-    request_timeout: null
-    max_retries: 2
-    seed: null
-    streaming: false
 """)
     return config_file_for_tests_path

@@ -131,7 +131,7 @@ INFO - Deserializing FAISS index from pickle file /path/to/index/test_index - fa
 
 INFO - Building FAISS retriever - retriever_builder.py - 23
 INFO - Creating retriever from vector store with kwargs: {'k': 5, 'fetch_k': 5, 'lambda_mult': 0.5} - faiss_retriever.py - 25
-INFO - Creating QA agent with the RAG retriever - agent_builder.py - 64
+INFO - Creating RAG application - agent_builder.py - 64
 
 DEBUG - Loading tokenizer took 0.32 seconds - huggingface_inference_engine.py - 41
 Loading checkpoint shards:   0%|          | 0/30 [00:00<?, ?it/s]

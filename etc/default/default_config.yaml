@@ -5,6 +5,12 @@ log_level: DEBUG
 langchain_tracking: false
 system_prompts_lang: eng
 
+langfuse:
+  enabled: false
+  host: null
+  public_key: null
+  secret_key: null
+
 data_ingestion:
   multiprocessing: true
   
@@ -25,33 +31,6 @@ data_ingestion:
     - name: remove_ligature_st
       pattern: 'ﬆ'
       replace_with: 'st'
-    - name: replace_fi
-      pattern: 'ﬁ'
-      replace_with: 'fi'
-    - name: replace_fl
-      pattern: 'ﬂ'
-      replace_with: 'fl'
-    - name: replace_ffi
-      pattern: 'ﬃ'
-      replace_with: 'ffi'
-    - name: replace_ffl
-      pattern: 'ﬄ'
-      replace_with: 'ffl'
-    - name: replace_ft
-      pattern: 'ﬅ'
-      replace_with: 'ft'
-    - name: replace_st
-      pattern: 'ﬆ'
-      replace_with: 'st'
-    - name: replace_AA
-      pattern: 'Ꜳ'
-      replace_with: 'AA'
-    - name: replace_AE
-      pattern: 'Æ'
-      replace_with: 'AE'
-    - name: replace_aa
-      pattern: 'ꜳ'
-      replace_with: 'aa'
 
   chunking:
     chunk_size: 512
@@ -68,14 +47,14 @@ vector_store:
 
 retriever:
   enabled: true
-  top_k: 5
+  k: 5
   search_type: 'mmr'
   fetch_k: 5
   lambda_mult: 0.5
 
-reranker:
+reranking:
   enabled: false
-  reranked_top_k: 3
+  rerank_k: 3
   inference_engine:
     name: huggingface
     url: null
@@ -90,9 +69,6 @@ reranker:
     temperature: 0.1
 
 full_paragraphs_retriever:
-  enabled: false
-
-chat_history:
   enabled: false
 
 inference_engine:
