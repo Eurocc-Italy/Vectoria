@@ -76,7 +76,8 @@ class HuggingFaceLLM(LLMBase):
         try:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 self.args["model_name"], 
-                trust_remote_code=self.args.get("trust_remote_code", False)
+                trust_remote_code=self.args.get("trust_remote_code", False),
+                device=self.args["device"]
             )
         except Exception as e:
             self.logger.error("Failed to load tokenizer: %s", e)
@@ -111,7 +112,8 @@ class HuggingFaceLLM(LLMBase):
             tokenizer=self.tokenizer,
             max_new_tokens=self.args["max_new_tokens"],
             return_full_text=False,
-            temperature=self.args["temperature"]
+            temperature=self.args["temperature"],
+            device=self.args["device"]
         )
         return HuggingFacePipeline(pipeline=self.pipe)
 
@@ -122,7 +124,8 @@ class HuggingFaceLLM(LLMBase):
             tokenizer=self.tokenizer,
             max_new_tokens=self.args["max_new_tokens"],
             return_full_text=False,
-            temperature=self.args["temperature"]
+            temperature=self.args["temperature"],
+            device=self.args["device"]
         )
         return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
 
