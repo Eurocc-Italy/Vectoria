@@ -39,7 +39,7 @@ def build_index_from_files(
         
 
     start_time = time.perf_counter()
-    vector_store = VectorStoreFactory.create_vector_store(**config.get("vector_store"))
+    vector_store = VectorStoreFactory.build_vector_store(**config.get("vector_store"))
     
     vector_store.make_index(docs)
     logger.debug("Index creation took %.2f seconds", time.perf_counter() - start_time)

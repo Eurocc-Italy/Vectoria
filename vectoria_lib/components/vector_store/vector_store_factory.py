@@ -4,7 +4,7 @@ from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreB
 class VectorStoreFactory:
     
     @classmethod
-    def create_vector_store(cls, name, **kwargs) -> VectorStoreBase:
+    def build_vector_store(cls, name, **kwargs) -> VectorStoreBase:
 
         _instances = {}
 
