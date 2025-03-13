@@ -11,7 +11,7 @@ def get_retrieval_chain():
     """
     config = Config()
     
-    retriever = VectorStoreFactory.create_vector_store(config.get("vector_store", "name")).as_retriever(
+    retriever = VectorStoreFactory.build_vector_store(config.get("vector_store", "name")).as_retriever(
         search_config = config.get("retriever")
     )
 

@@ -6,7 +6,7 @@ from vectoria_lib.common.config import Config
 def get_context_enhancement_chain():
 
     config = Config()
-    vector_store = VectorStoreFactory.create_vector_store(config.get("vector_store", "name"))
+    vector_store = VectorStoreFactory.build_vector_store(config.get("vector_store", "name"))
     full_paragraphs_retriever = FullParagraphs(vector_store)
 
     return (
