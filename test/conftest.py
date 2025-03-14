@@ -105,9 +105,11 @@ data_ingestion:
 
 vector_store:
   name: faiss
-  model_name: BAAI/bge-m3
-  device: cuda
-  normalize_embeddings: false
+  inference_engine:
+    name: huggingface
+    model_name: BAAI/bge-m3
+    device: cuda
+    normalize_embeddings: false
 
 retriever:
   enabled: false
@@ -130,7 +132,6 @@ reranker:
     load_in_8bit: false
     max_new_tokens: 150
     trust_remote_code: false
-    device_map: null
     temperature: 0.1
 
 full_paragraphs_retriever:
@@ -146,7 +147,6 @@ inference_engine:
   load_in_8bit: false
   max_new_tokens: 10
   trust_remote_code: false
-  device_map: null
   do_sample: false
   temperature: 0
 

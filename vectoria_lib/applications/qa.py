@@ -46,7 +46,7 @@ class QAApplication(ChainRunner):
         config = Config()
 
         # Load the index from the disk
-        _ = VectorStoreFactory.build_vector_store(**config.get("vector_store")).load_from_disk(index_path)
+        _ = VectorStoreFactory.build_vector_store(**config.get("vector_store")).load_index(index_path)
 
         chain = RunnablePassthrough() # The RunnablePassthrough makes the input key pass through all the next runnables to the final output dictionary
 

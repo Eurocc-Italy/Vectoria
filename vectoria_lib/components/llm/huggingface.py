@@ -57,7 +57,6 @@ class HuggingFaceLLM(LLMBase):
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.args["model_name"],
                 quantization_config=quantization_config,
-                device_map=self.args.get("device_map"),
                 trust_remote_code=self.args.get("trust_remote_code"),
             )
             self.model.eval()
@@ -130,4 +129,12 @@ class HuggingFaceLLM(LLMBase):
         return ChatHuggingFace(llm=HuggingFacePipeline(pipeline=self.pipe))
 
     def as_langchain_embeddings_model(self) -> Embeddings:
-        return HuggingFaceEmbeddings(model_name=self.args["model_name"])
+        return HuggingFaceEmbeddings(
+            model_name=self.args["model_name"],
+            model_kwargs={
+                "device": self.args["device"]
+            },
+            encode_kwargs={
+                "normalize_embeddings": self.args["normalize_embeddings"]
+            }
+        )

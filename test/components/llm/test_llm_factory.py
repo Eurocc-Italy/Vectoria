@@ -21,8 +21,8 @@ def test_llm_factory(config):
     assert engine_1 != engine_3
     assert engine_2 != engine_3
 
-    assert LLMFactory.CACHE[f"{engine_1.name}-{engine_1.args.get('model_name')}"] == engine_1
-    assert LLMFactory.CACHE[f"{engine_2.name}-{engine_2.args.get('model_name')}"] == engine_2
-    assert LLMFactory.CACHE[f"{engine_3.name}-{engine_3.args.get('model_name')}"] == engine_3
+    assert LLMFactory.CACHE[f"{engine_1.args.get('name')}-{engine_1.args.get('model_name')}"] == engine_1
+    assert LLMFactory.CACHE[f"{engine_2.args.get('name')}-{engine_2.args.get('model_name')}"] == engine_2
+    assert LLMFactory.CACHE[f"{engine_3.args.get('name')}-{engine_3.args.get('model_name')}"] == engine_3
 
     assert len(LLMFactory.CACHE) == 2
