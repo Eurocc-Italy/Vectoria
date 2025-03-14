@@ -17,7 +17,7 @@ class VectorStoreBase(ABC, metaclass=SingletonABC):
         pass
 
     @abstractmethod
-    def load_from_disk(self, input_path: str | Path):
+    def load_index(self, input_path: str | Path):
         pass
 
     @abstractmethod

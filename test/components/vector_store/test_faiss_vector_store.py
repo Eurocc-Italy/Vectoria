@@ -3,7 +3,7 @@ from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorS
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import FAISS
 from langchain_core.vectorstores.base import VectorStoreRetriever
-
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 def test_faiss_vector_store(config, index_test_folder):
 
     doc = Document(
@@ -13,10 +13,11 @@ def test_faiss_vector_store(config, index_test_folder):
     
     docs = recursive_character_text_splitter(doc, chunk_size=50, chunk_overlap=20)
     
+    embedder = LLMFactory.build_llm(config.get("vector_store", "inference_engine")).as_langchain_embeddings_model()
+
     vector_store = FaissVectorStore(
-        model_name = config.get("vector_store", "model_name"),
-        device = config.get("vector_store", "device"),
-        normalize_embeddings = config.get("vector_store", "normalize_embeddings")        
+        embedder_model = embedder,
+        index_path = None
     ).make_index(docs)
     assert isinstance(vector_store.index, FAISS)
     
@@ -25,10 +26,9 @@ def test_faiss_vector_store(config, index_test_folder):
     assert pkl_path.exists()
 
     vector_store = FaissVectorStore(
-        model_name = config.get("vector_store", "model_name"),
-        device = config.get("vector_store", "device"),
-        normalize_embeddings = config.get("vector_store", "normalize_embeddings")        
-    ).load_from_disk(pkl_path)
+        embedder_model = embedder,
+        index_path = pkl_path
+    ).load_index(pkl_path)
     assert isinstance(vector_store.index, FAISS)
 
     docs = vector_store.search("What is the Matrix?", k=1)

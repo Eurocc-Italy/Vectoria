@@ -12,8 +12,10 @@ from langchain_core.embeddings import Embeddings
 class LLMBase(ABC):
     def __init__(self, args: dict):
         self.args = args
-        self.name = args.pop("name")
         self.logger = logging.getLogger('llm')
+
+    def get_model_name(self):
+        return self.args["model_name"]
 
     def update_args(self, new_args: dict):
         for key, value in new_args.items():

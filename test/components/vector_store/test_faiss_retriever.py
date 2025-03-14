@@ -1,17 +1,19 @@
 import pytest 
 
 from vectoria_lib.components.vector_store.faiss_vector_store import FaissVectorStore
-
+from vectoria_lib.components.llm.llm_factory import LLMFactory
 @pytest.mark.parametrize("k",[1,2,3])
 def test_faiss_retriever(k, config, index_test_folder):
     
+    embedder = LLMFactory.build_llm(config.get("vector_store", "inference_engine")).as_langchain_embeddings_model()
+
     vector_store = FaissVectorStore(
-        model_name = config.get("vector_store", "model_name"),
-        device = config.get("vector_store", "device"),
-        normalize_embeddings = config.get("vector_store", "normalize_embeddings")
-    ).load_from_disk(
+        embedder_model = embedder,
+        index_path = None
+    ).load_index(
         index_test_folder
     )
+
     retriever = vector_store.as_retriever(
         search_config = {
             "search_type": config.get("retriever", "search_type"),

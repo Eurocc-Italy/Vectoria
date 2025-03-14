@@ -4,14 +4,12 @@
 # @authors : Andrea Proia, Chiara Malizia, Leonardo Baroncelli
 #
 
-import pickle, logging
 from pathlib import Path
 
 from langchain_community.vectorstores.faiss import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
-from vectoria_lib.common.config import Config
 from vectoria_lib.components.vector_store.vectore_store_base import VectorStoreBase
+from vectoria_lib.components.llm.llm_base import LLMBase
 
 class FaissVectorStore(VectorStoreBase):
     """
@@ -26,29 +24,19 @@ class FaissVectorStore(VectorStoreBase):
     """
     def __init__(
             self,
-            model_name,
-            device,
-            normalize_embeddings,
+            embedder_model: LLMBase,
             index_path = None
         ):
         super().__init__()
 
-        self.model_name = model_name
+        self.model_name = embedder_model.model_name
 
         self.logger.info("Loading Embedder model: %s.." % self.model_name)
 
-        self.hf_embedder = HuggingFaceEmbeddings(
-            model_name=self.model_name,
-            model_kwargs={
-                "device": device
-            },
-            encode_kwargs={
-                "normalize_embeddings": normalize_embeddings
-            }
-        )
+        self.hf_embedder = embedder_model
 
         if index_path:
-            self.index = FAISS.load_local(index_path, self.hf_embedder, allow_dangerous_deserialization=True)
+            self.load_index(index_path)
         else:
             self.index = None
 
@@ -83,12 +71,11 @@ class FaissVectorStore(VectorStoreBase):
         self.index.save_local(output_path)
         return output_path
 
-    def load_from_disk(self, input_path: str | Path):
+    def load_index(self, input_path: str | Path):
         if self.index:
             self.logger.info("Index already loaded. Skipping deserialization.")
             return self
-        self.logger.info("Deserializing FAISS index from pickle file %s" % input_path)
-        input_path = Path(input_path)
+        self.logger.info("Deserializing FAISS index from pickle file %s" % input_path)        
         self.index = FAISS.load_local(input_path, self.hf_embedder, allow_dangerous_deserialization=True)
         return self
 
@@ -104,7 +91,7 @@ class FaissVectorStore(VectorStoreBase):
         """
         self.logger.info("Converting FAISS index to retriever with kwargs: %s" % search_config)
         if self.index is None:
-            raise ValueError("Index is not created. Call 'make_index' or 'load_from_disk' first.")
+            raise ValueError("Index is not created. Call 'make_index' or 'load_index' first.")
             
         return self.index.as_retriever(
             search_type = search_config["search_type"],
