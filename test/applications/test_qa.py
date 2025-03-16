@@ -108,9 +108,9 @@ def test_retriever(config, index_test_folder, clear_inference_engine_cache):
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_retriever_and_reranker(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", True)
-    config.set("retriever", "k", 2)
-    config.set("reranker", "enabled", True)
-    config.set("reranker", "rerank_k", 1)
+    config.set("retriever", "k", 5)
+    config.set("retriever", "enable_rerank", True)
+    config.set("retriever", "rerank_k", 2)
 
     app = QAApplication(
         index_path=index_test_folder
@@ -121,17 +121,17 @@ def test_retriever_and_reranker(config, index_test_folder, clear_inference_engin
     )
     assert isinstance(result, dict)
     assert result.keys() == {"input", "context", "docs", "answer"}
-    assert len(result["docs"]) == 1
+    assert len(result["docs"]) == 2
 
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_retriever_and_reranker_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+def test_retriever_and_reranker_and_context_enhancement(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", True)
     config.set("retriever", "k", 5)
-    config.set("reranker", "enabled", True)
-    config.set("reranker", "rerank_k", 3)
-    config.set("full_paragraphs_retriever", "enabled", True)
+    config.set("retriever", "enable_rerank", True)
+    config.set("retriever", "rerank_k", 3)
+    config.set("retriever", "enable_contenxt_enhancement", True)
 
     app = QAApplication(
         index_path=index_test_folder
@@ -149,10 +149,10 @@ def test_retriever_and_reranker_and_full_paragraphs(config, index_test_folder, c
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_retriever_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
+def test_retriever_and_context_enhancement(config, index_test_folder, clear_inference_engine_cache):
     config.set("retriever", "enabled", True)
     config.set("retriever", "k", 2)
-    config.set("full_paragraphs_retriever", "enabled", True)
+    config.set("retriever", "enable_contenxt_enhancement", True)
 
     app = QAApplication(
         index_path=index_test_folder
@@ -169,8 +169,8 @@ def test_retriever_and_full_paragraphs(config, index_test_folder, clear_inferenc
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
 def test_reranker_and_generation(config, index_test_folder, clear_inference_engine_cache):
-    config.set("reranker", "enabled", True)
-    config.set("reranker", "rerank_k", 3)
+    config.set("retriever", "enable_rerank", True)
+    config.set("retriever", "rerank_k", 3)
 
     app = QAApplication(
         index_path=index_test_folder
@@ -200,10 +200,10 @@ def test_reranker_and_generation(config, index_test_folder, clear_inference_engi
 
 @pytest.mark.slow
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is not available")
-def test_reranker_and_full_paragraphs(config, index_test_folder, clear_inference_engine_cache):
-    config.set("reranker", "enabled", True)
-    config.set("reranker", "rerank_k", 3)
-    config.set("full_paragraphs_retriever", "enabled", True)
+def test_reranker_and_context_enhancement(config, index_test_folder, clear_inference_engine_cache):
+    config.set("retriever", "enable_rerank", True)
+    config.set("retriever", "rerank_k", 3)
+    config.set("retriever", "enable_contenxt_enhancement", True)
 
     app = QAApplication(
         index_path=index_test_folder

@@ -13,6 +13,8 @@ from langchain_huggingface import HuggingFacePipeline, ChatHuggingFace
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.language_models.llms import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
+from langchain_community.cross_encoders import HuggingFaceCrossEncoder
+from langchain.retrievers.document_compressors import CrossEncoderReranker
 
 from vectoria_lib.components.llm.llm_base import LLMBase
 from typing import Optional
@@ -37,6 +39,8 @@ class HuggingFaceLLM(LLMBase):
             args (Dict[str, Any]): Configuration for model loading
         """
         super().__init__(args)
+        self.model = None
+        self.tokenizer = None
         self.pipe = None
         self._initialize_model()
 
@@ -46,18 +50,15 @@ class HuggingFaceLLM(LLMBase):
         Centralized method for model and tokenizer initialization with performance tracking.
         """
         start_time = time.perf_counter()
-        
         self._load_tokenizer()
-        
         quantization_config = self._get_quantization_config()
         
         start_time = time.perf_counter()
-        
         try:
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.args["model_name"],
                 quantization_config=quantization_config,
-                trust_remote_code=self.args.get("trust_remote_code"),
+                trust_remote_code=self.args.get("trust_remote_code", False),
             )
             self.model.eval()
             self.logger.debug(
@@ -138,3 +139,12 @@ class HuggingFaceLLM(LLMBase):
                 "normalize_embeddings": self.args["normalize_embeddings"]
             }
         )
+
+    def as_langchain_reranker_model(self):
+        reranker_model = HuggingFaceCrossEncoder(
+            model_name=self.args["model_name"],
+            model_kwargs={
+                "device": self.args["device"]
+            }
+        )
+        return CrossEncoderReranker(model=reranker_model)

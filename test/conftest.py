@@ -52,7 +52,12 @@ def openai_server_status_fn():
 
 def _ping_openai_server(engine_config: dict):
     try:
-        response = requests.get(engine_config.get("openai_api_base").replace("/v1", "/version"))
+        api_url = engine_config.get("openai_api_base")
+        if "v1" in api_url:
+            api_url = api_url.replace("/v1", "/version")
+        else:
+            api_url = api_url + "/version"
+        response = requests.get(api_url)
         return response.status_code == 200
     except Exception:
         return False
@@ -118,25 +123,18 @@ retriever:
   k: 5
   fetch_k: 5
   lambda_mult: 0.5
-
-reranker:
-  enabled: false
-  rerank_k: 3
+  enable_rerank: false
+  rerank_k: 2
   inference_engine:
     name: huggingface
     url: null
     api_key: null
-    model_name: BAAI/bge-reranker-base
+    model_name: BAAI/bge-reranker-v2-m3
     device: cuda
-    load_in_4bit: false
-    load_in_8bit: false
-    max_new_tokens: 150
     trust_remote_code: false
     temperature: 0.1
-
-full_paragraphs_retriever:
-  enabled: false
-
+  enable_contenxt_enhancement: false
+  
 inference_engine:
   name: huggingface
   url: null

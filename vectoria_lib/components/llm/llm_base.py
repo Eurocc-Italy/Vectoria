@@ -35,6 +35,7 @@ class LLMBase(ABC):
     @abstractmethod
     def as_langchain_embeddings_model(self) -> Embeddings:
         pass
-    
-    def __repr__(self):
-        return f"LLMBase for {self.name}"
+
+    @abstractmethod
+    def as_langchain_reranker_model(self):
+        pass

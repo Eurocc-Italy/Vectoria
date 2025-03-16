@@ -55,24 +55,17 @@ retriever:
   search_type: 'mmr'
   fetch_k: 5
   lambda_mult: 0.5
-
-reranking:
-  enabled: false
+  enable_rerank: false
   rerank_k: 3
   inference_engine:
     name: huggingface
     url: null
     api_key: null
-    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL> (e.g. BAAI/bge-reranker-v2-gemma)
+    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL> (e.g. BAAI/bge-reranker-v2-m3)
     device: cuda
-    load_in_4bit: false
-    load_in_8bit: false
-    max_new_tokens: 150
     trust_remote_code: false
-    temperature: 0.1
-
-full_paragraphs_retriever:
-  enabled: false
+    temperature: 0
+  enable_contenxt_enhancement: false
 
 inference_engine:
   name: huggingface
@@ -83,7 +76,7 @@ inference_engine:
   load_in_8bit: false
   max_new_tokens: 150
   trust_remote_code: false
-  temperature: 0.1
+  temperature: 0
 
 evaluation:
   tool: ragas
