@@ -15,9 +15,9 @@ from langchain_core.runnables import RunnablePassthrough
 from vectoria_lib.common.config import Config
 from vectoria_lib.applications.chain_runner import ChainRunner
 from vectoria_lib.chains.retrieval import get_retrieval_chain
-from vectoria_lib.chains.reranking import get_reranking_chain
+#from vectoria_lib.chains.reranking import get_reranking_chain
+# from vectoria_lib.chains.context_enhancement import get_context_enhancement_chain
 from vectoria_lib.chains.create_context import get_create_context_chain
-from vectoria_lib.chains.context_enhancement import get_context_enhancement_chain
 from vectoria_lib.chains.generation import get_generation_chain
 from vectoria_lib.components.vector_store.vector_store_factory import VectorStoreFactory
 
@@ -52,12 +52,6 @@ class QAApplication(ChainRunner):
 
         if config.get("retriever", "enabled"):
             chain = chain.assign(docs=get_retrieval_chain())
-
-        if config.get("reranker", "enabled"):
-            chain = chain.assign(docs=get_reranking_chain())
-
-        if config.get("full_paragraphs_retriever", "enabled"):
-            chain = chain.assign(docs=get_context_enhancement_chain())
 
         chain = chain.assign(context=get_create_context_chain())
 
