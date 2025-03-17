@@ -29,7 +29,7 @@ gpus: 4
 language: it  # it | eng
 format: pdf  # pdf | docx
 reranker_enabled: true  # disable for small installations
-reranker_4bit: false  # 4 bit and 8 bit are mutually exclusive
-reranker_8bit: false  # 4 bit and 8 bit are mutually exclusive
-inference_4bit: false  # 4 bit and 8 bit are mutually exclusive
-inference_8bit: true  # 4 bit and 8 bit are mutually exclusive
+# reranker_4bit: false  # 4 bit and 8 bit are mutually exclusive
+# reranker_8bit: false  # 4 bit and 8 bit are mutually exclusive
+# inference_4bit: false  # 4 bit and 8 bit are mutually exclusive
+# inference_8bit: true  # 4 bit and 8 bit are mutually exclusive

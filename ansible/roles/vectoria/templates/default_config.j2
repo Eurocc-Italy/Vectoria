@@ -1,8 +1,14 @@
 # Logging
 vectoria_logs_dir: ~/vectoria_logs
 log_level: DEBUG
-langchain_tracking: null
+langchain_tracking: false
 system_prompts_lang: {{ language }}
+
+langfuse:
+  enabled: false
+  host: null
+  public_key: null
+  secret_key: null
 
 data_ingestion:
   multiprocessing: true
@@ -61,60 +67,51 @@ data_ingestion:
 
 vector_store:
   name: faiss
-  model_name: {{ install_path }}/embedder_model
-  device: cuda
-  normalize_embeddings: false
+  inference_engine:
+    name: huggingface
+    url: null
+    api_key: null
+    model_name: {{ install_path }}/embedder_model
+    device: cuda
+    normalize_embeddings: false
 
 retriever:
   enabled: true
-  top_k: 5
+  k: 5
   search_type: 'mmr'
   fetch_k: 5
   lambda_mult: 0.5
-
-reranker:
-  enabled: {{ reranker_enabled }}
-  reranked_top_k: 3
+  enable_rerank: {{ reranker_enabled }}
+  rerank_k: 3
   inference_engine:
     name: huggingface
     url: null
     api_key: null
     model_name: /dev/shm/reranker_model
     device: cuda
-    load_in_4bit: {{ reranker_4bit }}
-    load_in_8bit: {{ reranker_8bit }}
-    max_new_tokens: 150
     trust_remote_code: false
-    device_map: auto
-    temperature: 0.1
+    temperature: 0
+  enable_contenxt_enhancement: false
 
-full_paragraphs_retriever:
-  enabled: false
-
-chat_history:
-  enabled: false
-
-# Inference engine
 inference_engine:
-  name: 'huggingface'
-  url: null
-  api_key: null
-  model_name: /dev/shm/inference_engine 
-  device: cuda
-  load_in_4bit: {{ inference_4bit }}
-  load_in_8bit: {{ inference_8bit }}
-  max_new_tokens: 150
-  trust_remote_code: false
-  device_map: auto
-  temperature: 0.1
-
-evaluation_tool: ragas
-evaluation_engine:
   name: huggingface
   url: null
   api_key: null
   model_name: /dev/shm/inference_engine 
   device: cuda
-  load_in_8bit: {{ inference_8bit }}
   max_new_tokens: 150
   trust_remote_code: false
+  temperature: 0
+
+evaluation:
+  tool: ragas
+  inference_engine:
+    name: vllm
+    model_name: {{ install_path }}/inference_engine
+    url: null
+    api_key: null
+  embeddings_engine:
+    name: vllm
+    model_name: {{ install_path }}/embedder_model
+    url: null
+    api_key: null
