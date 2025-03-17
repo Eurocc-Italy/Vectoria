@@ -141,8 +141,6 @@ inference_engine:
   api_key: null
   model_name: HuggingFaceTB/SmolLM-135M
   device: cuda
-  load_in_4bit: false
-  load_in_8bit: false
   max_new_tokens: 10
   trust_remote_code: false
   do_sample: false
