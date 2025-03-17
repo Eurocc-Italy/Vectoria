@@ -51,7 +51,8 @@ class HuggingFaceLLM(LLMBase):
         """
         start_time = time.perf_counter()
         self._load_tokenizer()
-        quantization_config = self._get_quantization_config()
+        quantization_config = None
+        # quantization_config = self._get_quantization_config()
         
         start_time = time.perf_counter()
         try:
