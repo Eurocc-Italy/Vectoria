@@ -11,6 +11,7 @@
     {% endfor %}
     {% endif %}
     git-lfs install
+    rm -rf {{ install_path }}/embedder_model
     git clone git@hf.co:{{ embedder_model }} {{ install_path }}/embedder_model
   when: embedder_model is defined
 
@@ -22,6 +23,7 @@
     {% endfor %}
     {% endif %}
     git-lfs install
+    rm -rf {{ install_path }}/reranker_model
     git clone git@hf.co:{{ reranker_model }} {{ install_path }}/reranker_model
   when: reranker_model is defined and reranker_enabled
 
@@ -33,5 +35,6 @@
     {% endfor %}
     {% endif %}
     git-lfs install
+    rm -rf {{ install_path }}/inference_engine
     git clone git@hf.co:{{ inference_engine }} {{ install_path }}/inference_engine
   when: inference_engine is defined
