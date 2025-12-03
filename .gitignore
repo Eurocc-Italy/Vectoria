@@ -14,6 +14,7 @@ env_*/
 **/*.pkl
 **/*.faiss
 .idea
+.vscode
 vectoria_logs/
 log/
 *-env/

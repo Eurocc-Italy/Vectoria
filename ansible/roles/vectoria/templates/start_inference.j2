@@ -5,51 +5,56 @@
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
 #SBATCH --partition={{ partition }}
-#SBATCH --time 00:30:00     # format: HH:MM:SS
-#SBATCH -N 1                
-#SBATCH --ntasks-per-node=1
+#SBATCH --time 00:15:00     # format: HH:MM:SS
+#SBATCH --nodes 1           # 1 node
+#SBATCH --ntasks-per-node=1 # 1 task
 #SBATCH --cpus-per-task={{ cpus }}  
 #SBATCH --gres=gpu:{{ gpus }}
-#SBATCH --exclusive
+##SBATCH --exclusive        # reserve full node for job
+                            # NOTE: gpu/cpu requirements will be ignored
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 
 export TMPDIR={{ tmpdir }}
 export TMP={{ tmpdir }}
 
-#-------------------------------------------------------
+# NOTE: the following section is experimental and is commented out by default.
+# Only use if you have enough RAM on the compute node.
 
-# COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH={{ install_path }}/inference_engine
-RAM_PATH=/dev/shm   
+# #-------------------------------------------------------
 
-# 1. Copy model to RAM
-echo "Copying inference model to RAM..."
-start_time=$(date +%s)   # Record the start time
-cp -Lr $MODEL_PATH $RAM_PATH
-end_time=$(date +%s)     # Record the end time
+# # COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# MODEL_PATH={{ install_path }}/inference_engine
+# RAM_PATH=/dev/shm   
 
-# 2. Calculate and display time taken to copy the model
-time_taken=$((end_time - start_time))
-echo "Model copied to RAM in $time_taken seconds."
+# # 1. Copy model to RAM
+# echo "Copying inference model to RAM..."
+# start_time=$(date +%s)   # Record the start time
+# cp -r $MODEL_PATH $RAM_PATH
+# end_time=$(date +%s)     # Record the end time
 
-#-------------------------------------------------------
+# # 2. Calculate and display time taken to copy the model
+# time_taken=$((end_time - start_time))
+# echo "Model copied to RAM in $time_taken seconds."
 
-# COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH={{ install_path }}/reranker_model
-RAM_PATH=/dev/shm
+# #-------------------------------------------------------
 
-# 1. Copy model to RAM
-echo "Copying reranker model to RAM..."
-start_time=$(date +%s)   # Record the start time
-cp -Lr $MODEL_PATH $RAM_PATH
-end_time=$(date +%s)     # Record the end time
+# # COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# # NOTE: comment the following block if reranker is not used
+# MODEL_PATH={{ install_path }}/reranker_model
+# RAM_PATH=/dev/shm
 
-# 2. Calculate and display time taken to copy the model
-time_taken=$((end_time - start_time))
-echo "Model copied to RAM in $time_taken seconds."
+# # 1. Copy model to RAM
+# echo "Copying reranker model to RAM..."
+# start_time=$(date +%s)   # Record the start time
+# cp -r $MODEL_PATH $RAM_PATH
+# end_time=$(date +%s)     # Record the end time
 
-#-------------------------------------------------------
+# # 2. Calculate and display time taken to copy the model
+# time_taken=$((end_time - start_time))
+# echo "Model copied to RAM in $time_taken seconds."
+
+# #-------------------------------------------------------
 
 {% if hpc_modules %}
 {% for module in hpc_modules %}
@@ -62,14 +67,14 @@ echo "All modules loaded..."
 source {{ install_path }}/vectoria_env/bin/activate
 echo "Environment loaded..."
 
-FAISS_INDEX_PATH=$(realpath {{ install_path }}/vectoria/test/index/*)
+INDEX_PATH=$(realpath {{ install_path }}/vectoria/test/index/*)
 TEST_SET_PATH={{ install_path }}/vectoria/test/data/results/test.json
 OUTPUT_DIR={{ install_path }}/vectoria/test/data/results
 CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml
 
 echo "START"
 # OPTION 1: QUESTIONS FROM FILE
-python vectoria --config $CONFIG_FILE_PATH inference --index-path $FAISS_INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
+python vectoria --config $CONFIG_FILE_PATH inference --index-path $INDEX_PATH --test-set-path $TEST_SET_PATH --output-dir $OUTPUT_DIR
 # OPTION 2: QUESTIONS FROM CLI
-#python vectoria --config $CONFIG_FILE_PATH inference --index-path $FAISS_INDEX_PATH --questions "Which is the training regime for the models?" "Which models are tested?" --output-dir $OUTPUT_DIR
+#python vectoria --config $CONFIG_FILE_PATH inference --index-path $INDEX_PATH --questions "<YOUR QUESTION GOES HERE>" --output-dir $OUTPUT_DIR
 echo "END"

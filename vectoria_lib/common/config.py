@@ -88,3 +88,7 @@ class Config(metaclass=Singleton):
 
     def _disable_tokenizer_parallelism(self):
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    def __repr__(self):
+        from pprint import pformat
+        return pformat(self.config)

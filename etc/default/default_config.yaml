@@ -5,6 +5,12 @@ log_level: DEBUG
 langchain_tracking: false
 system_prompts_lang: eng
 
+langfuse:
+  enabled: false
+  host: null
+  public_key: null
+  secret_key: null
+
 data_ingestion:
   multiprocessing: true
   
@@ -25,33 +31,6 @@ data_ingestion:
     - name: remove_ligature_st
       pattern: 'ﬆ'
       replace_with: 'st'
-    - name: replace_fi
-      pattern: 'ﬁ'
-      replace_with: 'fi'
-    - name: replace_fl
-      pattern: 'ﬂ'
-      replace_with: 'fl'
-    - name: replace_ffi
-      pattern: 'ﬃ'
-      replace_with: 'ffi'
-    - name: replace_ffl
-      pattern: 'ﬄ'
-      replace_with: 'ffl'
-    - name: replace_ft
-      pattern: 'ﬅ'
-      replace_with: 'ft'
-    - name: replace_st
-      pattern: 'ﬆ'
-      replace_with: 'st'
-    - name: replace_AA
-      pattern: 'Ꜳ'
-      replace_with: 'AA'
-    - name: replace_AE
-      pattern: 'Æ'
-      replace_with: 'AE'
-    - name: replace_aa
-      pattern: 'ꜳ'
-      replace_with: 'aa'
 
   chunking:
     chunk_size: 512
@@ -62,38 +41,31 @@ data_ingestion:
 
 vector_store:
   name: faiss
-  model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL> (e.g. BAAI/bge-m3)
-  device: cuda
-  normalize_embeddings: false
-
-retriever:
-  enabled: true
-  top_k: 5
-  search_type: 'mmr'
-  fetch_k: 5
-  lambda_mult: 0.5
-
-reranker:
-  enabled: false
-  reranked_top_k: 3
   inference_engine:
     name: huggingface
     url: null
     api_key: null
-    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL> (e.g. BAAI/bge-reranker-v2-gemma)
+    model_name: </PATH/TO/INSTALLDIR/EMBEDDER_MODEL> (e.g. BAAI/bge-m3)
     device: cuda
-    load_in_4bit: false
-    load_in_8bit: false
-    max_new_tokens: 150
+    normalize_embeddings: false
+
+retriever:
+  enabled: true
+  k: 5
+  search_type: 'mmr'
+  fetch_k: 5
+  lambda_mult: 0.5
+  enable_rerank: false
+  rerank_k: 3
+  inference_engine:
+    name: huggingface
+    url: null
+    api_key: null
+    model_name: </PATH/TO/INSTALLDIR/RERANKER_MODEL> (e.g. BAAI/bge-reranker-v2-m3)
+    device: cuda
     trust_remote_code: false
-    device_map: auto
-    temperature: 0.1
-
-full_paragraphs_retriever:
-  enabled: false
-
-chat_history:
-  enabled: false
+    temperature: 0
+  enable_contenxt_enhancement: false
 
 inference_engine:
   name: huggingface
@@ -104,7 +76,6 @@ inference_engine:
   load_in_8bit: false
   max_new_tokens: 150
   trust_remote_code: false
-  device_map: auto
   temperature: 0.1
 
 evaluation:

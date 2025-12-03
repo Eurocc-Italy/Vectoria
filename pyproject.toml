@@ -26,21 +26,24 @@ maintainers = [
     {name = "Luca Babetto", email = "l.babetto@cineca.it"}
 ]
 dependencies = [
+    "torch<=2.4.0",
+    "numpy<=2.2.3",
     "requests==2.32.3",
     "transformers==4.46.*",
     "faiss-gpu-cu12==1.9.0.post1",
-    "accelerate",
     "python-docx==1.1.2",
     "pypdf>=4.3",
     "langchain>=0.3",
-    "langchain-community>=0.3",
-    "langchain-core>=0.3",
-    "langchain-huggingface>=0.1",
-    "langchain-openai>=0.2",
+    "langchain-community>=0.3.19",
+    "langchain-core>=0.3.45",
+    "langchain-huggingface>=0.1.2",
+    "langchain-openai>=0.3.8",
     "langgraph",
+    "langfuse",
     "sentence_transformers>=3.0.0",
-    "tqdm",
-    "bitsandbytes",
+    "tqdm"
+    #"accelerate",
+    #"bitsandbytes"
 ]
 
 [project.optional-dependencies]

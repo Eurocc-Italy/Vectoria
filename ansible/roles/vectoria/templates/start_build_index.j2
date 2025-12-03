@@ -5,12 +5,13 @@
 #SBATCH --output=%j.out
 #SBATCH --error=%j.err
 #SBATCH --partition={{ partition }}
-#SBATCH --time 00:30:00     # format: HH:MM:SS
+#SBATCH --time 00:15:00     # format: HH:MM:SS
 #SBATCH -N 1                # 1 node
 #SBATCH --ntasks-per-node=1 # 1 task
 #SBATCH --cpus-per-task={{ cpus }}  
 #SBATCH --gres=gpu:{{ gpus }}
-#SBATCH --exclusive
+##SBATCH --exclusive        # reserve full node for job
+                            # NOTE: gpu/cpu requirements will be ignored
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 
@@ -29,7 +30,7 @@ source {{ install_path }}/vectoria_env/bin/activate
 echo "Environment loaded..."
 
 INPUT_DOCS_DIR={{ install_path }}/docs # [pdf, docx]
-OUTPUT_INDEX_DIR={{ install_path }}/vectoria/test/index
+OUTPUT_INDEX_DIR={{ install_path }}/vectoria/test/data/index
 OUTPUT_SUFFIX=_docs
 CONFIG_FILE_PATH={{ install_path }}/vectoria/etc/default/default_config.yaml
 
