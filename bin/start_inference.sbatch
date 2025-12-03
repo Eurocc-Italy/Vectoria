@@ -18,40 +18,43 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # Avoid fragmentation
 export TMPDIR="/path/to/scratch/dir"
 export TMP="/path/to/scratch/dir"
 
-#-------------------------------------------------------
+# NOTE: the following section is experimental and is commented out by default.
+# Only use if you have enough RAM on the compute node.
 
-# TEST: COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-MODEL_PATH=/path/to/installdir/inference_engine
-RAM_PATH=/dev/shm   
+# #-------------------------------------------------------
 
-# 2. Copy model to RAM
-echo "Copying inference model to RAM..."
-start_time=$(date +%s)   # Record the start time
-cp -r $MODEL_PATH $RAM_PATH
-end_time=$(date +%s)     # Record the end time
+# # COPY MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# MODEL_PATH=/path/to/installdir/inference_engine
+# RAM_PATH=/dev/shm   
 
-# 3. Calculate and display time taken to copy the model
-time_taken=$((end_time - start_time))
-echo "Model copied to RAM in $time_taken seconds."
+# # 1. Copy model to RAM
+# echo "Copying inference model to RAM..."
+# start_time=$(date +%s)   # Record the start time
+# cp -r $MODEL_PATH $RAM_PATH
+# end_time=$(date +%s)     # Record the end time
 
-#-------------------------------------------------------
+# # 2. Calculate and display time taken to copy the model
+# time_taken=$((end_time - start_time))
+# echo "Model copied to RAM in $time_taken seconds."
 
-# COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
-# NOTE: comment the following block if reranker is not used
-MODEL_PATH=/path/to/installdir/reranker_model
-RAM_PATH=/dev/shm
+# #-------------------------------------------------------
 
-# 2. Copy model to RAM
-echo "Copying reranker model to RAM..."
-start_time=$(date +%s)   # Record the start time
-cp -r $MODEL_PATH $RAM_PATH
-end_time=$(date +%s)     # Record the end time
+# # COPY RERANKER MODEL ON REMOTE NODE'S RAM BEFORE EXECUTION
+# # NOTE: comment the following block if reranker is not used
+# MODEL_PATH=/path/to/installdir/reranker_model
+# RAM_PATH=/dev/shm
 
-# 3. Calculate and display time taken to copy the model
-time_taken=$((end_time - start_time))
-echo "Model copied to RAM in $time_taken seconds."
+# # 1. Copy model to RAM
+# echo "Copying reranker model to RAM..."
+# start_time=$(date +%s)   # Record the start time
+# cp -r $MODEL_PATH $RAM_PATH
+# end_time=$(date +%s)     # Record the end time
 
-#-------------------------------------------------------
+# # 2. Calculate and display time taken to copy the model
+# time_taken=$((end_time - start_time))
+# echo "Model copied to RAM in $time_taken seconds."
+
+# #-------------------------------------------------------
 
 # Load necessary modules
 module load <...>
