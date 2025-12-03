@@ -4,6 +4,13 @@ output
 **/*/__pycache__
 **/*/.ipynb_checkpoints
 
+.venv 
+env/
+venv/
+ENV/
+env_*/
+.ENV/
+
 **/*.pkl
 **/*.faiss
 .idea
