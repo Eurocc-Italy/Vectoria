@@ -1,5 +1,10 @@
 from langchain_core.runnables import Runnable
-from langfuse.callback import CallbackHandler
+
+try:
+    from langfuse.callback import CallbackHandler
+except ModuleNotFoundError:  # for newer versions of langfuse
+    from langfuse.langchain import CallbackHandler
+
 
 class ChainRunner:
 
@@ -11,11 +16,10 @@ class ChainRunner:
                 CallbackHandler(
                     public_key=langfuse_config.get("public_key"),
                     secret_key=langfuse_config.get("secret_key"),
-                    host=langfuse_config.get("host")
+                    host=langfuse_config.get("host"),
                 )
             )
-        
+
     def invoke(self, inputs: dict):
 
         return self.chain.invoke(inputs, config={"callbacks": self.callbacks})
-
