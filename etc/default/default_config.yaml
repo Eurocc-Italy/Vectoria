@@ -76,7 +76,7 @@ inference_engine:
   load_in_8bit: false
   max_new_tokens: 150
   trust_remote_code: false
-  temperature: 0
+  temperature: 0.1
 
 evaluation:
   tool: ragas
