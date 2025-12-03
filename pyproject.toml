@@ -39,6 +39,7 @@ dependencies = [
     "langchain-huggingface>=0.1.2",
     "langchain-openai>=0.3.8",
     "langgraph",
+    "langfuse",
     "sentence_transformers>=3.0.0",
     "tqdm"
     #"accelerate",
